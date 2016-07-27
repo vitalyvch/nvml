@@ -146,6 +146,9 @@ endif
 
 CFLAGS += $(EXTRA_CFLAGS)
 
+EXTRA_LDFLAGS := -g
+EXTRA_CFLAGS := -g
+
 objdir=.
 
 %.o: %.c

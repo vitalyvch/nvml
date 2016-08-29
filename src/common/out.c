@@ -126,7 +126,7 @@ Last_errormsg_get()
 
 #define MAXPRINT 256	/* maximum expected log line for libpmem */
 
-static __thread char Last_errormsg[MAXPRINT];
+static __thread char Last_errormsg[MAXPRINT] __attribute__((tls_model ("initial-exec")));
 
 static inline void
 Last_errormsg_key_alloc()

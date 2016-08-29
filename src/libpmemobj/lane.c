@@ -52,9 +52,9 @@
 
 static pthread_key_t Lane_info_key;
 
-static __thread struct cuckoo *Lane_info_ht;
-static __thread struct lane_info *Lane_info_records;
-static __thread struct lane_info *Lane_info_cache;
+static __thread struct cuckoo *Lane_info_ht __attribute__((tls_model("initial-exec")));
+static __thread struct lane_info *Lane_info_records __attribute__((tls_model("initial-exec")));
+static __thread struct lane_info *Lane_info_cache __attribute__((tls_model("initial-exec")));
 
 struct section_operations *Section_ops[MAX_LANE_SECTION];
 

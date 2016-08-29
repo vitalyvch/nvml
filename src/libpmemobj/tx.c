@@ -66,7 +66,7 @@ static __thread struct {
 	enum pobj_tx_stage stage;
 	int last_errnum;
 	struct lane_section *section;
-} tx;
+} tx __attribute__((tls_model("initial-exec")));
 
 struct tx_lock_data {
 	union {

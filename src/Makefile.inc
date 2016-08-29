@@ -76,7 +76,8 @@ endif
 
 CFLAGS += $(EXTRA_CFLAGS)
 
-LDFLAGS += -Wl,-z,relro -Wl,--fatal-warnings -Wl,--warn-common $(EXTRA_LDFLAGS)
+#LDFLAGS += -Wl,-z,relro -Wl,--fatal-warnings -Wl,--warn-common $(EXTRA_LDFLAGS) -mcmodel=large -ftls-model=global-dynamic
+LDFLAGS += -Wl,-z,relro -Wl,--fatal-warnings -Wl,--warn-common $(EXTRA_LDFLAGS) -mcmodel=large
 
 define arch32_error_msg
 
@@ -222,7 +223,8 @@ $(eval $(cstyle-rule))
 
 $(objdir)/%.o: %.c $(MAKEFILE_DEPS)
 	@mkdir -p $(objdir)/.deps
-	$(CC) -MD -c -o $@ $(CFLAGS) $(INCS) -fPIC $<
+	#$(CC) -MD -c -o $@ $(CFLAGS) $(INCS) -mcmodel=large -ftls-model=global-dynamic $<
+	$(CC) -MD -c -o $@ $(CFLAGS) $(INCS) -mcmodel=large $<
 	$(create-deps)
 
 .PHONY: all clean clobber install uninstall cstyle

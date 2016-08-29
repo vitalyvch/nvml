@@ -54,7 +54,7 @@ int _pobj_cache_invalidate;
 
 #ifndef _WIN32
 
-__thread struct _pobj_pcache _pobj_cached_pool;
+__thread struct _pobj_pcache _pobj_cached_pool __attribute__((tls_model("initial-exec")));
 
 #else /* _WIN32 */
 

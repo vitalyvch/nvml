@@ -145,7 +145,7 @@ struct heap_rt {
 	uint32_t last_drained[MAX_BUCKETS];
 };
 
-static __thread unsigned Cache_idx = UINT32_MAX;
+static __thread unsigned Cache_idx __attribute__((tls_model("initial-exec"))) = UINT32_MAX;
 static unsigned Next_cache_idx;
 
 /*

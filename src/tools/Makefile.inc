@@ -184,10 +184,15 @@ endif
 
 SYNC_FILE=.synced
 
-clean:
+ifneq ($(EXTRA_TARGETS),)
+EXTRA_TARGETS_CLEAN = $(EXTRA_TARGETS:=-clean)
+EXTRA_TARGETS_CLOBBER = $(EXTRA_TARGETS:=-clobber)
+endif
+
+clean: $(EXTRA_TARGETS_CLEAN)
 	$(RM) $(OBJS) $(CLEAN_FILES) $(SYNC_FILE) $(TMP_HEADERS)
 
-clobber: clean
+clobber: clean $(EXTRA_TARGETS_CLOBBER)
 ifneq ($(TARGET),)
 	$(RM) $(TARGET)
 	$(RM) $(TARGET_STATIC_NONDEBUG)
@@ -222,6 +227,9 @@ endif
 
 %.txt: %
 	man ./$< > $@
+
+%.html: %
+	groff -mandoc -Thtml ./$< > $@
 
 $(TARGET) $(TARGET_STATIC_DEBUG) $(TARGET_STATIC_NONDEBUG): $(TMP_HEADERS) $(OBJS) $(MAKEFILE_DEPS)
 

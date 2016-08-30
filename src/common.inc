@@ -196,3 +196,5 @@ endif
 else
 export BUILD_RPMEM := n
 endif
+
+export BUILD_STRACE_EBPF := $(call check_package, libbcc)

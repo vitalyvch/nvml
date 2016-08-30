@@ -1,3 +1,5 @@
+#!/bin/bash -x
+#
 # Copyright 2014-2016, Intel Corporation
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,45 +29,27 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 #
-# Makefile -- top Makefile for tools
+# make-redis.sh - Script for running redis-benchmark while redis-server
+#                 is traced.
 #
 
-TOP = ../..
+set -m
 
-TESTCONFIG=$(TOP)/src/test/testconfig.sh
+# Should be same as in redis.conf
+echo -n > /tmp/appendonly.aof
 
-TARGETS = pmempool rpmemd strace.ebpf
-SCOPEDIRS=$(TARGETS)
-SCOPEFILES=$(foreach dir, $(SCOPEDIRS), $(shell find $(dir) -name *.[ch] ))
+`which time` -p -v "$@" redis-server redis.conf >> redis-server.log &
 
-all    : TARGET = all
-check  : TARGET = check
-test   : TARGET = test
-clean  : TARGET = clean
-clobber: TARGET = clobber
-cstyle : TARGET = cstyle
-format : TARGET = format
-install: TARGET = install
-uninstall: TARGET = uninstall
-sync-remotes: TARGET = sync-remotes
+sleep 13
 
-all clean clobber cstyle install uninstall check format test: $(TARGETS)
+redis-benchmark -q -n 100000
 
-$(TESTCONFIG):
+sleep 3
 
-sync-remotes: $(TARGETS) $(TESTCONFIG)
+redis-cli shutdown
 
-$(TARGETS):
-	$(MAKE) -C $@ $(TARGET)
+fg
 
-clean:
-	$(RM) TAGS cscope.in.out cscope.out cscope.po.out
-
-clobber: clean
-
-cscope:
-	cscope -q -b $(SCOPEFILES)
-	ctags -e $(SCOPEFILES)
-
-.PHONY: all clean clobber cstyle format install uninstall common cscope sync-remotes $(TARGETS)
+exit 0

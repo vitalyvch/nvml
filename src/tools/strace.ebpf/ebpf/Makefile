@@ -1,4 +1,4 @@
-# Copyright 2014-2016, Intel Corporation
+# Copyright 2016, Intel Corporation
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -27,45 +27,35 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 #
-# Makefile -- top Makefile for tools
+# src/tools/strace.ebpf/ebpf/Makefile -- Makefile for libebpf
 #
 
-TOP = ../..
+TOP = ../../..
 
-TESTCONFIG=$(TOP)/src/test/testconfig.sh
+LIBRARY_NAME = ebpf
 
-TARGETS = pmempool rpmemd strace.ebpf
-SCOPEDIRS=$(TARGETS)
-SCOPEFILES=$(foreach dir, $(SCOPEDIRS), $(shell find $(dir) -name *.[ch] ))
+# eBPF sources
+BIN_SRCS = \
+	trace.h \
+	trace_head.c \
+	trace_tp_all.c \
+	trace_kern_tmpl.c \
+	trace_libc_tmpl.c \
+	trace_file_tmpl.c \
+	trace_fileat_tmpl.c \
 
-all    : TARGET = all
-check  : TARGET = check
-test   : TARGET = test
-clean  : TARGET = clean
-clobber: TARGET = clobber
-cstyle : TARGET = cstyle
-format : TARGET = format
-install: TARGET = install
-uninstall: TARGET = uninstall
-sync-remotes: TARGET = sync-remotes
 
-all clean clobber cstyle install uninstall check format test: $(TARGETS)
+BIN_OBJS = $(addsuffix .o,$(BIN_SRCS))
 
-$(TESTCONFIG):
+%.c.o: %.c Makefile
+	$(LD) -r -b binary -o $@ $<
 
-sync-remotes: $(TARGETS) $(TESTCONFIG)
+%.h.o: %.h Makefile
+	$(LD) -r -b binary -o $@ $<
 
-$(TARGETS):
-	$(MAKE) -C $@ $(TARGET)
+OBJS = $(BIN_OBJS)
 
-clean:
-	$(RM) TAGS cscope.in.out cscope.out cscope.po.out
 
-clobber: clean
-
-cscope:
-	cscope -q -b $(SCOPEFILES)
-	ctags -e $(SCOPEFILES)
-
-.PHONY: all clean clobber cstyle format install uninstall common cscope sync-remotes $(TARGETS)
+include ../../../Makefile.inc

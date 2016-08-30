@@ -1,4 +1,4 @@
-# Copyright 2014-2016, Intel Corporation
+# Copyright 2016, Intel Corporation
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -27,45 +27,38 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 #
-# Makefile -- top Makefile for tools
+# src/tools/strace.ebpf/libstrace/Makefile -- Makefile for libstrace
 #
 
-TOP = ../..
+TOP = ../../..
 
-TESTCONFIG=$(TOP)/src/test/testconfig.sh
+LIBRARY_NAME = strace
 
-TARGETS = pmempool rpmemd strace.ebpf
-SCOPEDIRS=$(TARGETS)
-SCOPEFILES=$(foreach dir, $(SCOPEDIRS), $(shell find $(dir) -name *.[ch] ))
+OBJS = bpf.o\
+	   utils.o\
+	   attach_probes.o \
+	   ebpf_syscalls.o \
+	   generate_ebpf.o \
+	   print_event_cb.o \
 
-all    : TARGET = all
-check  : TARGET = check
-test   : TARGET = test
-clean  : TARGET = clean
-clobber: TARGET = clobber
-cstyle : TARGET = cstyle
-format : TARGET = format
-install: TARGET = install
-uninstall: TARGET = uninstall
-sync-remotes: TARGET = sync-remotes
 
-all clean clobber cstyle install uninstall check format test: $(TARGETS)
+CFLAGS += $(shell $(PKG_CONFIG) --cflags libbcc)
 
-$(TESTCONFIG):
+# XXX libbcc expects multi-treading safity. Currently it's required for
+# print_event_cb.o only, although we will apply it for overall application.
+CFLAGS += -pthread
 
-sync-remotes: $(TARGETS) $(TESTCONFIG)
+CFLAGS += -g -Wextra
 
-$(TARGETS):
-	$(MAKE) -C $@ $(TARGET)
+ifeq ($(CC),clang)
+CFLAGS += -Wno-initializer-overrides
+else
+CFLAGS += -Wno-override-init
+endif
 
-clean:
-	$(RM) TAGS cscope.in.out cscope.out cscope.po.out
+CFLAGS += -I ../compat
+CFLAGS += -I ../ebpf
 
-clobber: clean
-
-cscope:
-	cscope -q -b $(SCOPEFILES)
-	ctags -e $(SCOPEFILES)
-
-.PHONY: all clean clobber cstyle format install uninstall common cscope sync-remotes $(TARGETS)
+include ../../../Makefile.inc

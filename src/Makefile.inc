@@ -173,7 +173,7 @@ ifneq ($(LIBPMEMBLK_PRIV_FUNCS),)
 OBJS += pmemblk_priv_funcs.o
 endif
 
-MAKEFILE_DEPS=../Makefile.inc Makefile $(TOP)/src/common.inc
+MAKEFILE_DEPS=$(TOP)/src/Makefile.inc Makefile $(TOP)/src/common.inc
 
 all: $(objdir) $(LIB_OUTDIR) $(EXTRA_TARGETS) $(LIB_AR) $(LIB_SO_SONAME) $(LIB_SO_REAL) $(LIB_SO) $(TMP_HEADERS)
 

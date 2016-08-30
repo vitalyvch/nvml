@@ -1,4 +1,4 @@
-# Copyright 2014-2016, Intel Corporation
+# Copyright 2016, Intel Corporation
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -27,45 +27,17 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 #
-# Makefile -- top Makefile for tools
+# Makefile -- Makefile for documentation
 #
 
-TOP = ../..
 
-TESTCONFIG=$(TOP)/src/test/testconfig.sh
-
-TARGETS = pmempool rpmemd strace.ebpf
-SCOPEDIRS=$(TARGETS)
-SCOPEFILES=$(foreach dir, $(SCOPEDIRS), $(shell find $(dir) -name *.[ch] ))
-
-all    : TARGET = all
-check  : TARGET = check
-test   : TARGET = test
-clean  : TARGET = clean
-clobber: TARGET = clobber
-cstyle : TARGET = cstyle
-format : TARGET = format
-install: TARGET = install
-uninstall: TARGET = uninstall
-sync-remotes: TARGET = sync-remotes
-
-all clean clobber cstyle install uninstall check format test: $(TARGETS)
-
-$(TESTCONFIG):
-
-sync-remotes: $(TARGETS) $(TESTCONFIG)
-
-$(TARGETS):
-	$(MAKE) -C $@ $(TARGET)
-
-clean:
-	$(RM) TAGS cscope.in.out cscope.out cscope.po.out
-
-clobber: clean
-
-cscope:
-	cscope -q -b $(SCOPEFILES)
-	ctags -e $(SCOPEFILES)
-
-.PHONY: all clean clobber cstyle format install uninstall common cscope sync-remotes $(TARGETS)
+DESIGN.pdf: DESIGN.rst Makefile DSGN_rst_style.yaml *.uml
+	rst2pdf -c -b 1 \
+		--verbose \
+		--default-dpi=300 \
+		-l en \
+		-e preprocess -e plantuml \
+		-s DSGN_rst_style.yaml \
+		$<

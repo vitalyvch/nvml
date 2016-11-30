@@ -267,6 +267,9 @@ LIBPMEMPOOL_MOD_DEPS = \
 LIBPMEMPOOL_MOD_TESTS = \
 	libpmempool_transform
 
+STRACE_EBPF_TESTS = \
+	strace.ebpf_help \
+	strace.ebpf_basic \
 
 LOCAL_TESTS = \
 	$(OBJ_TESTS)\

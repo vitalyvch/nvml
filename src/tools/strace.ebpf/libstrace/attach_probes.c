@@ -38,9 +38,9 @@
 
 #include <bcc/bpf_common.h>
 
-#include "bpf.h"
 #include "main.h"
 #include "utils.h"
+#include "strace_bpf.h"
 #include "attach_probes.h"
 #include "ebpf_syscalls.h"
 
@@ -97,7 +97,7 @@ attach_kp_libc_all(struct bpf_ctx *b)
 			continue;
 		}
 
-		succ_counter ++;
+		succ_counter++;
 	}
 
 	return succ_counter > 0;

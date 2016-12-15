@@ -31,12 +31,11 @@
  */
 
 /*
- * bpf.h -- Key bpf_ctx structure and related functions
+ * strace_bpf.h -- Key bpf_ctx structure and related functions
  */
 
-/* PLEASE do not rename this macro to BPF_H. There is a conflict. */
-#ifndef __BPF_H
-#define __BPF_H
+#ifndef STRACE_BPF_H
+#define STRACE_BPF_H
 
 #include <stdint.h>
 #include <unistd.h>
@@ -81,4 +80,4 @@ int load_fn_and_attach_to_tp(struct bpf_ctx *sbcp,
 
 void detach_all(struct bpf_ctx *b);
 
-#endif /* __BPF_H */
+#endif /* STRACE_BPF_H */

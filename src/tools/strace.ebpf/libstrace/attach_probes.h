@@ -39,7 +39,7 @@
 
 #include <stdbool.h>
 
-#include "bpf.h"
+#include "strace_bpf.h"
 
 bool attach_probes(struct bpf_ctx *b);
 

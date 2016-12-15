@@ -73,15 +73,13 @@ Cons
 Structural Component Diagram
 -----------------------------
 
-.. uml::
-    !include DSGN_struct_comp_dia.uml
+.. image:: DSGN_struct_comp_dia.png
 
 
 Behavioral Activity Diagram
 ----------------------------
 
-.. uml::
-    !include DSGN_beh_act_dia.uml
+.. image:: DSGN_beh_act_dia.png
 
 
 Conclusion

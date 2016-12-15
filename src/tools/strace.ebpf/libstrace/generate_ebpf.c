@@ -95,7 +95,9 @@ generate_ebpf_kp_libc_all(FILE *ts)
 
 		fwrite(text, strlen(text), 1, ts);
 
-		free(text); text = NULL;
+		free(text);
+
+		text = NULL;
 	}
 }
 
@@ -162,7 +164,9 @@ generate_ebpf_kp_kern_all(FILE *ts)
 
 		fwrite(text, strlen(text), 1, ts);
 
-		free(text); text = NULL;
+		free(text);
+
+		text = NULL;
 	}
 
 	free(line);
@@ -194,7 +198,9 @@ generate_ebpf_kp_file(FILE *ts)
 
 		fwrite(text, strlen(text), 1, ts);
 
-		free(text); text = NULL;
+		free(text);
+
+		text = NULL;
 	}
 }
 
@@ -223,7 +229,9 @@ generate_ebpf_kp_fileat(FILE *ts)
 
 		fwrite(text, strlen(text), 1, ts);
 
-		free(text); text = NULL;
+		free(text);
+
+		text = NULL;
 	}
 }
 
@@ -252,7 +260,9 @@ generate_ebpf_kp_desc(FILE *ts)
 
 		fwrite(text, strlen(text), 1, ts);
 
-		free(text); text = NULL;
+		free(text);
+
+		text = NULL;
 	}
 }
 
@@ -279,7 +289,9 @@ generate_ebpf_tp_all(FILE *ts)
 
 	fwrite(text, strlen(text), 1, ts);
 
-	free(text); text = NULL;
+	free(text);
+
+	text = NULL;
 }
 
 /*
@@ -296,7 +308,9 @@ generate_ebpf()
 	/* Let's from header */
 	char *head = load_file(ebpf_head_file);
 	fwrite(head, strlen(head), 1, ts);
-	free(head); head = NULL;
+	free(head);
+
+	head = NULL;
 
 	if (NULL == args.expr)
 		goto DeFault;

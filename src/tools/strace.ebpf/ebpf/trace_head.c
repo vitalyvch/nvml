@@ -31,7 +31,7 @@
  */
 
 /*
- * trace_head.c -- Header for generated eBPF code. Uses BCC, eBPF.
+ * trace_head.c -- The head for generated eBPF code. Uses BCC, eBPF.
  */
 
 #include <uapi/linux/ptrace.h>

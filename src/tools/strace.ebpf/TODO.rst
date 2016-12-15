@@ -6,14 +6,14 @@ TODO
 
 Currently we require a bit more than 1000 nsec for tracing single syscall.
 It is not bad but there are at least few places which could allow us to
-reduce that values may be to 600 nsec. Every syscall itself currently require
+reduce this value may be to 600 nsec. Every syscall itself currently requires
 a bit more than 100 nsec for entering, and close value for returning. So a bit
-more then 200 nsec together.
+more than 200 nsec together.
 
 1.1 Extra poll()
 -----------------
 
-Currently libbcc do two poll() same syscalls per iter. There are no reason for
+Currently libbcc does two poll() same syscalls per iter. There are no reason for
 it and we should drop it. It will improove our time for about 200 nsec, but it
 is a libbcc bug. Back trace for one of that poll() syscalls:
 
@@ -26,12 +26,12 @@ is a libbcc bug. Back trace for one of that poll() syscalls:
 1.2 Tracepoints support
 ------------------------
 
-Currently kernel provide a way for fast intercepting of all syscalls together.
+Currently kernel provides a way for fast intercepting of all syscalls together.
 But we temporarily can't use it because of this bug:
 
     - https://github.com/iovisor/bcc/issues/748
 
-As soon as bug will be fixed we should try it one time more.
+As soon as this bug will be fixed we should try it one time more.
 
 1.3 out buffering
 ------------------
@@ -40,8 +40,8 @@ Optimization of this place is critical to achieve maximum possible log
 bandwidth. Most likely we should use fd directly.
 
 
-2. Debuging
-============
+2. Debugging
+=============
 
 2.1 Enable Valgrind
 --------------------
@@ -84,4 +84,4 @@ names.
 3.3 eBPF sources
 -----------------
 
-It is good to have embedded copies of these files as fallback.
+[Done] It is good to have embedded copies of these files as fallback.

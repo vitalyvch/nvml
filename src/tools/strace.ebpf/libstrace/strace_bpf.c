@@ -31,7 +31,7 @@
  */
 
 /*
- * bpf.c -- functions related to struct bpf_ctx
+ * strace_bpf.c -- functions related to struct bpf_ctx
  */
 
 #include <stdio.h>
@@ -46,8 +46,8 @@
 #include <bcc/bpf_common.h>
 #include <bcc/perf_reader.h>
 
-#include "bpf.h"
 #include "main.h"
+#include "strace_bpf.h"
 
 
 /*
@@ -55,7 +55,8 @@
  * Should be actual if we will intercept something more low-level than regular
  * syscalls.
  */
-static bool pr_arr_check_quota(struct bpf_ctx *sbcp, unsigned new_pr_qty)
+static bool
+pr_arr_check_quota(struct bpf_ctx *sbcp, unsigned new_pr_qty)
 {
 	return sbcp->pr_arr_qty + new_pr_qty <= args.pr_arr_max;
 }
@@ -63,7 +64,8 @@ static bool pr_arr_check_quota(struct bpf_ctx *sbcp, unsigned new_pr_qty)
 /*
  * Save reference to hendler of intercepted syscall in pr_arr.
  */
-static void append_item_to_pr_arr(struct bpf_ctx *sbcp, const char *name,
+static void
+append_item_to_pr_arr(struct bpf_ctx *sbcp, const char *name,
 		struct perf_reader *probe, bool attached)
 {
 	struct bpf_pr *item =
@@ -195,19 +197,23 @@ static int
 load_obj_code_into_ebpf_vm(struct bpf_ctx *sbcp, const char *func_name,
 		enum bpf_prog_type prog_type)
 {
-	int fd = -1;
 	void *bfs_res = bpf_function_start(sbcp->module, func_name);
 
 	if (NULL == bfs_res) {
-		fprintf(stderr, "%s: Unknown program %s\n",
+		fprintf(stderr, "ERROR:%s: Unknown program %s\n",
 				__func__, func_name);
 		return -1;
 	}
 
-	const unsigned log_buf_size = sbcp->debug ? 65536 : 0;
-	char *const log_buf = sbcp->debug ? calloc(1, log_buf_size) : NULL;
+	unsigned log_buf_size = 0;
+	char *log_buf = NULL;
 
-	fd = bpf_prog_load(prog_type,
+	if (sbcp->debug) {
+		log_buf_size = 65536;
+		log_buf = calloc(1, log_buf_size);
+	}
+
+	int fd = bpf_prog_load(prog_type,
 			bfs_res,
 			(int)bpf_function_size(sbcp->module, func_name),
 			bpf_module_license(sbcp->module),
@@ -218,6 +224,8 @@ load_obj_code_into_ebpf_vm(struct bpf_ctx *sbcp, const char *func_name,
 		/* XXX Command line options to save it to separate file */
 		fprintf(stderr, "DEBUG:%s('%s'):\n%s\n",
 				__func__, func_name, log_buf);
+
+		free(log_buf);
 	}
 
 	if (fd < 0) {

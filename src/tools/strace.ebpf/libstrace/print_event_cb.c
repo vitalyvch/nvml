@@ -60,9 +60,9 @@ enum { TASK_COMM_LEN = 16 };
 
 static unsigned long long start_ts_nsec = 0;
 
-const char *sc_num2str(const int64_t sc_num);
-void fprint_i64(FILE *f, uint64_t x);
-char b2hex(char b);
+static inline const char *sc_num2str(const int64_t sc_num);
+static inline void fprint_i64(FILE *f, uint64_t x);
+static inline char b2hex(char b);
 
 /*
  * Process event.
@@ -171,7 +171,7 @@ print_header_hex(int argc, char *argv[])
 /*
  * This function returnss character corresponding to hexadecimal digit.
  */
-char
+static inline char
 b2hex(char b)
 {
 	switch (b & 0xF) {
@@ -197,9 +197,9 @@ b2hex(char b)
 }
 
 /*
- * This function prints 64-bit integer in hexadecimal forn in stream.
+ * This function prints 64-bit integer in hexadecimal form in stream.
  */
-void
+static inline void
 fprint_i64(FILE *f, uint64_t x)
 {
 	char str[2 * sizeof(x)];
@@ -215,9 +215,9 @@ fprint_i64(FILE *f, uint64_t x)
 }
 
 /*
- * This function returnss syscall's name by number
+ * This function returns syscall's name by number
  */
-const char *
+static inline const char *
 sc_num2str(const int64_t sc_num)
 {
 	static char buf[32];
@@ -297,7 +297,7 @@ print_event_hex(void *cb_cookie, void *data, int size)
 
 	case -1:
 		/*
-		 * XXX Something unexpected happened. Ma be we should issue a
+		 * XXX Something unexpected happened. Maybe we should issue a
 		 * warning or do something better
 		 */
 		break;

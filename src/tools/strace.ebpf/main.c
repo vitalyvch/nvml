@@ -53,7 +53,7 @@
 #include <bcc/bpf_common.h>
 #include <bcc/perf_reader.h>
 
-#include "bpf.h"
+#include "strace_bpf.h"
 
 #include "main.h"
 #include "utils.h"
@@ -141,7 +141,7 @@ List of supported sets:\n"
 static void
 fprint_help(FILE *f)
 {
-	fwrite(help_text, sizeof(help_text)-1, 1, f);
+	fwrite(help_text, sizeof(help_text) - 1, 1, f);
 }
 
 /*
@@ -150,7 +150,7 @@ fprint_help(FILE *f)
 static void
 fprint_trace_list(FILE *f)
 {
-	fwrite(trace_list_text, sizeof(trace_list_text)-1, 1, f);
+	fwrite(trace_list_text, sizeof(trace_list_text) - 1, 1, f);
 }
 
 struct args_t args;
@@ -214,98 +214,98 @@ main(int argc, char *argv[])
 			break;
 
 		switch (c) {
-			case 't':
-				args.timestamp = true;
-				break;
+		case 't':
+			args.timestamp = true;
+			break;
 
-			case 'X':
-				args.failed = true;
-				break;
+		case 'X':
+			args.failed = true;
+			break;
 
-			case 'h':
-				fprint_help(stdout);
+		case 'h':
+			fprint_help(stdout);
+			exit(EXIT_SUCCESS);
+
+		case 'd':
+			args.debug = true;
+			break;
+
+		case 'p':
+			args.pid = atoi(optarg);
+			break;
+
+		case 'o':
+			args.out_fn = optarg;
+			break;
+
+		case 'K':
+			args.out_sep_ch = *optarg;
+			break;
+
+		case 'e':
+			if (!strcasecmp(optarg, "list") ||
+					!strcasecmp(optarg, "help")) {
+				fprintf(stderr,
+					"List of supported expressions:"
+					" 'help', 'list', 'trace=set'"
+					"\n");
 				exit(EXIT_SUCCESS);
-
-			case 'd':
-				args.debug = true;
-				break;
-
-			case 'p':
-				args.pid = atoi(optarg);
-				break;
-
-			case 'o':
-				args.out_fn = optarg;
-				break;
-
-			case 'K':
-				args.out_sep_ch = *optarg;
-				break;
-
-			case 'e':
-				if (!strcasecmp(optarg, "list") ||
-						!strcasecmp(optarg, "help")) {
-					fprintf(stderr,
-						"List of supported expressions:"
-						" 'help', 'list', 'trace=set'"
-						"\n");
-					exit(EXIT_SUCCESS);
-				} else if (!strcasecmp(optarg, "trace=help") ||
-						!strcasecmp(optarg,
-							"trace=list")) {
-					fprint_trace_list(stderr);
-					fprintf(stderr,
-						"You can combine sets"
-						" by using comma.\n");
-					exit(EXIT_SUCCESS);
-				}
-				args.expr = optarg;
-				break;
-
-			case 'l':
-				if (!strcasecmp(optarg, "list") ||
-						!strcasecmp(optarg, "help")) {
-					fprintf(stderr,
-						"List of supported expressions:"
-						"'bin', 'binary', 'hex', "
-						"'strace', 'list' & 'help'\n");
-					exit(EXIT_SUCCESS);
-				}
-				args.out_fmt_str = optarg;
-				out_fmt = out_fmt_str2enum(args.out_fmt_str);
-				break;
-
-			case 'L':
-				get_sc_list(stdout, is_a_sc);
+			} else if (!strcasecmp(optarg, "trace=help") ||
+					!strcasecmp(optarg,
+						"trace=list")) {
+				fprint_trace_list(stderr);
+				fprintf(stderr,
+					"You can combine sets"
+					" by using comma.\n");
 				exit(EXIT_SUCCESS);
+			}
+			args.expr = optarg;
+			break;
 
-			case 'R':
-				get_sc_list(stdout, NULL);
+		case 'l':
+			if (!strcasecmp(optarg, "list") ||
+					!strcasecmp(optarg, "help")) {
+				fprintf(stderr,
+					"List of supported expressions:"
+					"'bin', 'binary', 'hex', "
+					"'strace', 'list' & 'help'\n");
 				exit(EXIT_SUCCESS);
+			}
+			args.out_fmt_str = optarg;
+			out_fmt = out_fmt_str2enum(args.out_fmt_str);
+			break;
 
-			case 'b':
-				for (unsigned i = 0; i < SC_TBL_SIZE; i++)
-					if (NULL != sc_tbl[i].hlr_name)
-						fprintf(stdout,
-							"%03d: %-20s\t %s\n",
-							sc_tbl[i].num,
-							sc_tbl[i].num_name,
-							sc_tbl[i].hlr_name);
-				exit(EXIT_SUCCESS);
+		case 'L':
+			get_sc_list(stdout, is_a_sc);
+			exit(EXIT_SUCCESS);
 
-			case ':':
-				fprintf(stderr, "ERROR: "
-					"Missing mandatory option's "
-					"argument\n");
-				fprint_help(stderr);
-				exit(EXIT_FAILURE);
+		case 'R':
+			get_sc_list(stdout, NULL);
+			exit(EXIT_SUCCESS);
 
-			default:
-				fprintf(stderr, "ERROR: "
-					"Unknown option: '-%c'\n", c);
-			case '?':
-				fprint_help(stderr);
-				exit(EXIT_FAILURE);
+		case 'b':
+			for (unsigned i = 0; i < SC_TBL_SIZE; i++)
+				if (NULL != sc_tbl[i].hlr_name)
+					fprintf(stdout,
+						"%03d: %-20s\t %s\n",
+						sc_tbl[i].num,
+						sc_tbl[i].num_name,
+						sc_tbl[i].hlr_name);
+			exit(EXIT_SUCCESS);
+
+		case ':':
+			fprintf(stderr, "ERROR: "
+				"Missing mandatory option's "
+				"argument\n");
+			fprint_help(stderr);
+			exit(EXIT_FAILURE);
+
+		default:
+			fprintf(stderr, "ERROR: "
+				"Unknown option: '-%c'\n", c);
+		case '?':
+			fprint_help(stderr);
+			exit(EXIT_FAILURE);
 		}
 	}
 

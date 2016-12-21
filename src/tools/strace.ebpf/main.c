@@ -136,7 +136,7 @@ List of supported sets:\n"
 	"\n";
 
 /*
- * This function prints help message in stream.
+ * fprint_help -- This function prints help message in stream.
  */
 static void
 fprint_help(FILE *f)
@@ -145,7 +145,8 @@ fprint_help(FILE *f)
 }
 
 /*
- * This function prints description of expressions in stream.
+ * fprint_trace_list -- This function prints description of expressions
+ *     in stream.
  */
 static void
 fprint_trace_list(FILE *f)
@@ -165,7 +166,7 @@ extern int perf_reader_page_cnt;
 static unsigned out_buf_size = 8 * 1024 * 1024;
 
 /*
- * Tool's entry point
+ * main -- Tool's entry point
  */
 int
 main(int argc, char *argv[])

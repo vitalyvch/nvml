@@ -53,7 +53,8 @@ const char *ebpf_kern_tmpl_file = "trace_kern_tmpl.c";
 const char *ebpf_tp_all_file = "trace_tp_all.c";
 
 /*
- * This function returns syscall number by name according to libc knowledge.
+ * get_sc_num -- This function returns syscall number by name according to
+ *     libc knowledge.
  */
 static int
 get_sc_num(const char *sc_name)
@@ -70,7 +71,8 @@ get_sc_num(const char *sc_name)
 }
 
 /*
- * This function generates eBPF handler for syscalls which are known to glibc.
+ * generate_ebpf_kp_libc_all -- This function generates eBPF handler for
+ *     syscalls which are known to glibc.
  */
 static void
 generate_ebpf_kp_libc_all(FILE *ts)
@@ -105,7 +107,8 @@ generate_ebpf_kp_libc_all(FILE *ts)
 static unsigned SyS_sigsuspend = 0;
 
 /*
- * This function generates universal default eBPF syscall handler.
+ * generate_ebpf_kp_kern_all -- This function generates universal default eBPF
+ *     syscall handler.
  *
  * Primer purpose of generated handler - new and unknown syscalls.
  */
@@ -174,8 +177,8 @@ generate_ebpf_kp_kern_all(FILE *ts)
 }
 
 /*
- * This function generates eBPF syscall handlers specific for syscalls with
- * filename in arguments.
+ * generate_ebpf_kp_file -- This function generates eBPF syscall handlers
+ *     specific for syscalls with filename in arguments.
  */
 static void
 generate_ebpf_kp_file(FILE *ts)
@@ -205,8 +208,8 @@ generate_ebpf_kp_file(FILE *ts)
 }
 
 /*
- * This function generates eBPF syscall handlers specific for syscalls with
- * relative filename in arguments.
+ * generate_ebpf_kp_fileat -- This function generates eBPF syscall handlers
+ *     specific for syscalls with relative filename in arguments.
  */
 static void
 generate_ebpf_kp_fileat(FILE *ts)
@@ -236,8 +239,8 @@ generate_ebpf_kp_fileat(FILE *ts)
 }
 
 /*
- * This function generates eBPF syscall handlers specific for syscalls with
- * file-descriptor in arguments.
+ * generate_ebpf_kp_desc -- This function generates eBPF syscall handlers
+ *     specific for syscalls with file-descriptor in arguments.
  */
 static void
 generate_ebpf_kp_desc(FILE *ts)
@@ -267,8 +270,8 @@ generate_ebpf_kp_desc(FILE *ts)
 }
 
 /*
- * This function generates eBPF syscall handlers specific for syscalls which
- * operate on files.
+ * generate_ebpf_kp_pmemfile -- This function generates eBPF syscall handlers
+ *     specific for syscalls which operate on files.
  */
 static void
 generate_ebpf_kp_pmemfile(FILE *ts)
@@ -279,8 +282,8 @@ generate_ebpf_kp_pmemfile(FILE *ts)
 }
 
 /*
- * This function generates eBPF syscall handler specific for tracepoint
- * feature.
+ * generate_ebpf_tp_all -- This function generates eBPF syscall handler
+ *     specific for tracepoint feature.
  */
 static void
 generate_ebpf_tp_all(FILE *ts)
@@ -295,7 +298,7 @@ generate_ebpf_tp_all(FILE *ts)
 }
 
 /*
- * This function parses and process expression.
+ * generate_ebpf -- This function parses and process expression.
  */
 char *
 generate_ebpf()

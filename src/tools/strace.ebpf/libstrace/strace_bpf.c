@@ -51,7 +51,9 @@
 
 
 /*
- * This function checks possibility of intercepting one more syscall.
+ * pr_arr_check_quota -- This function checks possibility of intercepting one
+ *     more syscall.
+ *
  * Should be actual if we will intercept something more low-level than regular
  * syscalls.
  */
@@ -62,7 +64,8 @@ pr_arr_check_quota(struct bpf_ctx *sbcp, unsigned new_pr_qty)
 }
 
 /*
- * Save reference to hendler of intercepted syscall in pr_arr.
+ * append_item_to_pr_arr -- Save reference to hendler of intercepted syscall
+ *     in pr_arr.
  */
 static void
 append_item_to_pr_arr(struct bpf_ctx *sbcp, const char *name,
@@ -83,7 +86,8 @@ append_item_to_pr_arr(struct bpf_ctx *sbcp, const char *name,
 }
 
 /*
- * Register callback to capture stream of events.
+ * attach_callback_to_perf_output -- Register callback to capture stream of
+ *     events.
  */
 int
 attach_callback_to_perf_output(struct bpf_ctx *sbcp,
@@ -157,7 +161,7 @@ attach_callback_to_perf_output(struct bpf_ctx *sbcp,
 }
 
 /*
- * Overall resource cleanup.
+ * detach_all -- Overall resource cleanup.
  *
  * WARNING We really need explicit cleanup to prevent in-kernel memory leaks.
  *         Yes, there still are kernel bugs related to eBPF.
@@ -191,7 +195,8 @@ detach_all(struct bpf_ctx *b)
 }
 
 /*
- *  Load eBPF object code to kernel VM and obtaining a fd
+ * load_obj_code_into_ebpf_vm -- Load eBPF object code to kernel VM and
+ *     obtaining a fd
  */
 static int
 load_obj_code_into_ebpf_vm(struct bpf_ctx *sbcp, const char *func_name,
@@ -240,7 +245,8 @@ load_obj_code_into_ebpf_vm(struct bpf_ctx *sbcp, const char *func_name,
 }
 
 /*
- * This function replaces character 'tmpl' in string 'str' with 'ch'.
+ * chr_replace -- This function replaces character 'tmpl' in string 'str'
+ *     with 'ch'.
  */
 static void
 chr_replace(char *str, const char tmpl, const char ch)
@@ -254,8 +260,8 @@ chr_replace(char *str, const char tmpl, const char ch)
 }
 
 /*
- * Load ebpf function code into VM and attach it to syscall exit point using
- *    KProbe.
+ * load_fn_and_attach_to_kp -- Load ebpf function code into VM and attach it
+ *    to syscall exit point using KProbe.
  */
 int
 load_fn_and_attach_to_kp(struct bpf_ctx *sbcp,
@@ -311,8 +317,8 @@ load_fn_and_attach_to_kp(struct bpf_ctx *sbcp,
 }
 
 /*
- * Load ebpf function code into VM and attach it to syscall exit point using
- *    KProbe.
+ * load_fn_and_attach_to_kretp -- Load ebpf function code into VM and attach
+ *     it to syscall exit point using KProbe.
  */
 int
 load_fn_and_attach_to_kretp(struct bpf_ctx *sbcp,
@@ -366,8 +372,8 @@ load_fn_and_attach_to_kretp(struct bpf_ctx *sbcp,
 }
 
 /*
- * Load ebpf function code into VM and attach it to syscall exit point using
- *    TracePoint.
+ * load_fn_and_attach_to_tp -- Load ebpf function code into VM and attach it
+ *     to syscall exit point using TracePoint.
  */
 int
 load_fn_and_attach_to_tp(struct bpf_ctx *sbcp,

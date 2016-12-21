@@ -35,7 +35,7 @@
  */
 
 /*
- * Syscall's entry handler.
+ * tracepoint__sys_enter -- Syscall's entry handler.
  */
 int
 tracepoint__sys_enter(struct pt_regs *ctx)
@@ -55,7 +55,7 @@ tracepoint__sys_enter(struct pt_regs *ctx)
 };
 
 /*
- * Syscall's exit handler.
+ * tracepoint__sys_exit -- Syscall's exit handler.
  */
 int
 tracepoint__sys_exit(struct pt_regs *ctx)

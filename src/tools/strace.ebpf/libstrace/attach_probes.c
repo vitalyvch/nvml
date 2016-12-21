@@ -47,7 +47,8 @@
 enum { HANDLER_NAME_MAX_SIZE = 128 };
 
 /*
- * This function attaches eBPF handler to each syscall known to libc.
+ * attach_kp_libc_all -- This function attaches eBPF handler to each syscall
+ *     known to libc.
  *
  * It can be useful because kernel has a lot of "unused" syscalls.
  */
@@ -107,8 +108,10 @@ attach_kp_libc_all(struct bpf_ctx *b)
 static unsigned SyS_sigsuspend = 0;
 
 /*
- * This function attaches eBPF handler to all existing syscalls in running
- * kernel. It consume more time than attach_kp_libc_all().
+ * attach_kp_kern_all -- This function attaches eBPF handler to all existing
+ *     syscalls in running kernel.
+ *
+ * It consume more time than attach_kp_libc_all().
  */
 static bool
 attach_kp_kern_all(struct bpf_ctx *b)
@@ -184,8 +187,10 @@ attach_kp_kern_all(struct bpf_ctx *b)
 }
 
 /*
- * This function attaches eBPF handler to each syscall which operates on file
- * descriptor. Inspired by: 'strace -e trace=desc'
+ * attach_kp_desc -- This function attaches eBPF handler to each syscall which
+ *     operates on file descriptor.
+ *
+ * Inspired by: 'strace -e trace=desc'
  */
 static bool
 attach_kp_desc(struct bpf_ctx *b)
@@ -243,8 +248,10 @@ attach_kp_desc(struct bpf_ctx *b)
 }
 
 /*
- * This function attaches eBPF handler to each syscall which operates on
- * filenames. Inspired by 'strace -e trace=file'.
+ * attach_kp_file -- This function attaches eBPF handler to each syscall which
+ *     operates on filenames.
+ *
+ * Inspired by 'strace -e trace=file'.
  */
 static bool
 attach_kp_file(struct bpf_ctx *b)
@@ -302,8 +309,10 @@ attach_kp_file(struct bpf_ctx *b)
 }
 
 /*
- * This function attaches eBPF handler to each syscall which operates on
- * relative file path. There are no equivalents in strace.
+ * attach_kp_fileat -- This function attaches eBPF handler to each syscall
+ *     which operates on relative file path.
+ *
+ * There are no equivalents in strace.
  */
 static bool
 attach_kp_fileat(struct bpf_ctx *b)
@@ -361,8 +370,9 @@ attach_kp_fileat(struct bpf_ctx *b)
 }
 
 /*
- * Attach eBPF handlers to all file-related syscalls. Inspired by:
- * 'strace -e trace=desc,file'
+ * attach_kp_pmemfile -- Attach eBPF handlers to all file-related syscalls.
+ *
+ * Inspired by: 'strace -e trace=desc,file'
  */
 static bool
 attach_kp_pmemfile(struct bpf_ctx *b)
@@ -383,8 +393,10 @@ static const char tp_all_enter_fn[] = "tracepoint__sys_enter";
 static const char tp_all_exit_fn[]  = "tracepoint__sys_exit";
 
 /*
- * Intercept all syscalls of running kernel using TracePoint way.
- * Should be faster and better but require at kernel at least 4.6.
+ * attach_tp_all -- Intercept all syscalls of running kernel using TracePoint
+ *     way.
+ *
+ * Should be faster and better but requires kernel at least 4.6.
  *
  * XXX Not tested.
  */
@@ -421,7 +433,7 @@ attach_tp_all(struct bpf_ctx *b)
 }
 
 /*
- * This function parses and processes expression.
+ * attach_probes -- This function parses and processes expression.
  *
  * XXX Think about applying 'fn_name' via str_replace_all()
  *     to be more consistent

@@ -51,8 +51,8 @@
 #include "generate_ebpf.h"
 
 /*
- * This function loads text file from disk and return malloc-ed,
- * null-terminated string
+ * load_file_from_disk -- This function loads text file from disk and return
+ * malloc-ed, null-terminated string
  */
 char *
 load_file_from_disk(const char *const fn)
@@ -88,9 +88,11 @@ out:
 }
 
 /*
- * Export embedded trace.h to file
+ * save_trace_h -- Export embedded trace.h to file
  */
-void save_trace_h(void) {
+void
+save_trace_h(void)
+{
 	int fd;
 
 	long res = access(ebpf_trace_h_file, R_OK);
@@ -109,7 +111,7 @@ void save_trace_h(void) {
 }
 
 /*
- * This function loads 'virtual' file.
+ * load_file -- This function loads 'virtual' file.
  */
 char *
 load_file(const char *const fn)
@@ -147,7 +149,7 @@ load_file(const char *const fn)
 }
 
 /*
- * This function reads status of eBPF JIT compiler.
+ * load_bpf_jit_status -- This function reads status of eBPF JIT compiler.
  */
 static int
 load_bpf_jit_status(void)
@@ -175,8 +177,8 @@ load_bpf_jit_status(void)
 }
 
 /*
- * This function checks status of eBPF JIT compiler and prints appropriate
- * message.
+ * check_bpf_jit_status -- This function checks status of eBPF JIT compiler
+ * and prints appropriate message.
  */
 void
 check_bpf_jit_status(FILE *file)
@@ -218,7 +220,7 @@ check_bpf_jit_status(FILE *file)
 
 
 /*
- * This function recognises syscalls among in-kernel functions.
+ * is_a_sc -- This function recognises syscalls among in-kernel functions.
  */
 bool
 is_a_sc(const char *const line, const ssize_t size)
@@ -243,7 +245,7 @@ const char debug_tracing[] = DEBUG_TRACING;
 const char debug_tracing_aff[] = DEBUG_TRACING DT_AFF;
 
 /*
- * This function fetch syscall's list from running kernel
+ * get_sc_list -- This function fetch syscall's list from running kernel
  */
 void
 get_sc_list(FILE *f, template_t template)
@@ -274,7 +276,7 @@ get_sc_list(FILE *f, template_t template)
 }
 
 /*
- * Replace all occurrence of 'templt' in 'text' with 'str'
+ * str_replace_all -- Replace all occurrence of 'templt' in 'text' with 'str'
  */
 void
 str_replace_all(char **const text, const char *templt, const char *str)
@@ -302,7 +304,8 @@ str_replace_all(char **const text, const char *templt, const char *str)
 }
 
 /*
- * This function runs traced command passed through command line.
+ * start_command -- This function runs traced command passed through
+ * command line.
  */
 pid_t
 start_command(int argc, char *argv[])
@@ -336,7 +339,9 @@ start_command(int argc, char *argv[])
 }
 
 /*
- * SIGCHLD handler. Is used if "command" was provided on command line.
+ * sig_chld_handler -- SIGCHLD handler.
+ *
+ * Is used if "command" was provided on command line.
  */
 void
 sig_chld_handler(int sig, siginfo_t *si, void *unused)
@@ -350,7 +355,9 @@ sig_chld_handler(int sig, siginfo_t *si, void *unused)
 }
 
 /*
- * Generic signal hendler. Is used for notification of traced process about
+ * sig_transmit_handler -- Generic signal hendler.
+ *
+ * Is used for notification of traced process about
  * parent's death.
  */
 void

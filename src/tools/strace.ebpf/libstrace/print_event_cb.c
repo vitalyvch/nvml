@@ -72,7 +72,7 @@ static inline char b2hex(char b);
  */
 
 /*
- * Print logs header.
+ * print_header_strace -- Print logs header.
  *
  * XXX A blank for human-readable strace-like logs
  */
@@ -90,7 +90,7 @@ print_header_strace(int argc, char *argv[])
 }
 
 /*
- * Print syscall's log entry.
+ * print_event_strace -- Print syscall's log entry.
  *
  * XXX A blank for human-readable strace-like logs
  */
@@ -134,7 +134,7 @@ print_event_strace(void *cb_cookie, void *data, int size)
 /* ** Hex logs ** */
 
 /*
- * This function prints header for hexadecimal logs.
+ * print_header_hex -- This function prints header for hexadecimal logs.
  */
 static void
 print_header_hex(int argc, char *argv[])
@@ -169,7 +169,7 @@ print_header_hex(int argc, char *argv[])
 }
 
 /*
- * This function returnss character corresponding to hexadecimal digit.
+ * b2hex -- This function returnss character corresponding to hexadecimal digit.
  */
 static inline char
 b2hex(char b)
@@ -197,7 +197,8 @@ b2hex(char b)
 }
 
 /*
- * This function prints 64-bit integer in hexadecimal form in stream.
+ * fprint_i64 -- This function prints 64-bit integer in hexadecimal form
+ *     in stream.
  */
 static inline void
 fprint_i64(FILE *f, uint64_t x)
@@ -215,7 +216,7 @@ fprint_i64(FILE *f, uint64_t x)
 }
 
 /*
- * This function returns syscall's name by number
+ * sc_num2str -- This function returns syscall's name by number
  */
 static inline const char *
 sc_num2str(const int64_t sc_num)
@@ -236,7 +237,7 @@ out:
 }
 
 /*
- * This function prints syscall's logs entry in stream.
+ * print_event_hex -- This function prints syscall's logs entry in stream.
  *
  * WARNING
  *
@@ -422,7 +423,7 @@ print_event_hex(void *cb_cookie, void *data, int size)
 /* ** Binary logs ** */
 
 /*
- * This function writes header in stream.
+ * print_header_bin -- This function writes header in stream.
  */
 static void
 print_header_bin(int argc, char *argv[])
@@ -455,7 +456,7 @@ print_header_bin(int argc, char *argv[])
 }
 
 /*
- * This function writes syscall's log entry in stream
+ * print_event_bin -- This function writes syscall's log entry in stream
  */
 static void
 print_event_bin(void *cb_cookie, void *data, int size)
@@ -476,7 +477,7 @@ print_event_bin(void *cb_cookie, void *data, int size)
 }
 
 /*
- * This function parsess log's type
+ * out_fmt_str2enum -- This function parsess log's type
  */
 enum out_fmt
 out_fmt_str2enum(const char *str)

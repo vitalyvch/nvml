@@ -1,22 +1,8 @@
-Strace.eBPF
-###############################
+% Strace.eBPF
+% **Fast syscall's tracing**
+% Vitalii Chernookyi
 
-.. role:: large1
-.. role:: large2
-.. role:: large3
-
-.. space:: 50
-
-.. class:: center
-
-:large3:`Fast syscall's tracing`
-
-.. space:: 150
-
-.. class:: center
-
-:large1:`Vitalii Chernookyi`
-
+******
 
 Why we need new tool
 ---------------------
@@ -30,6 +16,7 @@ Why we need new tool
    - kernel hacking (sysdig)
    - special HW (Lauterbach).
 
+******
 
 Used technologies
 ------------------
@@ -39,6 +26,7 @@ Used technologies
  - Perf Event Circular Buffer
  - event-loop
 
+******
 
 System requirements
 --------------------
@@ -48,6 +36,7 @@ System requirements
  - CAP_SYS_ADMIN capability for bpf() syscall
  - mounted tracefs
 
+******
 
 Pros
 -----
@@ -59,6 +48,7 @@ Pros
       classical tools and technologies, like awk.
     - Could trace syscalls system-wide.
 
+******
 
 Cons
 -----
@@ -69,18 +59,21 @@ Cons
       performace tool will skip some calls. Tool does not assume to try
       any work-around behind the scene.
 
+******
 
 Structural Component Diagram
 -----------------------------
 
-.. image:: DSGN_struct_comp_dia.png
+![DSGN_struct_comp_dia.png](DSGN_struct_comp_dia.png)
 
+******
 
 Behavioral Activity Diagram
 ----------------------------
 
-.. image:: DSGN_beh_act_dia.png
+![DSGN_beh_act_dia.png](DSGN_beh_act_dia.png)
 
+******
 
 Conclusion
 -----------

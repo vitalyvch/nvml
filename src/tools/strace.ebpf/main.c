@@ -418,6 +418,13 @@ main(int argc, char *argv[])
 	/* initialize BPF */
 	struct bpf_ctx *b = calloc(1, sizeof(*b));
 
+	if (NULL == b) {
+		fprintf(stderr,
+			"ERROR:%s: Out of memory. Exiting.\n", __func__);
+
+		return EXIT_FAILURE;
+	}
+
 	/* Compiling of generated eBPF code */
 	b->module = bpf_module_create_c_from_string(bpf_str, 0, NULL, 0);
 	b->debug  = args.debug;

@@ -73,6 +73,10 @@ append_item_to_pr_arr(struct bpf_ctx *sbcp, const char *name,
 {
 	struct bpf_pr *item =
 		calloc(1, sizeof(*item) + strlen(name) + 1);
+
+	if (NULL == item)
+		return;
+
 	item->pr = probe;
 	item->attached = attached;
 	strcpy(item->key, name);
@@ -80,6 +84,11 @@ append_item_to_pr_arr(struct bpf_ctx *sbcp, const char *name,
 	if (NULL == sbcp->pr_arr)
 		sbcp->pr_arr =
 			calloc(args.pr_arr_max, sizeof(*sbcp->pr_arr));
+
+	if (NULL == sbcp->pr_arr) {
+		free(item);
+		return;
+	}
 
 	sbcp->pr_arr[sbcp->pr_arr_qty] = item;
 	sbcp->pr_arr_qty += 1;
@@ -216,6 +225,9 @@ load_obj_code_into_ebpf_vm(struct bpf_ctx *sbcp, const char *func_name,
 	if (sbcp->debug) {
 		log_buf_size = 65536;
 		log_buf = calloc(1, log_buf_size);
+
+		if (NULL == log_buf)
+			log_buf_size = 0;
 	}
 
 	int fd = bpf_prog_load(prog_type,
@@ -225,7 +237,7 @@ load_obj_code_into_ebpf_vm(struct bpf_ctx *sbcp, const char *func_name,
 			bpf_module_kern_version(sbcp->module),
 			log_buf, log_buf_size);
 
-	if (sbcp->debug) {
+	if (sbcp->debug && (NULL != log_buf)) {
 		/* XXX Command line options to save it to separate file */
 		fprintf(stderr, "DEBUG:%s('%s'):\n%s\n",
 				__func__, func_name, log_buf);
@@ -288,6 +300,9 @@ load_fn_and_attach_to_kp(struct bpf_ctx *sbcp,
 
 	char *ev_name = calloc(1, 2 + strlen(event) + 1);
 
+	if (NULL == ev_name)
+		return -1;
+
 	strcpy(ev_name, "p_");
 	strcat(ev_name, event);
 	chr_replace(ev_name, '+', '_');
@@ -344,6 +359,9 @@ load_fn_and_attach_to_kretp(struct bpf_ctx *sbcp,
 	}
 
 	char *ev_name = calloc(1, 2 + strlen(event) + 1);
+
+	if (NULL == ev_name)
+		return -1;
 
 	strcpy(ev_name, "r_");
 	strcat(ev_name, event);
@@ -408,6 +426,9 @@ load_fn_and_attach_to_tp(struct bpf_ctx *sbcp,
 
 	char *ev_name = calloc(1,
 			strlen(tp_category) + 1 + strlen(tp_name) + 1);
+
+	if (NULL == ev_name)
+		return -1;
 
 	strcpy(ev_name, tp_category);
 	strcat(ev_name, ":");

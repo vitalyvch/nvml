@@ -74,6 +74,9 @@ load_file_from_disk(const char *const fn)
 
 	buf = calloc(1, (size_t)st.st_size + 1);
 
+	if (NULL == buf)
+		goto out;
+
 	res = read(fd, buf, (size_t)st.st_size);
 
 	if (st.st_size != res) {
@@ -294,6 +297,11 @@ str_replace_all(char **const text, const char *templt, const char *str)
 		text_len = strlen(p);
 
 		*text = calloc(1, text_len - templt_len + str_len + 1);
+
+		if (NULL == *text) {
+			free(p);
+			return;
+		}
 
 		strncpy(*text, p, ((uintptr_t)occ) - ((uintptr_t)p));
 		strcat(*text, str);

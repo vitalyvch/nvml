@@ -62,8 +62,15 @@ nondebug/libstrace.a-clean:
 nondebug/libebpf.a-clobber: nondebug/libebpf.a-clean
 nondebug/libstrace.a-clobber: nondebug/libstrace.a-clean
 
+nondebug/libebpf.a-cstyle:
+	$(MAKE) -C ebpf cstyle
+
+nondebug/libstrace.a-cstyle:
+	$(MAKE) -C libstrace cstyle
+
 .PHONY: nondebug/libebpf.a-clean nondebug/libstrace.a-clean
 .PHONY: nondebug/libebpf.a-clobber nondebug/libstrace.a-clobber
+.PHONY: nondebug/libebpf.a-cstyle nondebug/libstrace.a-cstyle
 
 OBJS = main.o \
 

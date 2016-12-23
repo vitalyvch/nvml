@@ -16,11 +16,13 @@ _Currently libbcc does two poll() same syscalls per iter. There are no reason fo
 it and we should drop it. It will improove our time for about 200 nsec, but it
 is a libbcc bug. Back trace for one of that poll() syscalls:_
 
-(gdb) bt  
-#0  poll () at ../sysdeps/unix/syscall-template.S:84  
-#1  0x00007f9c40a07566 in perf_reader_poll () from /usr/lib/x86_64-linux-gnu/libbcc.so.0  
-#2  0x0000000000401a7b in kprobe_poll (b=<optimized out>, timeout=<optimized out>) at BPF.c:82  
+```
+(gdb) bt
+#0  poll () at ../sysdeps/unix/syscall-template.S:84
+#1  0x00007f9c40a07566 in perf_reader_poll () from /usr/lib/x86_64-linux-gnu/libbcc.so.0
+#2  0x0000000000401a7b in kprobe_poll (b=<optimized out>, timeout=<optimized out>) at BPF.c:82
 #3  0x000000000040175d in main (argc=<optimized out>, argv=0x7fffe635c888) at snoop.c:228
+```
 
 1.2 Tracepoints support
 ------------------------
@@ -47,23 +49,25 @@ bandwidth. Most likely we should use fd directly.
 
 _Currently Valgrind fails with a message like:_
 
---12470-- WARNING: unhandled amd64-linux syscall: 321  
-==12470==    at 0x77F7C19: syscall (syscall.S:38)  
-==12470==    by 0x5129133: bpf_create_map (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)  
-==12470==    by 0x5181809: ??? (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)  
-==12470==    by 0x51AE4A7: ??? (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)  
-==12470==    by 0x51835E6: ??? (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)  
-==12470==    by 0x522FE1C: ??? (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)  
-==12470==    by 0x53DCE85: ??? (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)  
-==12470==    by 0x520B9BD: ??? (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)  
-==12470==    by 0x51E0065: ??? (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)  
-==12470==    by 0x51751A4: ??? (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)  
-==12470==    by 0x51209B3: ebpf::BPFModule::load_cfile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, bool, char const**, int) (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)  
-==12470==    by 0x51268FD: ebpf::BPFModule::load_string(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, char const**, int) (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)  
---12470-- You may be able to write your own handler.  
---12470-- Read the file README_MISSING_SYSCALL_OR_IOCTL.  
---12470-- Nevertheless we consider this a bug.  Please report  
+```
+--12470-- WARNING: unhandled amd64-linux syscall: 321
+==12470==    at 0x77F7C19: syscall (syscall.S:38)
+==12470==    by 0x5129133: bpf_create_map (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)
+==12470==    by 0x5181809: ??? (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)
+==12470==    by 0x51AE4A7: ??? (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)
+==12470==    by 0x51835E6: ??? (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)
+==12470==    by 0x522FE1C: ??? (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)
+==12470==    by 0x53DCE85: ??? (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)
+==12470==    by 0x520B9BD: ??? (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)
+==12470==    by 0x51E0065: ??? (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)
+==12470==    by 0x51751A4: ??? (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)
+==12470==    by 0x51209B3: ebpf::BPFModule::load_cfile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, bool, char const**, int) (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)
+==12470==    by 0x51268FD: ebpf::BPFModule::load_string(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, char const**, int) (in /usr/lib/x86_64-linux-gnu/libbcc.so.0.1.8)
+--12470-- You may be able to write your own handler.
+--12470-- Read the file README_MISSING_SYSCALL_OR_IOCTL.
+--12470-- Nevertheless we consider this a bug.  Please report
 --12470-- it at http://valgrind.org/support/bug_reports.html.
+```
 
 3. Extra features
 ==================

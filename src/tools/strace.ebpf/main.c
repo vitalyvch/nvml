@@ -142,7 +142,11 @@ List of supported sets:\n"
 static void
 fprint_help(FILE *f)
 {
-	fwrite(help_text, sizeof(help_text) - 1, 1, f);
+	size_t fw_res;
+
+	fw_res = fwrite(help_text, sizeof(help_text) - 1, 1, f);
+
+	assert(fw_res > 0);
 }
 
 /*
@@ -152,7 +156,11 @@ fprint_help(FILE *f)
 static void
 fprint_trace_list(FILE *f)
 {
-	fwrite(trace_list_text, sizeof(trace_list_text) - 1, 1, f);
+	size_t fw_res;
+
+	fw_res = fwrite(trace_list_text, sizeof(trace_list_text) - 1, 1, f);
+
+	assert(fw_res > 0);
 }
 
 struct args_t args;
@@ -380,11 +388,11 @@ main(int argc, char *argv[])
 	if (0 < args.pid) {
 		char str[128];
 
-		int res = snprintf(str, sizeof(str),
+		int snp_res = snprintf(str, sizeof(str),
 				"if ((pid_tid >> 32) != %d) { return 0; }",
 				args.pid);
 
-		assert(res > 0);
+		assert(snp_res > 0);
 
 		str_replace_all(&bpf_str, "PID_CHECK_HOOK", str);
 
@@ -410,8 +418,13 @@ main(int argc, char *argv[])
 	if (args.debug) {
 		fprintf(stderr, "\t>>>>> Generated eBPF code <<<<<\n");
 
-		if (bpf_str)
-			fwrite(bpf_str, strlen(bpf_str), 1, stderr);
+		if (bpf_str) {
+			size_t fw_res;
+
+			fw_res = fwrite(bpf_str, strlen(bpf_str), 1, stderr);
+
+			assert(fw_res > 0);
+		}
 
 		fprintf(stderr, "\t>>>>> EndOf generated eBPF code <<<<<<\n");
 	}

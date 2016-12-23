@@ -34,6 +34,7 @@
  * generate_ebpf.h -- generate_ebpf() function
  */
 
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -80,6 +81,8 @@ generate_ebpf_kp_libc_all(FILE *ts)
 	char *text = NULL;
 
 	for (unsigned i = 0; i < SC_TBL_SIZE; i++) {
+		size_t fw_res;
+
 		if (NULL == sc_tbl[i].hlr_name)
 			continue;
 
@@ -95,7 +98,9 @@ generate_ebpf_kp_libc_all(FILE *ts)
 		str_replace_all(&text, "SYSCALL_NAME",
 				sc_tbl[i].hlr_name);
 
-		fwrite(text, strlen(text), 1, ts);
+		fw_res = fwrite(text, strlen(text), 1, ts);
+
+		assert(fw_res > 0);
 
 		free(text);
 
@@ -131,6 +136,7 @@ generate_ebpf_kp_kern_all(FILE *ts)
 
 	while ((read = getline(&line, &len, in)) != -1) {
 		int sc_num;
+		size_t fw_res;
 
 		if (!is_a_sc(line, read - 1))
 			continue;
@@ -165,7 +171,9 @@ generate_ebpf_kp_kern_all(FILE *ts)
 
 		str_replace_all(&text, "SYSCALL_NAME", line);
 
-		fwrite(text, strlen(text), 1, ts);
+		fw_res = fwrite(text, strlen(text), 1, ts);
+
+		assert(fw_res > 0);
 
 		free(text);
 
@@ -186,6 +194,8 @@ generate_ebpf_kp_file(FILE *ts)
 	char *text = NULL;
 
 	for (unsigned i = 0; i < SC_TBL_SIZE; i++) {
+		size_t fw_res;
+
 		if (NULL == sc_tbl[i].hlr_name)
 			continue;
 
@@ -199,7 +209,9 @@ generate_ebpf_kp_file(FILE *ts)
 		str_replace_all(&text, "SYSCALL_NAME",
 				sc_tbl[i].hlr_name);
 
-		fwrite(text, strlen(text), 1, ts);
+		fw_res = fwrite(text, strlen(text), 1, ts);
+
+		assert(fw_res > 0);
 
 		free(text);
 
@@ -217,6 +229,8 @@ generate_ebpf_kp_fileat(FILE *ts)
 	char *text = NULL;
 
 	for (unsigned i = 0; i < SC_TBL_SIZE; i++) {
+		size_t fw_res;
+
 		if (NULL == sc_tbl[i].hlr_name)
 			continue;
 
@@ -230,7 +244,9 @@ generate_ebpf_kp_fileat(FILE *ts)
 		str_replace_all(&text, "SYSCALL_NAME",
 				sc_tbl[i].hlr_name);
 
-		fwrite(text, strlen(text), 1, ts);
+		fw_res = fwrite(text, strlen(text), 1, ts);
+
+		assert(fw_res > 0);
 
 		free(text);
 
@@ -248,6 +264,8 @@ generate_ebpf_kp_desc(FILE *ts)
 	char *text = NULL;
 
 	for (unsigned i = 0; i < SC_TBL_SIZE; i++) {
+		size_t fw_res;
+
 		if (NULL == sc_tbl[i].hlr_name)
 			continue;
 
@@ -261,7 +279,9 @@ generate_ebpf_kp_desc(FILE *ts)
 		str_replace_all(&text, "SYSCALL_NAME",
 				sc_tbl[i].hlr_name);
 
-		fwrite(text, strlen(text), 1, ts);
+		fw_res = fwrite(text, strlen(text), 1, ts);
+
+		assert(fw_res > 0);
 
 		free(text);
 
@@ -290,7 +310,9 @@ generate_ebpf_tp_all(FILE *ts)
 {
 	char *text = load_file(ebpf_tp_all_file);
 
-	fwrite(text, strlen(text), 1, ts);
+	size_t fw_res = fwrite(text, strlen(text), 1, ts);
+
+	assert(fw_res > 0);
 
 	free(text);
 
@@ -310,7 +332,9 @@ generate_ebpf()
 
 	/* Let's from header */
 	char *head = load_file(ebpf_head_file);
-	fwrite(head, strlen(head), 1, ts);
+	size_t fw_res = fwrite(head, strlen(head), 1, ts);
+
+	assert(fw_res > 0);
 	free(head);
 
 	head = NULL;

@@ -36,6 +36,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <assert.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -265,12 +266,16 @@ get_sc_list(FILE *f, template_t template)
 	}
 
 	while ((read = getline(&line, &len, in)) != -1) {
+		size_t fw_res;
+
 		if (NULL != template) {
 			if (!template(line, read - 1))
 				continue;
 		}
 
-		fwrite(line, (size_t)read, 1, f);
+		fw_res = fwrite(line, (size_t)read, 1, f);
+
+		assert(fw_res > 0);
 	}
 
 	free(line);

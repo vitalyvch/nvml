@@ -35,6 +35,7 @@
  */
 
 #include <stdio.h>
+#include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -162,7 +163,11 @@ attach_callback_to_perf_output(struct bpf_ctx *sbcp,
 				__func__, cpu);
 		}
 
-		snprintf(reader_name, sizeof(reader_name), "%p:%d", sbcp, cpu);
+		res = snprintf(reader_name, sizeof(reader_name),
+				"%p:%d", sbcp, cpu);
+
+		assert(res > 0);
+
 		append_item_to_pr_arr(sbcp, reader_name, reader, false);
 	}
 
@@ -189,8 +194,11 @@ detach_all(struct bpf_ctx *b)
 		if (b->pr_arr[i]->attached) {
 			char desc[256];
 
-			snprintf(desc, sizeof(desc),
+			int res = snprintf(desc, sizeof(desc),
 				"-:kprobes/%s", b->pr_arr[i]->key);
+
+			assert(res > 0);
+
 			bpf_detach_kprobe(desc);
 		}
 
@@ -308,7 +316,10 @@ load_fn_and_attach_to_kp(struct bpf_ctx *sbcp,
 	chr_replace(ev_name, '+', '_');
 	chr_replace(ev_name, '.', '_');
 
-	snprintf(desc, sizeof(desc), "p:kprobes/%s %s", ev_name, event);
+	int res = snprintf(desc, sizeof(desc),
+			"p:kprobes/%s %s", ev_name, event);
+
+	assert(res > 0);
 
 	pr = bpf_attach_kprobe(fn_fd, ev_name, desc, pid, (int)cpu, group_fd,
 				NULL, NULL);
@@ -368,7 +379,10 @@ load_fn_and_attach_to_kretp(struct bpf_ctx *sbcp,
 	chr_replace(ev_name, '+', '_');
 	chr_replace(ev_name, '.', '_');
 
-	snprintf(desc, sizeof(desc), "r:kprobes/%s %s", ev_name, event);
+	int res = snprintf(desc, sizeof(desc),
+			"r:kprobes/%s %s", ev_name, event);
+
+	assert(res > 0);
 
 	pr = bpf_attach_kprobe(fn_fd, ev_name, desc, pid, (int)cpu, group_fd,
 				NULL, NULL);

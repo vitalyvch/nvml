@@ -34,6 +34,7 @@
  * attach_probes.c -- attach_probes() function
  */
 
+#include <assert.h>
 #include <string.h>
 
 #include <bcc/bpf_common.h>
@@ -45,6 +46,27 @@
 #include "ebpf_syscalls.h"
 
 enum { HANDLER_NAME_MAX_SIZE = 128 };
+
+static void
+print_kprobe_name(char *str, size_t size, const char *name)
+{
+	int res;
+
+	res = snprintf(str, size, "kprobe__%s", name);
+
+	assert(res > 0);
+}
+
+static void
+print_kretprobe_name(char *str, size_t size, const char *name)
+{
+	int res;
+
+	res = snprintf(str, size, "kretprobe__%s", name);
+
+	assert(res > 0);
+}
+
 
 /*
  * attach_kp_libc_all -- This function attaches eBPF handler to each syscall
@@ -65,12 +87,10 @@ attach_kp_libc_all(struct bpf_ctx *b)
 		if (NULL == sc_tbl[i].hlr_name)
 			continue;
 
-		snprintf(kprobe, sizeof(kprobe),
-			"kprobe__%s",
+		print_kprobe_name(kprobe, sizeof(kprobe),
 			sc_tbl[i].hlr_name);
 
-		snprintf(kretprobe, sizeof(kretprobe),
-			"kretprobe__%s",
+		print_kretprobe_name(kretprobe, sizeof(kretprobe),
 			sc_tbl[i].hlr_name);
 
 		/* KRetProbe should be first to prevent race condition */
@@ -147,11 +167,11 @@ attach_kp_kern_all(struct bpf_ctx *b)
 			SyS_sigsuspend ++;
 		}
 
-		snprintf(kprobe, sizeof(kprobe),
-			"kprobe__%s", line);
+		print_kprobe_name(kprobe, sizeof(kprobe),
+			line);
 
-		snprintf(kretprobe, sizeof(kretprobe),
-			"kretprobe__%s", line);
+		print_kretprobe_name(kretprobe, sizeof(kretprobe),
+			line);
 
 		/* KRetProbe should be first to prevent race condition */
 		res = load_fn_and_attach_to_kretp(b, line, kretprobe,
@@ -208,12 +228,10 @@ attach_kp_desc(struct bpf_ctx *b)
 		if (EM_desc != (EM_desc & sc_tbl[i].masks))
 			continue;
 
-		snprintf(kprobe, sizeof(kprobe),
-			"kprobe__%s",
+		print_kprobe_name(kprobe, sizeof(kprobe),
 			sc_tbl[i].hlr_name);
 
-		snprintf(kretprobe, sizeof(kretprobe),
-			"kretprobe__%s",
+		print_kretprobe_name(kretprobe, sizeof(kretprobe),
 			sc_tbl[i].hlr_name);
 
 		/* KRetProbe should be first to prevent race condition */
@@ -269,12 +287,10 @@ attach_kp_file(struct bpf_ctx *b)
 		if (EM_file != (EM_file & sc_tbl[i].masks))
 			continue;
 
-		snprintf(kprobe, sizeof(kprobe),
-			"kprobe__%s",
+		print_kprobe_name(kprobe, sizeof(kprobe),
 			sc_tbl[i].hlr_name);
 
-		snprintf(kretprobe, sizeof(kretprobe),
-			"kretprobe__%s",
+		print_kretprobe_name(kretprobe, sizeof(kretprobe),
 			sc_tbl[i].hlr_name);
 
 		/* KRetProbe should be first to prevent race condition */
@@ -330,12 +346,10 @@ attach_kp_fileat(struct bpf_ctx *b)
 		if (EM_fileat != (EM_fileat & sc_tbl[i].masks))
 			continue;
 
-		snprintf(kprobe, sizeof(kprobe),
-			"kprobe__%s",
+		print_kprobe_name(kprobe, sizeof(kprobe),
 			sc_tbl[i].hlr_name);
 
-		snprintf(kretprobe, sizeof(kretprobe),
-			"kretprobe__%s",
+		print_kretprobe_name(kretprobe, sizeof(kretprobe),
 			sc_tbl[i].hlr_name);
 
 		/* KRetProbe should be first to prevent race condition */

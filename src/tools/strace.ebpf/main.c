@@ -36,6 +36,7 @@
 
 #include <errno.h>
 #include <stdio.h>
+#include <assert.h>
 #include <getopt.h>
 #include <signal.h>
 #include <stdint.h>
@@ -379,9 +380,11 @@ main(int argc, char *argv[])
 	if (0 < args.pid) {
 		char str[128];
 
-		snprintf(str, sizeof(str),
+		int res = snprintf(str, sizeof(str),
 				"if ((pid_tid >> 32) != %d) { return 0; }",
 				args.pid);
+
+		assert(res > 0);
 
 		str_replace_all(&bpf_str, "PID_CHECK_HOOK", str);
 

@@ -35,6 +35,7 @@
  */
 
 #include <stdio.h>
+#include <assert.h>
 #include <string.h>
 #include <sys/syscall.h>   /* For SYS_xxx definitions */
 
@@ -221,6 +222,7 @@ fprint_i64(FILE *f, uint64_t x)
 static inline const char *
 sc_num2str(const int64_t sc_num)
 {
+	int res;
 	static char buf[32];
 
 	if ((0 <= sc_num) && (SC_TBL_SIZE > sc_num)) {
@@ -231,7 +233,9 @@ sc_num2str(const int64_t sc_num)
 	}
 
 out:
-	snprintf(buf, sizeof(buf), "sys_%ld", sc_num);
+	res = snprintf(buf, sizeof(buf), "sys_%ld", sc_num);
+
+	assert(res > 0);
 
 	return buf;
 }

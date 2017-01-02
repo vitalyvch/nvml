@@ -229,7 +229,8 @@ sc_num2str(const int64_t sc_num)
 		if (NULL == syscall_array[sc_num].handler_name)
 			goto out;
 
-		return syscall_array[sc_num].handler_name + 4 /* strlen("sys_") */;
+		return syscall_array[sc_num].handler_name +
+			4 /* strlen("sys_") */;
 	}
 
 out:
@@ -310,9 +311,11 @@ print_event_hex(void *cb_cookie, void *data, int size)
 	default:
 		if (EM_file == (EM_file & syscall_array[event->sc_id].masks))
 			fwrite(event->fl_nm, strlen(event->fl_nm), 1, out);
-		else if (EM_desc == (EM_desc & syscall_array[event->sc_id].masks))
+		else if (EM_desc == (EM_desc &
+					syscall_array[event->sc_id].masks))
 			fprint_i64(out, (uint64_t)event->arg_1);
-		else if (EM_fileat == (EM_fileat & syscall_array[event->sc_id].masks))
+		else if (EM_fileat == (EM_fileat &
+					syscall_array[event->sc_id].masks))
 			fprint_i64(out, (uint64_t)event->arg_1);
 		else {
 			/*
@@ -339,7 +342,8 @@ print_event_hex(void *cb_cookie, void *data, int size)
 		break;
 
 	default:
-		if (EM_fileat == (EM_fileat & syscall_array[event->sc_id].masks))
+		if (EM_fileat == (EM_fileat &
+					syscall_array[event->sc_id].masks))
 			fwrite(event->fl_nm, strlen(event->fl_nm), 1, out);
 		break;
 	}

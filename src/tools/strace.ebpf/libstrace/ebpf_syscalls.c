@@ -74,16 +74,6 @@
  */
 struct sc_t syscall_array[SC_TBL_SIZE] = {
 	[0 ... SC_TBL_SIZE - 1] = SC_NI,
-	/*
-	 * [__NR_open]  =
-	 *    { .num = __NR_open,  .handler_name = "SyS_open",  .masks = EM_file },
-	 * [__NR_read]  =
-	 *    { .num = __NR_read,  .handler_name = "SyS_read",  .masks = EM_desk },
-	 * [__NR_write] =
-	 *    { .num = __NR_write, .handler_name = "SyS_write", .masks = EM_desk },
-	 * [__NR_close] =
-	 *    { .num = __NR_close, .handler_name = "SyS_close", .masks = EM_desk },
-	 */
 
 	EBPF_SYSCALL(__NR_arch_prctl, sys_arch_prctl)
 	EBPF_SYSCALL(__NR_rt_sigreturn, sys_rt_sigreturn)

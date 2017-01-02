@@ -101,19 +101,22 @@ attach_kp_libc_all(struct bpf_ctx *b)
 		if (res == -1) {
 			fprintf(stderr,
 				"ERROR:%s:Can't attach %s to '%s'. Ignoring.\n",
-				__func__, kretprobe, syscall_array[i].handler_name);
+				__func__, kretprobe,
+				syscall_array[i].handler_name);
 
 			/* Kretprobe fails. There is no reason to try probe */
 			continue;
 		}
 
-		res = load_fn_and_attach_to_kp(b, syscall_array[i].handler_name, kprobe,
+		res = load_fn_and_attach_to_kp(b, syscall_array[i].handler_name,
+				kprobe,
 				args.pid, 0, -1);
 
 		if (res == -1) {
 			fprintf(stderr,
 				"ERROR:%s:Can't attach %s to '%s'. Ignoring.\n",
-				__func__, kprobe, syscall_array[i].handler_name);
+				__func__, kprobe,
+				syscall_array[i].handler_name);
 
 			continue;
 		}
@@ -242,19 +245,22 @@ attach_kp_desc(struct bpf_ctx *b)
 		if (res == -1) {
 			fprintf(stderr,
 				"ERROR:%s:Can't attach %s to '%s'. Ignoring.\n",
-				__func__, kretprobe, syscall_array[i].handler_name);
+				__func__, kretprobe,
+				syscall_array[i].handler_name);
 
 			/* Kretprobe fails. There is no reason to try probe */
 			continue;
 		}
 
-		res = load_fn_and_attach_to_kp(b, syscall_array[i].handler_name, kprobe,
+		res = load_fn_and_attach_to_kp(b, syscall_array[i].handler_name,
+				kprobe,
 				args.pid, 0, -1);
 
 		if (res == -1) {
 			fprintf(stderr,
 				"ERROR:%s:Can't attach %s to '%s'. Ignoring.\n",
-				__func__, kprobe, syscall_array[i].handler_name);
+				__func__, kprobe,
+				syscall_array[i].handler_name);
 
 			continue;
 		}
@@ -301,19 +307,22 @@ attach_kp_file(struct bpf_ctx *b)
 		if (res == -1) {
 			fprintf(stderr,
 				"ERROR:%s:Can't attach %s to '%s'. Ignoring.\n",
-				__func__, kretprobe, syscall_array[i].handler_name);
+				__func__, kretprobe,
+				syscall_array[i].handler_name);
 
 			/* Kretprobe fails. There is no reason to try probe */
 			continue;
 		}
 
-		res = load_fn_and_attach_to_kp(b, syscall_array[i].handler_name, kprobe,
+		res = load_fn_and_attach_to_kp(b, syscall_array[i].handler_name,
+				kprobe,
 				args.pid, 0, -1);
 
 		if (res == -1) {
 			fprintf(stderr,
 				"ERROR:%s:Can't attach %s to '%s'. Ignoring.\n",
-				__func__, kprobe, syscall_array[i].handler_name);
+				__func__, kprobe,
+				syscall_array[i].handler_name);
 
 			continue;
 		}
@@ -360,19 +369,22 @@ attach_kp_fileat(struct bpf_ctx *b)
 		if (res == -1) {
 			fprintf(stderr,
 				"ERROR:%s:Can't attach %s to '%s'. Ignoring.\n",
-				__func__, kretprobe, syscall_array[i].handler_name);
+				__func__, kretprobe,
+				syscall_array[i].handler_name);
 
 			/* Kretprobe fails. There is no reason to try probe */
 			continue;
 		}
 
-		res = load_fn_and_attach_to_kp(b, syscall_array[i].handler_name, kprobe,
+		res = load_fn_and_attach_to_kp(b, syscall_array[i].handler_name,
+				kprobe,
 				args.pid, 0, -1);
 
 		if (res == -1) {
 			fprintf(stderr,
 				"ERROR:%s:Can't attach %s to '%s'. Ignoring.\n",
-				__func__, kprobe, syscall_array[i].handler_name);
+				__func__, kprobe,
+				syscall_array[i].handler_name);
 
 			continue;
 		}

@@ -158,7 +158,8 @@ generate_ebpf_kp_kern_all(FILE *ts)
 			if (EM_file == (EM_file & syscall_array[sc_num].masks))
 				text = load_file(ebpf_file_tmpl_file);
 			else if (EM_fileat ==
-					(EM_fileat & syscall_array[sc_num].masks))
+					(EM_fileat &
+					    syscall_array[sc_num].masks))
 				text = load_file(ebpf_fileat_tmpl_file);
 			else
 				text = load_file(ebpf_libc_tmpl_file);

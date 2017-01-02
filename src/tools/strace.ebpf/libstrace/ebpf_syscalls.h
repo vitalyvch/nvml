@@ -59,7 +59,7 @@ enum masks_t {
 struct sc_t {
 	unsigned num;
 	const char *num_name;
-	const char *hlr_name;
+	const char *handler_name;
 	unsigned masks;
 };
 

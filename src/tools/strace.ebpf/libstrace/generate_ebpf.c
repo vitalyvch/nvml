@@ -61,10 +61,10 @@ static int
 get_sc_num(const char *sc_name)
 {
 	for (int i = 0; i < SC_TBL_SIZE; i++) {
-		if (NULL == syscall_array[i].hlr_name)
+		if (NULL == syscall_array[i].handler_name)
 			continue;
 
-		if (!strcasecmp(sc_name, syscall_array[i].hlr_name))
+		if (!strcasecmp(sc_name, syscall_array[i].handler_name))
 			return i;
 	}
 
@@ -83,7 +83,7 @@ generate_ebpf_kp_libc_all(FILE *ts)
 	for (unsigned i = 0; i < SC_TBL_SIZE; i++) {
 		size_t fw_res;
 
-		if (NULL == syscall_array[i].hlr_name)
+		if (NULL == syscall_array[i].handler_name)
 			continue;
 
 		if (EM_file == (EM_file & syscall_array[i].masks))
@@ -96,7 +96,7 @@ generate_ebpf_kp_libc_all(FILE *ts)
 		str_replace_all(&text, "SYSCALL_NR",
 				syscall_array[i].num_name);
 		str_replace_all(&text, "SYSCALL_NAME",
-				syscall_array[i].hlr_name);
+				syscall_array[i].handler_name);
 
 		fw_res = fwrite(text, strlen(text), 1, ts);
 
@@ -196,7 +196,7 @@ generate_ebpf_kp_file(FILE *ts)
 	for (unsigned i = 0; i < SC_TBL_SIZE; i++) {
 		size_t fw_res;
 
-		if (NULL == syscall_array[i].hlr_name)
+		if (NULL == syscall_array[i].handler_name)
 			continue;
 
 		if (EM_file != (EM_file & syscall_array[i].masks))
@@ -207,7 +207,7 @@ generate_ebpf_kp_file(FILE *ts)
 		str_replace_all(&text, "SYSCALL_NR",
 				syscall_array[i].num_name);
 		str_replace_all(&text, "SYSCALL_NAME",
-				syscall_array[i].hlr_name);
+				syscall_array[i].handler_name);
 
 		fw_res = fwrite(text, strlen(text), 1, ts);
 
@@ -231,7 +231,7 @@ generate_ebpf_kp_fileat(FILE *ts)
 	for (unsigned i = 0; i < SC_TBL_SIZE; i++) {
 		size_t fw_res;
 
-		if (NULL == syscall_array[i].hlr_name)
+		if (NULL == syscall_array[i].handler_name)
 			continue;
 
 		if (EM_fileat != (EM_fileat & syscall_array[i].masks))
@@ -242,7 +242,7 @@ generate_ebpf_kp_fileat(FILE *ts)
 		str_replace_all(&text, "SYSCALL_NR",
 				syscall_array[i].num_name);
 		str_replace_all(&text, "SYSCALL_NAME",
-				syscall_array[i].hlr_name);
+				syscall_array[i].handler_name);
 
 		fw_res = fwrite(text, strlen(text), 1, ts);
 
@@ -266,7 +266,7 @@ generate_ebpf_kp_desc(FILE *ts)
 	for (unsigned i = 0; i < SC_TBL_SIZE; i++) {
 		size_t fw_res;
 
-		if (NULL == syscall_array[i].hlr_name)
+		if (NULL == syscall_array[i].handler_name)
 			continue;
 
 		if (EM_desc != (EM_desc & syscall_array[i].masks))
@@ -277,7 +277,7 @@ generate_ebpf_kp_desc(FILE *ts)
 		str_replace_all(&text, "SYSCALL_NR",
 				syscall_array[i].num_name);
 		str_replace_all(&text, "SYSCALL_NAME",
-				syscall_array[i].hlr_name);
+				syscall_array[i].handler_name);
 
 		fw_res = fwrite(text, strlen(text), 1, ts);
 

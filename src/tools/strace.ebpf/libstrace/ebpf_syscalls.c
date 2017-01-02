@@ -43,30 +43,30 @@
 #define EBPF_SYSCALL(nr, sym)    [nr] = {\
 	.num = nr, \
 	.num_name = #nr, \
-	.hlr_name = #sym, \
+	.handler_name = #sym, \
 	.masks = 0 },
 
 #define EBPF_SYSCALL_FILE(nr, sym)    [nr] = {\
 	.num = nr, \
 	.num_name = #nr, \
-	.hlr_name = #sym, \
+	.handler_name = #sym, \
 	.masks = EM_file },
 
 #define EBPF_SYSCALL_FILEAT(nr, sym)    [nr] = {\
 	.num = nr, \
 	.num_name = #nr, \
-	.hlr_name = #sym, \
+	.handler_name = #sym, \
 	.masks = EM_fileat },
 
 #define EBPF_SYSCALL_DESC(nr, sym)    [nr] = {\
 	.num = nr, \
 	.num_name = #nr, \
-	.hlr_name = #sym, \
+	.handler_name = #sym, \
 	.masks = EM_desc },
 
 #define SC_NI { .num = SC_TBL_SIZE, \
 	.num_name = "NI", \
-	.hlr_name = NULL }
+	.handler_name = NULL }
 
 /*
  * Commented syscalls mean that syscall exists in the kernel but glibc
@@ -76,13 +76,13 @@ struct sc_t syscall_array[SC_TBL_SIZE] = {
 	[0 ... SC_TBL_SIZE - 1] = SC_NI,
 	/*
 	 * [__NR_open]  =
-	 *    { .num = __NR_open,  .hlr_name = "SyS_open",  .masks = EM_file },
+	 *    { .num = __NR_open,  .handler_name = "SyS_open",  .masks = EM_file },
 	 * [__NR_read]  =
-	 *    { .num = __NR_read,  .hlr_name = "SyS_read",  .masks = EM_desk },
+	 *    { .num = __NR_read,  .handler_name = "SyS_read",  .masks = EM_desk },
 	 * [__NR_write] =
-	 *    { .num = __NR_write, .hlr_name = "SyS_write", .masks = EM_desk },
+	 *    { .num = __NR_write, .handler_name = "SyS_write", .masks = EM_desk },
 	 * [__NR_close] =
-	 *    { .num = __NR_close, .hlr_name = "SyS_close", .masks = EM_desk },
+	 *    { .num = __NR_close, .handler_name = "SyS_close", .masks = EM_desk },
 	 */
 
 	EBPF_SYSCALL(__NR_arch_prctl, sys_arch_prctl)

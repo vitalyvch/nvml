@@ -226,10 +226,10 @@ sc_num2str(const int64_t sc_num)
 	static char buf[32];
 
 	if ((0 <= sc_num) && (SC_TBL_SIZE > sc_num)) {
-		if (NULL == syscall_array[sc_num].hlr_name)
+		if (NULL == syscall_array[sc_num].handler_name)
 			goto out;
 
-		return syscall_array[sc_num].hlr_name + 4 /* strlen("sys_") */;
+		return syscall_array[sc_num].handler_name + 4 /* strlen("sys_") */;
 	}
 
 out:

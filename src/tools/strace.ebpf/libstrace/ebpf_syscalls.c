@@ -72,7 +72,7 @@
  * Commented syscalls mean that syscall exists in the kernel but glibc
  *    does not provide __NR_* and SYS_* macros.
  */
-struct sc_t sc_tbl[SC_TBL_SIZE] = {
+struct sc_t syscall_array[SC_TBL_SIZE] = {
 	[0 ... SC_TBL_SIZE - 1] = SC_NI,
 	/*
 	 * [__NR_open]  =

@@ -84,36 +84,36 @@ attach_kp_libc_all(struct bpf_ctx *b)
 		char kprobe[HANDLER_NAME_MAX_SIZE];
 		char kretprobe[HANDLER_NAME_MAX_SIZE];
 
-		if (NULL == sc_tbl[i].hlr_name)
+		if (NULL == syscall_array[i].hlr_name)
 			continue;
 
 		print_kprobe_name(kprobe, sizeof(kprobe),
-			sc_tbl[i].hlr_name);
+			syscall_array[i].hlr_name);
 
 		print_kretprobe_name(kretprobe, sizeof(kretprobe),
-			sc_tbl[i].hlr_name);
+			syscall_array[i].hlr_name);
 
 		/* KRetProbe should be first to prevent race condition */
 		res = load_fn_and_attach_to_kretp(b,
-				sc_tbl[i].hlr_name, kretprobe,
+				syscall_array[i].hlr_name, kretprobe,
 				args.pid, 0, -1);
 
 		if (res == -1) {
 			fprintf(stderr,
 				"ERROR:%s:Can't attach %s to '%s'. Ignoring.\n",
-				__func__, kretprobe, sc_tbl[i].hlr_name);
+				__func__, kretprobe, syscall_array[i].hlr_name);
 
 			/* Kretprobe fails. There is no reason to try probe */
 			continue;
 		}
 
-		res = load_fn_and_attach_to_kp(b, sc_tbl[i].hlr_name, kprobe,
+		res = load_fn_and_attach_to_kp(b, syscall_array[i].hlr_name, kprobe,
 				args.pid, 0, -1);
 
 		if (res == -1) {
 			fprintf(stderr,
 				"ERROR:%s:Can't attach %s to '%s'. Ignoring.\n",
-				__func__, kprobe, sc_tbl[i].hlr_name);
+				__func__, kprobe, syscall_array[i].hlr_name);
 
 			continue;
 		}
@@ -222,39 +222,39 @@ attach_kp_desc(struct bpf_ctx *b)
 		char kprobe[HANDLER_NAME_MAX_SIZE];
 		char kretprobe[HANDLER_NAME_MAX_SIZE];
 
-		if (NULL == sc_tbl[i].hlr_name)
+		if (NULL == syscall_array[i].hlr_name)
 			continue;
 
-		if (EM_desc != (EM_desc & sc_tbl[i].masks))
+		if (EM_desc != (EM_desc & syscall_array[i].masks))
 			continue;
 
 		print_kprobe_name(kprobe, sizeof(kprobe),
-			sc_tbl[i].hlr_name);
+			syscall_array[i].hlr_name);
 
 		print_kretprobe_name(kretprobe, sizeof(kretprobe),
-			sc_tbl[i].hlr_name);
+			syscall_array[i].hlr_name);
 
 		/* KRetProbe should be first to prevent race condition */
 		res = load_fn_and_attach_to_kretp(b,
-				sc_tbl[i].hlr_name, kretprobe,
+				syscall_array[i].hlr_name, kretprobe,
 				args.pid, 0, -1);
 
 		if (res == -1) {
 			fprintf(stderr,
 				"ERROR:%s:Can't attach %s to '%s'. Ignoring.\n",
-				__func__, kretprobe, sc_tbl[i].hlr_name);
+				__func__, kretprobe, syscall_array[i].hlr_name);
 
 			/* Kretprobe fails. There is no reason to try probe */
 			continue;
 		}
 
-		res = load_fn_and_attach_to_kp(b, sc_tbl[i].hlr_name, kprobe,
+		res = load_fn_and_attach_to_kp(b, syscall_array[i].hlr_name, kprobe,
 				args.pid, 0, -1);
 
 		if (res == -1) {
 			fprintf(stderr,
 				"ERROR:%s:Can't attach %s to '%s'. Ignoring.\n",
-				__func__, kprobe, sc_tbl[i].hlr_name);
+				__func__, kprobe, syscall_array[i].hlr_name);
 
 			continue;
 		}
@@ -281,39 +281,39 @@ attach_kp_file(struct bpf_ctx *b)
 		char kprobe[HANDLER_NAME_MAX_SIZE];
 		char kretprobe[HANDLER_NAME_MAX_SIZE];
 
-		if (NULL == sc_tbl[i].hlr_name)
+		if (NULL == syscall_array[i].hlr_name)
 			continue;
 
-		if (EM_file != (EM_file & sc_tbl[i].masks))
+		if (EM_file != (EM_file & syscall_array[i].masks))
 			continue;
 
 		print_kprobe_name(kprobe, sizeof(kprobe),
-			sc_tbl[i].hlr_name);
+			syscall_array[i].hlr_name);
 
 		print_kretprobe_name(kretprobe, sizeof(kretprobe),
-			sc_tbl[i].hlr_name);
+			syscall_array[i].hlr_name);
 
 		/* KRetProbe should be first to prevent race condition */
 		res = load_fn_and_attach_to_kretp(b,
-				sc_tbl[i].hlr_name, kretprobe,
+				syscall_array[i].hlr_name, kretprobe,
 				args.pid, 0, -1);
 
 		if (res == -1) {
 			fprintf(stderr,
 				"ERROR:%s:Can't attach %s to '%s'. Ignoring.\n",
-				__func__, kretprobe, sc_tbl[i].hlr_name);
+				__func__, kretprobe, syscall_array[i].hlr_name);
 
 			/* Kretprobe fails. There is no reason to try probe */
 			continue;
 		}
 
-		res = load_fn_and_attach_to_kp(b, sc_tbl[i].hlr_name, kprobe,
+		res = load_fn_and_attach_to_kp(b, syscall_array[i].hlr_name, kprobe,
 				args.pid, 0, -1);
 
 		if (res == -1) {
 			fprintf(stderr,
 				"ERROR:%s:Can't attach %s to '%s'. Ignoring.\n",
-				__func__, kprobe, sc_tbl[i].hlr_name);
+				__func__, kprobe, syscall_array[i].hlr_name);
 
 			continue;
 		}
@@ -340,39 +340,39 @@ attach_kp_fileat(struct bpf_ctx *b)
 		char kprobe[HANDLER_NAME_MAX_SIZE];
 		char kretprobe[HANDLER_NAME_MAX_SIZE];
 
-		if (NULL == sc_tbl[i].hlr_name)
+		if (NULL == syscall_array[i].hlr_name)
 			continue;
 
-		if (EM_fileat != (EM_fileat & sc_tbl[i].masks))
+		if (EM_fileat != (EM_fileat & syscall_array[i].masks))
 			continue;
 
 		print_kprobe_name(kprobe, sizeof(kprobe),
-			sc_tbl[i].hlr_name);
+			syscall_array[i].hlr_name);
 
 		print_kretprobe_name(kretprobe, sizeof(kretprobe),
-			sc_tbl[i].hlr_name);
+			syscall_array[i].hlr_name);
 
 		/* KRetProbe should be first to prevent race condition */
 		res = load_fn_and_attach_to_kretp(b,
-				sc_tbl[i].hlr_name, kretprobe,
+				syscall_array[i].hlr_name, kretprobe,
 				args.pid, 0, -1);
 
 		if (res == -1) {
 			fprintf(stderr,
 				"ERROR:%s:Can't attach %s to '%s'. Ignoring.\n",
-				__func__, kretprobe, sc_tbl[i].hlr_name);
+				__func__, kretprobe, syscall_array[i].hlr_name);
 
 			/* Kretprobe fails. There is no reason to try probe */
 			continue;
 		}
 
-		res = load_fn_and_attach_to_kp(b, sc_tbl[i].hlr_name, kprobe,
+		res = load_fn_and_attach_to_kp(b, syscall_array[i].hlr_name, kprobe,
 				args.pid, 0, -1);
 
 		if (res == -1) {
 			fprintf(stderr,
 				"ERROR:%s:Can't attach %s to '%s'. Ignoring.\n",
-				__func__, kprobe, sc_tbl[i].hlr_name);
+				__func__, kprobe, syscall_array[i].hlr_name);
 
 			continue;
 		}

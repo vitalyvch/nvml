@@ -65,6 +65,6 @@ struct sc_t {
 
 /* Currently glibc does not have appropriate macro for it */
 enum { SC_TBL_SIZE = 1024 };
-extern struct sc_t sc_tbl[SC_TBL_SIZE];
+extern struct sc_t syscall_array[SC_TBL_SIZE];
 
 #endif /* EBPF_SYSCALLS_H */

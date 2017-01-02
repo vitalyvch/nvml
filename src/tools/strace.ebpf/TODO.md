@@ -6,8 +6,8 @@
 Currently we require a bit more than 1000 nsec for tracing single syscall.
 It is not bad but there are at least few places which could allow us to
 reduce this value may be to 600 nsec. Every syscall itself currently requires
-a bit more than 100 nsec for entering, and close value for returning. So a bit
-more than 200 nsec together.
+a bit more than 100 nsec for entering, and close to the same value for
+returning. So a bit more than 200 nsec together.
 
 1.1 Extra poll()
 -----------------

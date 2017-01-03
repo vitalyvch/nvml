@@ -242,6 +242,23 @@ main(int argc, char *argv[])
 
 		case 'p':
 			args.pid = atoi(optarg);
+			if (args.pid < 1) {
+				fprintf(stderr,
+					"ERROR: wrong value for pid option is"
+					" provided: '%s' => '%d'. Exit.\n",
+					optarg, args.pid);
+
+				exit(EXIT_FAILURE);
+			}
+			if (kill(args.pid, 0) == -1) {
+				fprintf(stderr,
+					"ERROR: Process with pid '%d'"
+					" does not exist : '%m'.\n",
+					args.pid);
+
+				fprintf(stderr, "Exit.\n");
+				exit(EXIT_FAILURE);
+			}
 			break;
 
 		case 'o':

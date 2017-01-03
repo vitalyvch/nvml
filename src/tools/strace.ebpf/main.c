@@ -163,7 +163,7 @@ fprint_trace_list(FILE *f)
 	assert(fw_res > 0);
 }
 
-struct args_t args;
+struct cl_options args;
 bool cont = true;
 FILE *out;
 enum out_fmt out_fmt;

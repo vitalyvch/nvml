@@ -53,7 +53,7 @@ enum out_fmt {
 /*
  * This structure contains default and parsed values for command-line options
  */
-struct args_t {
+struct cl_options {
 	/* Mark output lines with timestamp */
 	bool timestamp;
 	/* Print only failed syscalls */
@@ -83,7 +83,7 @@ struct args_t {
 	unsigned pr_arr_max;
 };
 
-extern struct args_t args;
+extern struct cl_options args;
 extern bool cont;
 
 /* Output log */

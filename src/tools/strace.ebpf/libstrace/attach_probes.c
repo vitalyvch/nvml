@@ -396,12 +396,12 @@ attach_kp_fileat(struct bpf_ctx *b)
 }
 
 /*
- * attach_kp_pmemfile -- Attach eBPF handlers to all file-related syscalls.
+ * attach_kp_fileio -- Attach eBPF handlers to all file-related syscalls.
  *
  * Inspired by: 'strace -e trace=desc,file'
  */
 static bool
-attach_kp_pmemfile(struct bpf_ctx *b)
+attach_kp_fileio(struct bpf_ctx *b)
 {
 	bool res = false;
 
@@ -478,8 +478,8 @@ attach_probes(struct bpf_ctx *b)
 		return attach_kp_file(b);
 	} else if (!strcasecmp(args.expr, "trace=kp-desc")) {
 		return attach_kp_desc(b);
-	} else if (!strcasecmp(args.expr, "trace=kp-pmemfile")) {
-		return attach_kp_pmemfile(b);
+	} else if (!strcasecmp(args.expr, "trace=kp-fileio")) {
+		return attach_kp_fileio(b);
 	} else if (!strcasecmp(args.expr, "trace=tp-all")) {
 		return attach_tp_all(b);
 	}

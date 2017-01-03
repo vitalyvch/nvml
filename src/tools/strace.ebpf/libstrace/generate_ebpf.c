@@ -291,11 +291,11 @@ generate_ebpf_kp_desc(FILE *ts)
 }
 
 /*
- * generate_ebpf_kp_pmemfile -- This function generates eBPF syscall handlers
+ * generate_ebpf_kp_fileio -- This function generates eBPF syscall handlers
  *     specific for syscalls which operate on files.
  */
 static void
-generate_ebpf_kp_pmemfile(FILE *ts)
+generate_ebpf_kp_fileio(FILE *ts)
 {
 	generate_ebpf_kp_file(ts);
 	generate_ebpf_kp_desc(ts);
@@ -355,8 +355,8 @@ generate_ebpf()
 	} else if (!strcasecmp(args.expr, "trace=kp-desc")) {
 		generate_ebpf_kp_desc(ts);
 		goto out;
-	} else if (!strcasecmp(args.expr, "trace=kp-pmemfile")) {
-		generate_ebpf_kp_pmemfile(ts);
+	} else if (!strcasecmp(args.expr, "trace=kp-fileio")) {
+		generate_ebpf_kp_fileio(ts);
 		goto out;
 	} else if (!strcasecmp(args.expr, "trace=tp-all")) {
 		generate_ebpf_tp_all(ts);

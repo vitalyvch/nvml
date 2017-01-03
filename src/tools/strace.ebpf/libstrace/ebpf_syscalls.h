@@ -49,7 +49,7 @@ enum masks_t {
 	/* syscall accepts dir fd as a first arg and path as a second */
 	EM_fileat = 1 << 3,
 	/* syscall is actual for PMemFile */
-	EM_pmemfile = 1 << 4,
+	EM_fileio = 1 << 4,
 	EM_kern_all = 1 << 5,
 	EM_libc_all = 1 << 6,
 

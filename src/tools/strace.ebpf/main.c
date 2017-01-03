@@ -164,7 +164,7 @@ fprint_trace_list(FILE *f)
 }
 
 struct cl_options args;
-bool cont = true;
+bool Cont = true;
 FILE *out;
 enum out_fmt out_fmt;
 
@@ -498,12 +498,12 @@ main(int argc, char *argv[])
 	for (unsigned i = 0; i < b->pr_arr_qty; i++)
 		readers[i] = b->pr_arr[i]->pr;
 
-	while (cont) {
+	while (Cont) {
 		(void) perf_reader_poll((int)b->pr_arr_qty, readers, -1);
 
 		if (!args.command && 0 < args.pid) {
 			if (kill(args.pid, 0) == -1) {
-				cont = false;
+				Cont = false;
 
 				fprintf(stderr,
 					"ERROR: Process with pid '%d'"

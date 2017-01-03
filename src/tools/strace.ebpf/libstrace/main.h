@@ -84,7 +84,7 @@ struct cl_options {
 };
 
 extern struct cl_options args;
-extern bool cont;
+extern bool Cont;
 
 /* Output log */
 extern FILE *out;

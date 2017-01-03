@@ -360,7 +360,7 @@ void
 sig_chld_handler(int sig, siginfo_t *si, void *unused)
 {
 	if (si->si_code == CLD_EXITED && args.pid == si->si_pid) {
-		cont = false;
+		Cont = false;
 	}
 
 	(void) sig;
@@ -378,7 +378,7 @@ sig_transmit_handler(int sig, siginfo_t *si, void *unused)
 {
 	kill(args.pid, SIGSEGV == sig ? SIGHUP : sig);
 
-	cont = false;
+	Cont = false;
 
 	(void) si;
 	(void) unused;

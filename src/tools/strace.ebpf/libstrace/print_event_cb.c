@@ -454,12 +454,12 @@ print_header_bin(int argc, char *argv[])
 
 	if (1 != fwrite(&d_size, sizeof(d_size), 1, out)) {
 		/* ERROR */
-		cont = false;
+		Cont = false;
 	}
 
 	if (1 != fwrite(&d, sizeof(d), 1, out)) {
 		/* ERROR */
-		cont = false;
+		Cont = false;
 	}
 }
 
@@ -478,7 +478,7 @@ print_event_bin(void *cb_cookie, void *data, int size)
 
 	if (1 != fwrite(data, (size_t)size, 1, out)) {
 		/* ERROR */
-		cont = false;
+		Cont = false;
 	}
 
 	(void) cb_cookie;

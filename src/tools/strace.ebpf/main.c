@@ -295,12 +295,12 @@ main(int argc, char *argv[])
 
 		case 'b':
 			for (unsigned i = 0; i < SC_TBL_SIZE; i++)
-				if (NULL != sc_tbl[i].hlr_name)
+				if (NULL != syscall_array[i].handler_name)
 					fprintf(stdout,
 						"%03d: %-20s\t %s\n",
-						sc_tbl[i].num,
-						sc_tbl[i].num_name,
-						sc_tbl[i].hlr_name);
+						syscall_array[i].num,
+						syscall_array[i].num_name,
+						syscall_array[i].handler_name);
 			exit(EXIT_SUCCESS);
 
 		case ':':

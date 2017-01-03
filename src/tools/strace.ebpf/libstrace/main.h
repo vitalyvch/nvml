@@ -50,22 +50,36 @@ enum out_fmt {
 	EOF_QTY, /* Should be last */
 };
 
+/*
+ * This structure contains default and parsed values for command-line options
+ */
 struct args_t {
+	/* Mark output lines with timestamp */
 	bool timestamp;
+	/* Print only failed syscalls */
 	bool failed;
+	/* We have command to run on command line */
 	bool command;
 
+	/* We run in debug mode */
 	unsigned debug;
 
+	/* Pid of process to trace */
 	pid_t pid;
+
+	/* The name of output log file */
 	const char *out_fn;
+	/* string constant with type of output log format */
 	const char *out_fmt_str;
+	/* Field separator for hexadecimal logs */
 	char out_sep_ch;
+	/* Expression */
 	const char *expr;
-/*
- * XXX Set this variable using args and
- *    command line options
- */
+
+	/*
+	 * XXX Set this variable using args and
+	 *    command line options
+	 */
 	unsigned pr_arr_max;
 };
 

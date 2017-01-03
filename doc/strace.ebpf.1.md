@@ -71,6 +71,7 @@ eBPF and KProbe technologies and libbcc library.
     - Output of this tool is designed to be suiteable for processing with
       classical tools and technologies, like awk.
     - Could trace syscalls system-wide.
+	- Could trace init (process with 'pid == 1')
 
 + Cons:
 

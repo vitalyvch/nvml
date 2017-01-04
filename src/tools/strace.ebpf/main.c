@@ -278,6 +278,10 @@ main(int argc, char *argv[])
 					"List of supported expressions:"
 					" 'help', 'list', 'trace=set'"
 					"\n");
+				fprintf(stderr,
+					"For list of supported sets you should"
+					"use 'trace=help' or 'trace=list'"
+					"\n");
 				exit(EXIT_SUCCESS);
 			} else if (!strcasecmp(optarg, "trace=help") ||
 					!strcasecmp(optarg,

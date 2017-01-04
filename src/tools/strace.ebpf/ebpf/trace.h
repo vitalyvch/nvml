@@ -90,8 +90,12 @@ struct ev_dt_t {
 
 		struct {
 			char fl_nm[NAME_MAX];
-			/* Current process name. XXX Reserved for future. */
-			char comm[TASK_COMM_LEN];
+			/*
+			 * Auxilary field. In dependence on syscall
+			 * could contain second filename, current process
+			 * name or something else.
+			 */
+			char aux[NAME_MAX];
 		};
 
 		struct {

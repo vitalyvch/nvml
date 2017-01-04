@@ -38,6 +38,12 @@
 #ifndef TRACE_H
 #define TRACE_H
 
+/*
+ * The longest syscall's name is equal to 26 characters:
+ *    'SyS_sched_get_priority_max'.
+ * Let's to add a space for '\0' and few extra bytes.
+ */
+enum { E_SC_NAME_SIZE = 32 };
 
 struct ev_dt_t {
 	/*
@@ -80,12 +86,7 @@ struct ev_dt_t {
 	};
 
 	union {
-		/*
-		 * The longest syscall's name is equal to 26 characters:
-		 *    'SyS_sched_get_priority_max'.
-		 * Let's to add a space for '\0' and few extra bytes.
-		 */
-		char sc_name[32];
+		char sc_name[E_SC_NAME_SIZE];
 
 		struct {
 			char fl_nm[NAME_MAX];

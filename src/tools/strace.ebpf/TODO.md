@@ -24,6 +24,8 @@ is a libbcc bug. Back trace for one of that poll() syscalls:_
 #3  0x000000000040175d in main (argc=<optimized out>, argv=0x7fffe635c888) at snoop.c:228
 ```
 
+GitHub issue: https://github.com/iovisor/bcc/issues/779
+
 1.2 Tracepoints support
 ------------------------
 
@@ -76,7 +78,7 @@ _Currently Valgrind fails with a message like:_
 --------------------------
 
 It is not difficult to attach to few PIDs simultaneously. Maybe we should do
-it for parrallel applications like apache, nginx and like.
+it for parallel applications like apache, nginx and like.
 
 3.2 Attaching by name
 ----------------------

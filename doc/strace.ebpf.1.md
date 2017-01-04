@@ -47,7 +47,7 @@ date: pmem Tools version 1.0.2
 
 # NAME #
 
-**strace.ebpf** -- extreamely fast strace-like tool builded on top of eBPF
+**strace.ebpf** -- extreamely fast strace-like tool built on top of eBPF
 and KProbe technologies.
 
 

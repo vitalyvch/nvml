@@ -151,7 +151,11 @@ print help
 
 ** System Configuring **
 
-1. You should provide permissions to access tracefs for final user.
+1. You should provide permissions to access tracefs for final user
+   according to your distro documentation. Some of possible options:
+
+   - In /etc/fstab add mode=755 option for debugfs AND tracefs.
+   - Use sudo
 
 2. It's good to put this command in init scripts such as local.rc:
 
@@ -159,8 +163,8 @@ print help
 
 	It will significantly improve performance and avoid 'Lost events'
 
-3. You should increase "Open File Limit", for example according to this
-    instruction:
+3. You should increase "Open File Limit" according to your distro documentation.
+   Few common ways you can find in this instruction:
 
     https://easyengine.io/tutorials/linux/increase-open-files-limit/
 

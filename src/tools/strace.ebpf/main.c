@@ -172,7 +172,9 @@ enum out_fmt out_fmt;
 extern int perf_reader_page_cnt;
 
 /* 8 Megabytes should be something close to reasonable */
-static unsigned out_buf_size = 8 * 1024 * 1024;
+enum { OUT_BUF_SIZE = 8 * 1024 * 1024 };
+/* XXX Should be configurable through command line */
+static unsigned out_buf_size = OUT_BUF_SIZE;
 
 /*
  * main -- Tool's entry point

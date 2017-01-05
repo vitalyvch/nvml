@@ -170,7 +170,7 @@ print_header_hex(int argc, char *argv[])
 }
 
 /*
- * b2hex -- This function returnss character corresponding to hexadecimal digit.
+ * b2hex -- This function returns character corresponding to hexadecimal digit.
  */
 static inline char
 b2hex(char b)

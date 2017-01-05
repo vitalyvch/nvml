@@ -65,7 +65,7 @@ pr_arr_check_quota(struct bpf_ctx *sbcp, unsigned new_pr_qty)
 }
 
 /*
- * append_item_to_pr_arr -- Save reference to hendler of intercepted syscall
+ * append_item_to_pr_arr -- Save reference to handler of intercepted syscall
  *     in pr_arr.
  */
 static void

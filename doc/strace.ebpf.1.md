@@ -68,7 +68,7 @@ eBPF and KProbe technologies and libbcc library.
     - Used combination of technologies allow tool to be about one order faster
       than regular system strace.
     - This tool consume much less amount of CPU resource
-    - Output of this tool is designed to be suiteable for processing with
+    - Output of this tool is designed to be suitable for processing with
       classical tools and technologies, like awk.
     - Could trace syscalls system-wide.
 	- Could trace init (process with 'pid == 1')
@@ -77,8 +77,8 @@ eBPF and KProbe technologies and libbcc library.
 
     - Limited functionality
     - Slow attaching and detaching
-    - Asyncronity. If user will not provide enough system resources for
-      performace tool will skip some calls. Tool does not assume to try
+    - Asynchronity. If user will not provide enough system resources for
+      performance tool will skip some calls. Tool does not assume to try
       any work-around behind the scene.
     - Depend on modern kernel features
     - Limited possibility to run few instances simultaneously.

@@ -368,7 +368,7 @@ sig_chld_handler(int sig, siginfo_t *si, void *unused)
 }
 
 /*
- * sig_transmit_handler -- Generic signal hendler.
+ * sig_transmit_handler -- Generic signal handler.
  *
  * Is used for notification of traced process about
  * parent's death.

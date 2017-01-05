@@ -86,17 +86,17 @@ enum masks_t {
 	EM_file = EM_fs_path_1_arg,
 	/* syscall accepts dir fd as a first arg and path as a second */
 	EM_fileat = EM_fd_1_arg | EM_fs_path_2_arg,
-	/* syscall has fs pathes as first and second args. rename() */
+	/* syscall has fs paths as first and second args. rename() */
 	EM_fs_path_1_2_arg = EM_fs_path_1_arg | EM_fs_path_2_arg,
-	/* syscall has fs pathes as first and third args. linkat() */
+	/* syscall has fs paths as first and third args. linkat() */
 	EM_fs_path_1_3_arg = EM_fs_path_1_arg | EM_fs_path_3_arg,
-	/* syscall has fs pathes as second and forth args. renameat() */
+	/* syscall has fs paths as second and forth args. renameat() */
 	EM_fs_path_2_4_arg = EM_fs_path_2_arg | EM_fs_path_4_arg,
 
 	EM_ALL = -1,
 };
 
-/* Propetries of syscall with number 'num' */
+/* Properties of syscall with number 'num' */
 struct syscall_descriptor {
 	/* Number of syscall */
 	unsigned num;

@@ -77,7 +77,7 @@ OBJS = main.o \
 
 CFLAGS += $(shell $(PKG_CONFIG) --cflags libbcc)
 
-# XXX libbcc expects multi-treading safity. Currently it's required for
+# XXX libbcc expects multi-treading safety. Currently it's required for
 # print_event_cb.o only, although we will apply it for overall application.
 CFLAGS += -pthread
 
@@ -95,7 +95,7 @@ CFLAGS += -I ebpf
 
 LDFLAGS += -g -Wextra
 
-# XXX libbcc expects multi-treading safity.
+# XXX libbcc expects multi-treading safety.
 LDFLAGS += -pthread
 
 LIBS += $(shell $(PKG_CONFIG) --libs libbcc)

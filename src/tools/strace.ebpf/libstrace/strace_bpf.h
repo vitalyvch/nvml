@@ -61,10 +61,15 @@ struct bpf_pr {
 	char  key[];
 };
 
+/* Context of libstrace library */
 struct bpf_ctx {
+	/* A pointer to compiled ebpf code */
 	void			 *module;
+	/* debug mode */
 	unsigned		  debug;
+	/* A pointer to array of perf readers */
 	struct bpf_pr   **pr_arr;
+	/* A qty of perf readers in array above */
 	unsigned		  pr_arr_qty;
 };
 

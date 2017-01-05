@@ -80,6 +80,8 @@ eBPF and KProbe technologies and libbcc library.
     - Asyncronity. If user will not provide enough system resources for
       performace tool will skip some calls. Tool does not assume to try
       any work-around behind the scene.
+    - Depend on modern kernel features
+    - Limited possibility to run few instances simultaneously.
 
 
 WARNING: System-wide tracing can fill out your disk really fast.

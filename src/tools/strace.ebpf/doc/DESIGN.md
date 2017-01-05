@@ -59,6 +59,8 @@ Cons
     - Asyncronity. If user will not provide enough system resources for
       performace tool will skip some calls. Tool does not assume to try
       any work-around behind the scene.
+    - Depend on modern kernel features
+    - Limited possibility to run few instances simultaneously.
 
 ******
 

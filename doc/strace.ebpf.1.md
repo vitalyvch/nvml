@@ -168,6 +168,8 @@ print help
 
     https://easyengine.io/tutorials/linux/increase-open-files-limit/
 
+4. Kernel headers for running kernel should be installed.
+
 
 # FILES #
 

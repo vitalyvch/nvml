@@ -1,5 +1,5 @@
 /*
- * Copyright 2016, Intel Corporation
+ * Copyright 2017, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,68 +31,38 @@
  */
 
 /*
- * trace_file_tmpl.c -- Trace syscalls with numbers known from libc and
- *    filename as first argument. Uses BCC, eBPF.
+ * pid_check_ff_fast_hook.c -- Pid check hook for fast-follow-fork mode.
  */
 
-/*
- * kprobe__SYSCALL_NAME -- SYSCALL_NAME() entry handler
- */
-int
-kprobe__SYSCALL_NAME(struct pt_regs *ctx)
 {
-	struct first_step_t fs = {};
-	u64 pid_tid = bpf_get_current_pid_tgid();
+	bool t = false;
 
-	PID_CHECK_HOOK
+	if ((pid_tid >> 32) == TRACED_PID) {
+		t |= true;
+	} else {
+		struct task_struct *task;
+		struct task_struct *real_parent_task;
+		u64 ppid;
 
-	fs.start_ts_nsec = bpf_ktime_get_ns();
-	fs.arg_1 = PT_REGS_PARM1(ctx);
-	fs.arg_2 = PT_REGS_PARM2(ctx);
-	fs.arg_3 = PT_REGS_PARM3(ctx);
-	fs.arg_4 = PT_REGS_PARM4(ctx);
-	fs.arg_5 = PT_REGS_PARM5(ctx);
-	fs.arg_5 = PT_REGS_PARM6(ctx);
+		task = (struct task_struct *)bpf_get_current_task();
 
-	tmp_i.update(&pid_tid, &fs);
+		/*
+		 * XXX Something wrong is here with real_parent. Probably we
+		 * should use another parent pointer
+		 */
+		bpf_probe_read(&real_parent_task,
+				sizeof(real_parent_task),
+				&task->real_parent);
 
-	return 0;
-};
+		bpf_probe_read(&ppid,
+			   sizeof(ppid),
+			   &real_parent_task->pid);
 
-/*
- * kretprobe__SYSCALL_NAME -- SYSCALL_NAME() exit handler
- */
-int
-kretprobe__SYSCALL_NAME(struct pt_regs *ctx)
-{
-	struct first_step_t *fsp;
-	struct ev_dt_t ev = {};
+		if (ppid == TRACED_PID)
+			t |= true;
+	}
 
-	u64 cur_nsec = bpf_ktime_get_ns();
-
-	u64 pid_tid = bpf_get_current_pid_tgid();
-	fsp = tmp_i.lookup(&pid_tid);
-	if (fsp == 0)
+	if (!t) {
 		return 0;
-
-	ev.sc_id = SYSCALL_NR; /* SysCall ID */
-	ev.arg_1 = fsp->arg_1;
-	ev.arg_2 = fsp->arg_2;
-	ev.arg_3 = fsp->arg_3;
-	ev.arg_4 = fsp->arg_4;
-	ev.arg_5 = fsp->arg_5;
-	ev.arg_6 = fsp->arg_6;
-	ev.pid_tid = pid_tid;
-	ev.start_ts_nsec = fsp->start_ts_nsec;
-	ev.finish_ts_nsec = cur_nsec;
-	ev.ret = PT_REGS_RC(ctx);
-	bpf_probe_read(&ev.fl_nm, sizeof(ev.fl_nm), (void *)fsp->arg_1);
-
-	const size_t ev_size = offsetof(struct ev_dt_t, fl_nm) +
-		sizeof(ev.fl_nm);
-	events.perf_submit(ctx, &ev, ev_size);
-
-	tmp_i.delete(&pid_tid);
-
-	return 0;
+	}
 }

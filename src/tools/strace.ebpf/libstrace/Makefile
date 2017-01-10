@@ -49,6 +49,7 @@ CFLAGS += $(shell $(PKG_CONFIG) --cflags libbcc)
 # XXX libbcc expects multi-treading safety. Currently it's required for
 # print_event_cb.o only, although we will apply it for overall application.
 CFLAGS += -pthread
+CFLAGS += -D_GNU_SOURCE
 
 CFLAGS += -g -Wextra
 
@@ -59,6 +60,9 @@ CFLAGS += -Wno-override-init
 endif
 
 CFLAGS += -I ../compat
-CFLAGS += -I ../ebpf
+CFLAGS += -I ..
+
+
+%.o: %.c %.h Makefile
 
 include ../../../Makefile.inc

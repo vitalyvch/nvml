@@ -57,7 +57,7 @@ typedef __u64 u64;
 
 enum { TASK_COMM_LEN = 16 };
 
-#include "trace.h"
+#include <ebpf/trace.h>
 
 static unsigned long long start_ts_nsec = 0;
 
@@ -92,6 +92,7 @@ print_header_strace(int argc, char *argv[])
 
 /*
  * print_event_strace -- Print syscall's log entry.
+ *    Single-line mode only.
  *
  * XXX A blank for human-readable strace-like logs
  */
@@ -126,8 +127,16 @@ print_event_strace(void *cb_cookie, void *data, int size)
 	else
 		fprintf(out, "%-7s ", event->sc_name + 4);
 
-	fprintf(out, "%-6llu %4lld %3lld %s\n",
-			event->pid_tid, res, err, event->fl_nm);
+	if (0 == event->packet_type)
+		/*
+		 * XXX Check presence of aux_str by cheking sc_id
+		 *    and size arg
+		 */
+		fprintf(out, "%-6llu %4lld %3lld %s\n",
+				event->pid_tid, res, err, event->aux_str);
+	else
+		fprintf(out, "%-6llu %4lld %3lld %s\n",
+				event->pid_tid, res, err, event->str);
 
 	(void) cb_cookie;
 }
@@ -309,9 +318,16 @@ print_event_hex(void *cb_cookie, void *data, int size)
 		break;
 
 	default:
-		if (EM_file == (EM_file & syscall_array[event->sc_id].masks))
-			fwrite(event->fl_nm, strlen(event->fl_nm), 1, out);
-		else if (EM_desc == (EM_desc &
+		if (EM_file == (EM_file & syscall_array[event->sc_id].masks)) {
+			/*
+			 * XXX Check presence of string body by cheking sc_id
+			 *    and size arg
+			 */
+			if (0 == event->packet_type)
+				fwrite(event->aux_str, strlen(event->aux_str), 1, out);
+			else
+				fwrite(event->str, strlen(event->str), 1, out);
+		} else if (EM_desc == (EM_desc &
 					syscall_array[event->sc_id].masks))
 			fprint_i64(out, (uint64_t)event->arg_1);
 		else if (EM_fileat == (EM_fileat &
@@ -343,8 +359,14 @@ print_event_hex(void *cb_cookie, void *data, int size)
 
 	default:
 		if (EM_fileat == (EM_fileat &
-					syscall_array[event->sc_id].masks))
-			fwrite(event->fl_nm, strlen(event->fl_nm), 1, out);
+					syscall_array[event->sc_id].masks)) {
+			if (0 == event->packet_type)
+				/*
+				 * XXX Check presence of aux_str by cheking sc_id
+				 *    and size arg
+				 */
+				fwrite(event->aux_str, strlen(event->aux_str), 1, out);
+		}
 		break;
 	}
 	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out);
@@ -411,8 +433,8 @@ print_event_hex(void *cb_cookie, void *data, int size)
 
 	case -1:
 		/*
-		 * XXX Something unexpected happened. Ma be we should issue a
-		 * warning or do something better
+		 * XXX Something unexpected happened. May be we should issue a
+		 *    warning or do something better
 		 */
 		break;
 
@@ -428,7 +450,42 @@ print_event_hex(void *cb_cookie, void *data, int size)
 	(void) cb_cookie;
 }
 
+/*
+ * print_event_hex_raw -- This function prints syscall's logs entry in stream.
+ *
+ * WARNING
+ *
+ *    PLEASE don't use *printf() calls because it will slow down this
+ *		 function too much.
+ */
+static void
+print_event_hex_raw(void *cb_cookie, void *data, int size)
+{
+	print_event_hex(cb_cookie, data, size);
+}
+
+/*
+ * print_event_hex_sl -- This function prints syscall's logs entry in stream.
+ *    This logger should assemble multi-packet data in one line.
+ *
+ * WARNING
+ *
+ *    PLEASE don't use *printf() calls because it will slow down this
+ *		 function too much.
+ */
+static void
+print_event_hex_sl(void *cb_cookie, void *data, int size)
+{
+	print_event_hex(cb_cookie, data, size);
+}
+
 /* ** Binary logs ** */
+
+/*
+ * XXX We should think about writting 64-bit packet number before length
+ *    of packet, but there is probabilty that counting packets will be very
+ *    expensive, because we run in multi-threading environment.
+ */
 
 /*
  * print_header_bin -- This function writes header in stream.
@@ -476,6 +533,11 @@ print_event_bin(void *cb_cookie, void *data, int size)
 	if (args.failed && (event->ret >= 0))
 		return;
 
+	if (1 != fwrite(&size, sizeof(size), 1, out)) {
+		/* ERROR */
+		Cont = false;
+	}
+
 	if (1 != fwrite(data, (size_t)size, 1, out)) {
 		/* ERROR */
 		Cont = false;
@@ -496,20 +558,25 @@ out_fmt_str2enum(const char *str)
 	if (!strcasecmp("strace", str))
 		return EOF_STRACE;
 
-	if (!strcasecmp("hex", str))
-		return EOF_HEX;
+	if (!strcasecmp("hex", str) || !strcasecmp("hex_raw", str))
+		return EOF_HEX_RAW;
 
-	return EOF_HEX;
+	if (!strcasecmp("hex_sl", str))
+		return EOF_HEX_SL;
+
+	return EOF_HEX_RAW;
 }
 
 perf_reader_raw_cb print_event_cb[EOF_QTY + 1] = {
-	[EOF_HEX]	= print_event_hex,
+	[EOF_HEX_RAW]	= print_event_hex_raw,
+	[EOF_HEX_SL]	= print_event_hex_sl,
 	[EOF_BIN]	= print_event_bin,
 	[EOF_STRACE] = print_event_strace,
 };
 
 print_header_t print_header[EOF_QTY + 1] = {
-	[EOF_HEX]	= print_header_hex,
+	[EOF_HEX_RAW]	= print_header_hex,
+	[EOF_HEX_SL]	= print_header_hex,
 	[EOF_BIN]	= print_header_bin,
 	[EOF_STRACE] = print_header_strace,
 };

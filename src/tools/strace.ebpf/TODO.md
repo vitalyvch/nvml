@@ -71,6 +71,7 @@ _Currently Valgrind fails with a message like:_
 --12470-- it at http://valgrind.org/support/bug_reports.html.
 ```
 
+
 3. Extra features
 ==================
 
@@ -78,7 +79,8 @@ _Currently Valgrind fails with a message like:_
 --------------------------
 
 It is not difficult to attach to few PIDs simultaneously. Maybe we should do
-it for parallel applications like apache, nginx and like.
+it for parallel applications like apache, nginx and like. Most likelly we
+should simulate -p option from `man 1 strace`.
 
 3.2 Attaching by name
 ----------------------
@@ -86,7 +88,39 @@ it for parallel applications like apache, nginx and like.
 It is good to have ability to attach to processes not only by PIDs but also by
 names.
 
-3.3 eBPF sources
------------------
+3.3 Read full file name
+------------------------
 
-[Done] It is good to have embedded copies of these files as fallback.
+We should implement it as soon as this bug will be closed:
+ - https://github.com/iovisor/bcc/issues/900
+
+3.4 Simultaneous running of multiple instances
+------------------------------------------------
+
+Could be solved in way like this:
+
+Details:
+ - https://github.com/iovisor/bcc/pull/918
+ - https://github.com/iovisor/bcc/issues/872
+
+
+4. Output logs
+============================
+
+4.1 Binary log format: packet-counter field
+--------------------------------------------
+
+We should think about writting 64-bit packet number before length
+of packet, because it will enlarge reliability of logs. But there is
+probabilty that counting packets will be very expensive, because we run
+in multi-threading environment.
+
+4.2 Splitting log-files per-pid
+--------------------------------
+
+We already have an option for it, but we need to finish implemantation.
+
+4.3 Splitting log-files per-tid
+--------------------------------
+
+We already have an option for it, but we need to finish implemantation.

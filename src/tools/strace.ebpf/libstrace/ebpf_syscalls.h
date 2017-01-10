@@ -66,18 +66,22 @@ enum masks_t {
 	/* syscall fd path as sixth arg. For future syscalls. */
 	EM_fd_6_arg = 1 << 11,
 
-	/* syscall returns an fd */
+	/* syscall returns a fd */
 	EM_rdesc = 1 << 12,
+	/* syscall returns a pid */
+	EM_rpid = 1 << 13,
+	/* syscall returns a ptr */
+	EM_rptr = 1 << 14,
 
 	/* syscall should be traced in 'kern-all' mode only */
-	EM_kern_all = 1 << 13,
+	EM_kern_all = 1 << 15,
 	/* syscall should be traced in 'kern-all' and 'libc-all' modes */
-	EM_libc_all = 1 << 14,
+	EM_libc_all = 1 << 16,
 	/*
 	 * syscall should be traced in 'kern-all', 'libc-all' and 'fileio'
 	 *    modes
 	 */
-	EM_fileio = 1 << 15,
+	EM_fileio = 1 << 17,
 
 
 	/* syscall accepts fd as a first arg */

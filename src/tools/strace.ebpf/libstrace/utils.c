@@ -47,6 +47,8 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 
+#include <ebpf/ebpf_file_set.h>
+
 #include "main.h"
 #include "utils.h"
 #include "generate_ebpf.h"
@@ -66,7 +68,7 @@ load_file_from_disk(const char *const fn)
 	fd = open(fn, O_RDONLY);
 
 	if (fd == -1)
-		return buf;
+		return NULL;
 
 	res = fstat(fd, &st);
 
@@ -126,30 +128,57 @@ load_file(const char *const fn)
 		return f;
 
 	/* fallback to embedded ones */
-	if (0 == strcmp(ebpf_head_file, fn)) {
-		return strndup(_binary_trace_head_c_start,
-				(size_t)_binary_trace_head_c_size);
-	} else if (0 == strcmp(ebpf_libc_tmpl_file, fn)) {
-		return strndup(_binary_trace_libc_tmpl_c_start,
-				(size_t)_binary_trace_libc_tmpl_c_size);
-	} else if (0 == strcmp(ebpf_file_tmpl_file, fn)) {
-		return strndup(_binary_trace_file_tmpl_c_start,
-				(size_t)_binary_trace_file_tmpl_c_size);
-	} else if (0 == strcmp(ebpf_fileat_tmpl_file, fn)) {
-		return strndup(_binary_trace_fileat_tmpl_c_start,
-				(size_t)_binary_trace_fileat_tmpl_c_size);
-	} else if (0 == strcmp(ebpf_kern_tmpl_file, fn)) {
-		return strndup(_binary_trace_kern_tmpl_c_start,
-				(size_t)_binary_trace_kern_tmpl_c_size);
-	} else if (0 == strcmp(ebpf_tp_all_file, fn)) {
-		return strndup(_binary_trace_tp_all_c_start,
-				(size_t)_binary_trace_tp_all_c_size);
-	} else if (0 == strcmp(ebpf_trace_h_file, fn)) {
-		return strndup(_binary_trace_h_start,
-				(size_t)_binary_trace_h_size);
-	}
+	return ebpf_load_file(fn);
+}
 
-	return NULL;
+/*
+ * load_file_no_cr -- This function loads 'virtual' file and strip copyright.
+ */
+char *
+load_file_no_cr(const char *const fn)
+{
+	static const char *const eofcr_sep = " */\n";
+	char *f = load_file(fn);
+
+	if (NULL == f)
+		return NULL;
+
+	if (NULL == strcasestr(f, "Copyright"))
+		return f;
+
+	char *new_f = strcasestr(f, eofcr_sep);
+	if (NULL == new_f)
+		return f;
+
+	new_f = strdup(new_f + strlen(eofcr_sep));
+	if (NULL == new_f)
+		return f;
+
+	free(f);
+	f = NULL;
+
+	return new_f;
+}
+
+/*
+ * load_pid_check_hook -- This function loads 'pid_check_hook'
+ */
+char *
+load_pid_check_hook(enum ff_mode ff_mode)
+{
+	switch (ff_mode) {
+	case E_FF_DISABLED:
+		return load_file_no_cr(ebpf_pid_check_ff_disabled_hook_file);
+
+	case E_FF_FULL:
+		return load_file_no_cr(ebpf_pid_check_ff_full_hook_file);
+
+	case E_FF_FAST:
+		return load_file_no_cr(ebpf_pid_check_ff_fast_hook_file);
+
+	default:
+		return NULL;
+	}
 }
 
 /*

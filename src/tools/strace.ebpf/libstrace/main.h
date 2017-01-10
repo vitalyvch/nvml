@@ -42,12 +42,29 @@
 #include <stdbool.h>
 
 enum out_fmt {
-	EOF_HEX = 0,
+	/* Write syscall's data packets "as is" */
+	EOF_HEX_RAW = 0,
+	/* Assemble multi-packet syscall data into single line */
+	EOF_HEX_SL,
 	EOF_BIN,
 	EOF_STRACE,
 
 
 	EOF_QTY, /* Should be last */
+};
+
+/* follow fork modes */
+enum ff_mode {
+	E_FF_DISABLED = 0,
+	E_FF_FULL,
+	E_FF_FAST,
+};
+
+/* filenames reading modes */
+enum fnr_mode {
+	E_FNR_FAST = 0,
+	E_FNR_NAME_MAX,
+	E_FNR_FULL,
 };
 
 /*
@@ -81,6 +98,15 @@ struct cl_options {
 	 *    command line options
 	 */
 	unsigned pr_arr_max;
+	/* follow-fork mode */
+	enum ff_mode ff_mode;
+	/*
+	 * Split logs in per-pid way or, may be, in per pid_tid way,
+	 * like strace does.
+	 */
+	bool ff_separate_logs;
+	/* filenames reading mode */
+	enum fnr_mode fnr_mode;
 };
 
 extern struct cl_options args;

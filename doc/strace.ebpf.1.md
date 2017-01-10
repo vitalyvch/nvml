@@ -38,6 +38,9 @@ date: pmem Tools version 1.0.2
 [NAME](#name)<br />
 [SYNOPSIS](#synopsis)<br />
 [DESCRIPTION](#description)<br />
+[FEATURES](#features)<br />
+[LIMITATIONS](#limitations)<br />
+[SYSTEM REQUIREMENTS](#system requirements)<br />
 [OPTIONS](#options)<br />
 [CONFIGURATION](#configuration)<br />
 [FILES](#files)<br />
@@ -63,72 +66,178 @@ $ strace.ebpf [options] [command [arg ...]]
 strace.ebpf is a limited functional strace equivalent for Linux but based on
 eBPF and KProbe technologies and libbcc library.
 
-+ Pros:
+# FEATURES #
 
-    - Used combination of technologies allow tool to be about one order faster
-      than regular system strace.
-    - This tool consume much less amount of CPU resource
-    - Output of this tool is designed to be suitable for processing with
-      classical tools and technologies, like awk.
-    - Could trace syscalls system-wide.
-	- Could trace init (process with 'pid == 1')
+ - Used combination of technologies allow tool to be about one order faster
+   than regular system strace.
+ - This tool consume much less amount of CPU resource
+ - Output of this tool is designed to be suitable for processing with
+   classical tools and technologies, like awk.
+ - Could trace syscalls system-wide.
+ - Could trace init (process with 'pid == 1'). Finally we have a proper
+   tool for debugging systemd ;-)
 
-+ Cons:
+# LIMITATIONS #
 
-    - Limited functionality
-    - Slow attaching and detaching
-    - Asynchronity. If user will not provide enough system resources for
-      performance tool will skip some calls. Tool does not assume to try
-      any work-around behind the scene.
-    - Depend on modern kernel features
-    - Limited possibility to run few instances simultaneously.
+ - Limited functionality
+ - Slow attaching and detaching
+ - Asynchronity. If user will not provide enough system resources for
+   performance tool will skip some calls. Tool does not assume to try
+   any work-around behind the scene.
+ - Depend on modern kernel features
+ - Limited possibility to run few instances simultaneously.
+   Details:
+    - https://github.com/iovisor/bcc/pull/918
+    - https://github.com/iovisor/bcc/issues/872
+ - Underlaing eBPF technology still is in active development. So we should
+   expect hangs and crashes more often as for regular strace, especially on
+   low-res systems.
+ - Truncating of very long filenames (longer then ~NAME_MAX bytes) to ~NAME_MAX.
+   Details:
+    - https://github.com/iovisor/bcc/issues/900
 
 
 WARNING: System-wide tracing can fill out your disk really fast.
 
 
+# SYSTEM REQUIREMENTS #
+
+ - libbcc
+ - Linux Kernel 4.4 or later (for Perf Event Circular Buffer)
+ - CAP_SYS_ADMIN capability for bpf() syscall
+ - mounted tracefs
+
 # OPTIONS #
+
+#Output format:
+
+`-o, --output <file>`
+
+filename
 
 `-t, --timestamp`
 
 include timestamp in output
 
+`-l, --format <fmt>`
+
+output logs format. Possible values:
+
+	'bin', 'binary', 'hex', 'hex_raw', 'hex_sl', 'strace', 'list' & 'help'.
+
+ - 'bin'/'binary' file format is the fastest one and is described in generated
+   trace.h. If current directory is not writable generating of trace.h
+   is skipped.
+
+ - 'hex'/'hex_raw' the fastest text log format. Records for some calls could be
+   splitted in few lines if used with '--filenames name_max' or like.
+
+ - 'hex_sl' one-line text log format. Assembling syscall's record into one line
+   by this tool will improove readability and simplify processing but could
+   slowdown this tool if used with '--filenames name_max' or '--filenames full'.
+   Implementation is not finished and is postponned.
+
+ - 'strace' is going to emulate usual strace output, but is the slowest one.
+   Assume assembling syscall's packets into one line.
+   Implementation is not finished and is postponned.
+
+Default: 'hex'
+
+`-K, --hex-separator <sep>`
+
+set field separator for hex logs. Default is '\t'.
+
+
+#Filtering:
 `-X, --failed`
 
 only show failed syscalls
 
-`-d, --debug`
-
-enable debug output
-
-`-p, --pid`
-
-this PID only. Command arg should be missing
-
-`-o, --output`
-
-filename
-
-`-l, --format`
-
-output logs format. Possible values:
-
-	'bin', 'binary', 'hex', 'strace', 'list' & 'help'.
-
-'bin'/'binary' file format is described in generated trace.h. If current
-directory is not writable generating is skipped.
-
-Default: 'hex'
-
-`-K, --hex-separator`
-
-set field separator for hex logs. Default is '\t'.
-
-`-e, --expr`
+`-e, --expr <expr>`
 
 expression, 'help' or 'list' for supported list.
 
 Default: trace=kp-kern-all.
+
+#Tracing:
+
+`-f, --full-follow-fork`
+
+Follow new processes created with fork()/vfork()/clone()
+syscall as regular strace does.
+
+`-ff, --full-follow-fork=f`
+
+Same as above, but put logs for each process in
+separate file with name \<file\>\.pid
+Implementation is not finished and is postponned.
+
+`-fff, --full-follow-fork=ff`
+
+Same as above, but put logs for each thread in
+separate file with name \<file\>\.tid.pid
+Implementation is not finished and is postponned.
+
+`-F, --fast-follow-fork`
+
+Follow new processes created with fork()/vfork()/clone()
+in fast, but limited, way using kernel 4.8 feature
+bpf_get_current_task(). This mode assume "level 1"
+tracing only: no grandchildren or other descendants
+will be traced.
+Implementation is not debugged and is postponned.
+
+`-FF, --fast-follow-fork=F`
+
+Same as above, but put logs for each process in
+separate file with name \<file\>\.pid
+Implementation is not finished and is postponned.
+
+`-FFF, --fast-follow-fork=FF`
+
+Same as above, but put logs for each process in
+separate file with name \<file\>\.tid.pid
+Implementation is not finished and is postponned.
+
+`-n, --filenames <mode>`
+
+eBPF virtual machine is extremely limited in available memory. Also currently
+there are no ways to calculate a len of strings. For this reason we introduced
+four modes of fetching file-names:
+ - 'fast' - everything what we could not fit into single packet will be
+   truncated.
+ - 'name_max' - fetch-up NAME_MAX bytes of name. Every name will be sent
+   via separate packet. Processing of that packets is controlled by output
+   log format.
+ - 'number' - fetch-up 'number * NAME_MAX' bytes of name. Every part of name
+   will be sent via separate packet. Processing of that packets is controlled
+   by output log format. Minimal accepted value: 1.
+   Implementation is not finished and is postponned.
+ - 'full' - will be implemented as soon as this issue will be fixed:
+   https://github.com/iovisor/bcc/issues/900
+
+Default: fast
+
+#Startup:
+`-p, --pid <pid>`
+
+trace this PID only. In current version `command` arg should be missing.
+Press (CTRL-C) to send interrupt signal to exit.
+Note
+```
+-p "`pidof PROG`"
+```
+syntax.
+
+
+#Miscellaneous:
+`-d, --debug`
+
+enable debug output
+
+`-h, --help`
+
+print help
 
 `-L, --list`
 
@@ -140,13 +249,9 @@ Print a list of all traceable low-level funcs of the running kernel.
 
 WARNING: really long. ~45000 functions for 4.4 kernel.
 
-`-b, --builtin-list`
+`-B, --builtin-list`
 
 Print a list of all syscalls known by glibc.
-
-`-h, --help`
-
-print help
 
 
 # CONFIGURATION #
@@ -156,8 +261,8 @@ print help
 1. You should provide permissions to access tracefs for final user
    according to your distro documentation. Some of possible options:
 
-   - In /etc/fstab add mode=755 option for debugfs AND tracefs.
-   - Use sudo
+    - In /etc/fstab add mode=755 option for debugfs AND tracefs.
+    - Use sudo
 
 2. It's good to put this command in init scripts such as local.rc:
 
@@ -172,6 +277,10 @@ print help
 
 4. Kernel headers for running kernel should be installed.
 
+5. CAP_SYS_ADMIN capability should be provided for user for bpf() syscall.
+   In the newest kernel (4.10 ?) there is alternate option, but your should
+   found it youself.
+
 
 # FILES #
 
@@ -180,13 +289,13 @@ supporting more newer eBPF VM features in newer kernels. Also if current
 directory does not contain trace.h strace.ebpf on first start saves built-in
 trace.h into current directory. Saved built-in describe binary log's format.
 
--	trace.h
--	trace_head.c
--	trace_tp_all.c
--	trace_kern_tmpl.c
--	trace_libc_tmpl.c
--	trace_file_tmpl.c
--	trace_fileat_tmpl.c
+ - trace.h
+ - trace_head.c
+ - trace_tp_all.c
+ - trace_kern_tmpl.c
+ - trace_libc_tmpl.c
+ - trace_file_tmpl.c
+ - trace_fileat_tmpl.c
 
 
 # EXAMPLES #

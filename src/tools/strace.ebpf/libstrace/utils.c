@@ -47,6 +47,8 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 
+#include <ebpf/ebpf_file_set.h>
+
 #include "main.h"
 #include "utils.h"
 #include "generate_ebpf.h"
@@ -128,28 +130,77 @@ load_file(const char *const fn)
 	/* fallback to embedded ones */
 	if (0 == strcmp(ebpf_head_file, fn)) {
 		return strndup(_binary_trace_head_c_start,
-				(size_t)_binary_trace_head_c_size);
+			(size_t)_binary_trace_head_c_size);
 	} else if (0 == strcmp(ebpf_libc_tmpl_file, fn)) {
 		return strndup(_binary_trace_libc_tmpl_c_start,
-				(size_t)_binary_trace_libc_tmpl_c_size);
+			(size_t)_binary_trace_libc_tmpl_c_size);
 	} else if (0 == strcmp(ebpf_file_tmpl_file, fn)) {
 		return strndup(_binary_trace_file_tmpl_c_start,
-				(size_t)_binary_trace_file_tmpl_c_size);
+			(size_t)_binary_trace_file_tmpl_c_size);
 	} else if (0 == strcmp(ebpf_fileat_tmpl_file, fn)) {
 		return strndup(_binary_trace_fileat_tmpl_c_start,
-				(size_t)_binary_trace_fileat_tmpl_c_size);
+			(size_t)_binary_trace_fileat_tmpl_c_size);
 	} else if (0 == strcmp(ebpf_kern_tmpl_file, fn)) {
 		return strndup(_binary_trace_kern_tmpl_c_start,
-				(size_t)_binary_trace_kern_tmpl_c_size);
+			(size_t)_binary_trace_kern_tmpl_c_size);
 	} else if (0 == strcmp(ebpf_tp_all_file, fn)) {
 		return strndup(_binary_trace_tp_all_c_start,
-				(size_t)_binary_trace_tp_all_c_size);
+			(size_t)_binary_trace_tp_all_c_size);
 	} else if (0 == strcmp(ebpf_trace_h_file, fn)) {
 		return strndup(_binary_trace_h_start,
-				(size_t)_binary_trace_h_size);
+			(size_t)_binary_trace_h_size);
+	} else if (0 == strcmp(ebpf_fs_path_1_2_arg_tmpl_file, fn)) {
+		return strndup(_binary_trace_fs_path_1_2_arg_tmpl_c_start,
+			(size_t)_binary_trace_fs_path_1_2_arg_tmpl_c_size);
+	} else if (0 == strcmp(ebpf_fs_path_1_3_arg_tmpl_file, fn)) {
+		return strndup(_binary_trace_fs_path_1_3_arg_tmpl_c_start,
+			(size_t)_binary_trace_fs_path_1_3_arg_tmpl_c_size);
+	} else if (0 == strcmp(ebpf_fs_path_2_4_arg_tmpl_file, fn)) {
+		return strndup(_binary_trace_fs_path_2_4_arg_tmpl_c_start,
+			(size_t)_binary_trace_fs_path_2_4_arg_tmpl_c_size);
+	} else if (0 == strcmp(ebpf_fork_tmpl_file, fn)) {
+		return strndup(_binary_trace_fork_tmpl_c_start,
+			(size_t)_binary_trace_fork_tmpl_c_size);
+	} else if (0 == strcmp(ebpf_vfork_tmpl_file, fn)) {
+		return strndup(_binary_trace_vfork_tmpl_c_start,
+			(size_t)_binary_trace_vfork_tmpl_c_size);
+	} else if (0 == strcmp(ebpf_clone_tmpl_file, fn)) {
+		return strndup(_binary_trace_clone_tmpl_c_start,
+			(size_t)_binary_trace_clone_tmpl_c_size);
+	} else if (0 == strcmp(ebpf_pid_check_ff_disabled_hook_file, fn)) {
+		return strndup(_binary_pid_check_ff_disabled_hook_c_start,
+			(size_t)_binary_pid_check_ff_disabled_hook_c_size);
+	} else if (0 == strcmp(ebpf_pid_check_ff_full_hook_file, fn)) {
+		return strndup(_binary_pid_check_ff_full_hook_c_start,
+			(size_t)_binary_pid_check_ff_full_hook_c_size);
+	} else if (0 == strcmp(ebpf_pid_check_ff_fast_hook_file, fn)) {
+		return strndup(_binary_pid_check_ff_fast_hook_c_start,
+			(size_t)_binary_pid_check_ff_fast_hook_c_size);
 	}
 
+
 	return NULL;
+}
+
+/*
+ * load_pid_check_hook -- This function loads 'pid_check_hook'
+ */
+char *
+load_pid_check_hook(enum ff_mode ff_mode)
+{
+	switch(ff_mode) {
+	case E_FF_DISABLED:
+		return load_file(ebpf_pid_check_ff_disabled_hook_file);
+
+	case E_FF_FULL:
+		return load_file(ebpf_pid_check_ff_full_hook_file);
+
+	case E_FF_FAST:
+		return load_file(ebpf_pid_check_ff_fast_hook_file);
+
+	default:
+		return NULL;
+	}
 }
 
 /*

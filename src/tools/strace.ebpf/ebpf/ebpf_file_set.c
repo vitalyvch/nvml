@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017, Intel Corporation
+ * Copyright 2017, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,14 +31,30 @@
  */
 
 /*
- * generate_ebpf.h -- generate_ebpf() function
+ * ebpf_file_set.c -- A set of ebpf files
  */
 
-#ifndef GENERATE_EBPF_H
-#define GENERATE_EBPF_H
+#include "ebpf_file_set.h"
 
+const char *ebpf_trace_h_file = "trace.h";
 
-char *generate_ebpf(void);
+const char *ebpf_head_file = "trace_head.c";
+const char *ebpf_libc_tmpl_file = "trace_libc_tmpl.c";
+const char *ebpf_file_tmpl_file = "trace_file_tmpl.c";
+const char *ebpf_fileat_tmpl_file = "trace_fileat_tmpl.c";
+const char *ebpf_fs_path_1_2_arg_tmpl_file = "trace_fs_path_1_2_arg_tmpl.c";
+const char *ebpf_fs_path_1_3_arg_tmpl_file = "trace_fs_path_1_3_arg_tmpl.c";
+const char *ebpf_fs_path_2_4_arg_tmpl_file = "trace_fs_path_2_4_arg_tmpl.c";
+const char *ebpf_fork_tmpl_file = "trace_fork_tmpl.c";
+const char *ebpf_vfork_tmpl_file = "trace_vfork_tmpl.c";
+const char *ebpf_clone_tmpl_file = "trace_clone_tmpl.c";
+const char *ebpf_kern_tmpl_file = "trace_kern_tmpl.c";
 
+const char *ebpf_tp_all_file = "trace_tp_all.c";
 
-#endif
+const char *ebpf_pid_check_ff_disabled_hook_file =
+		"pid_check_ff_disabled_hook.c";
+const char *ebpf_pid_check_ff_fast_hook_file =
+		"pid_check_ff_fast_hook.c";
+const char *ebpf_pid_check_ff_full_hook_file =
+		"pid_check_ff_full_hook.c";

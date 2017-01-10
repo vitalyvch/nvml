@@ -1,0 +1,51 @@
+
+Run the specified command and trace syscalls.
+
+USAGE:
+    strace.ebpf [-h] [-t] [-X] [-p PID] [command [arg ...]]
+
+    -t, --timestamp     include timestamp in output
+    -X, --failed        only show failed syscalls
+    -d, --debug         enable debug output
+    -p, --pid    <pid>  trace this PID only. Command arg should be missing
+    -o, --output <file> filename
+    -l, --format <fmt>  output logs format. Possible values:
+                            'bin', 'binary', 'hex', 'strace', 'list' & 'help'.
+                            'bin'/'binary' file format is described in trace.h.
+                        Default: 'hex'
+    -K, --hex-separator <sep>
+                        set field separator for hex logs. Default is '\t'.
+    -e, --expr   <expr> expression, 'help' or 'list' for supported list.
+                        Default: trace=kp-kern-all.
+    -L, --list          Print a list of all traceable syscalls
+                        of the running kernel.
+    -R, --ll-list       Print a list of all traceable low-level funcs
+                        of the running kernel.
+                        WARNING: really long. ~45000 functions.
+    -B, --builtin-list
+                        Print a list of all syscalls known by glibc.
+    -h, --help          print help
+    -f, --full-follow-fork
+                        Follow new processes created with fork()/vfork()/clone()
+                        syscall as regular strace does.
+    -ff, --full-follow-fork=f
+                        Same as above, but put logs for each process in
+                        separate file with name <file>.pid
+    -F, --fast-follow-fork
+                        Follow new processes created with fork()/vfork()/clone()
+                        in fast, but limited, way using kernel 4.8 feature
+                        bpf_get_current_task(). This mode assume "level 1"
+                        tracing only: no grandchildren or other descendants
+                        will be traced.
+    -FF, --fast-follow-fork=F
+                        Same as above, but put logs for each process in
+                        separate file with name <file>.pid
+
+examples:
+    ./strace.ebpf -l hex           # trace all syscalls in the system
+    ./strace.ebpf -l hex ls        # trace syscalls of ls command
+    ./strace.ebpf -l hex -t ls     # include timestamps
+    ./strace.ebpf -l hex -X ls     # only show failed syscalls
+    ./strace.ebpf -l hex -p 342    # only trace PID 342
+
+WARNING: System-wide tracing can fillout your disk really fast.

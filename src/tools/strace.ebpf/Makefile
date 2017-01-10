@@ -72,7 +72,20 @@ nondebug/libstrace.a-cstyle:
 .PHONY: nondebug/libebpf.a-clobber nondebug/libstrace.a-clobber
 .PHONY: nondebug/libebpf.a-cstyle nondebug/libstrace.a-cstyle
 
+
+# .txt sources
+TXT_SRCS = \
+	help_text.txt \
+	trace_list_text.txt \
+
+
+TXT_OBJS = $(addsuffix .o,$(TXT_SRCS))
+
+%.txt.o: %.txt Makefile
+	$(LD) -r -b binary -o $@ $<
+
 OBJS = main.o \
+	$(TXT_OBJS)
 
 
 CFLAGS += $(shell $(PKG_CONFIG) --cflags libbcc)
@@ -91,7 +104,6 @@ endif
 
 CFLAGS += -I compat
 CFLAGS += -I libstrace
-CFLAGS += -I ebpf
 
 LDFLAGS += -g -Wextra
 

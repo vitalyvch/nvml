@@ -66,7 +66,13 @@ int
 kretprobe__SYSCALL_NAME(struct pt_regs *ctx)
 {
 	struct first_step_t *fsp;
-	struct ev_dt_t ev = {};
+
+	enum { _pad_size = offsetof(struct ev_dt_t, str) + NAME_MAX };
+
+	union {
+		struct ev_dt_t ev = {};
+		char _pad[_pad_size];
+	}
 
 	u64 cur_nsec = bpf_ktime_get_ns();
 
@@ -75,6 +81,7 @@ kretprobe__SYSCALL_NAME(struct pt_regs *ctx)
 	if (fsp == 0)
 		return 0;
 
+	ev.type = 1; /* 1 additional packets */
 	ev.sc_id = SYSCALL_NR; /* SysCall ID */
 	ev.arg_1 = fsp->arg_1;
 	ev.arg_2 = fsp->arg_2;
@@ -86,11 +93,14 @@ kretprobe__SYSCALL_NAME(struct pt_regs *ctx)
 	ev.start_ts_nsec = fsp->start_ts_nsec;
 	ev.finish_ts_nsec = cur_nsec;
 	ev.ret = PT_REGS_RC(ctx);
-	bpf_probe_read(&ev.fl_nm, sizeof(ev.fl_nm), (void *)fsp->arg_1);
+	/* XXX enum ??? */
+	// const size_t ev_size = offsetof(struct ev_dt_t, sc_name);
+	// events.perf_submit(ctx, &ev, ev_size);
+	events.perf_submit(ctx, &ev, offsetof(struct ev_dt_t, sc_name));
 
-	const size_t ev_size = offsetof(struct ev_dt_t, fl_nm) +
-		sizeof(ev.fl_nm);
-	events.perf_submit(ctx, &ev, ev_size);
+	ev.type = 11; /* first additional packet */
+	bpf_probe_read(&ev.str, NAME_MAX, (void *)fsp->arg_1);
+	events.perf_submit(ctx, &ev, _pad_size);
 
 	tmp_i.delete(&pid_tid);
 

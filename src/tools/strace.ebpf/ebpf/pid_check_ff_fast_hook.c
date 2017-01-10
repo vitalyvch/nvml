@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017, Intel Corporation
+ * Copyright 2017, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,14 +31,24 @@
  */
 
 /*
- * generate_ebpf.h -- generate_ebpf() function
+ * pid_check_ff_fast_hook.c -- Pid check hook for fast-follow-fork mode.
  */
 
-#ifndef GENERATE_EBPF_H
-#define GENERATE_EBPF_H
+{
+	bool t = false;
 
+	if ((pid_tid >> 32) == TRACED_PID) {
+		t |= true;
+	} else {
+		struct task_struct *task;
 
-char *generate_ebpf(void);
+		task = (struct task_struct *)bpf_get_current_task();
 
+		if (task->real_parent->pid == TRACED_PID)
+			t |= true;
+	}
 
-#endif
+	if (!t) {
+		return 0;
+	}
+}

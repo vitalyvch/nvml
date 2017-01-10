@@ -45,6 +45,16 @@ BIN_SRCS = \
 	trace_libc_tmpl.c \
 	trace_file_tmpl.c \
 	trace_fileat_tmpl.c \
+	trace_clone_tmpl.c \
+	trace_fork_tmpl.c \
+	trace_vfork_tmpl.c \
+	trace_fs_path_1_2_arg_tmpl.c \
+	trace_fs_path_1_3_arg_tmpl.c \
+	trace_fs_path_2_4_arg_tmpl.c \
+	pid_check_ff_disabled_hook.c \
+	pid_check_ff_fast_hook.c \
+	pid_check_ff_full_hook.c \
+
 
 
 BIN_OBJS = $(addsuffix .o,$(BIN_SRCS))
@@ -55,7 +65,10 @@ BIN_OBJS = $(addsuffix .o,$(BIN_SRCS))
 %.h.o: %.h Makefile
 	$(LD) -r -b binary -o $@ $<
 
-OBJS = $(BIN_OBJS)
+%.o: %.c %.h Makefile
+
+OBJS = $(BIN_OBJS) \
+	ebpf_file_set.o \
 
 
 include ../../../Makefile.inc

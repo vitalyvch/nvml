@@ -54,8 +54,11 @@
 #include <bcc/bpf_common.h>
 #include <bcc/perf_reader.h>
 
+#include <ebpf/ebpf_file_set.h>
+
 #include "strace_bpf.h"
 
+#include "txt.h"
 #include "main.h"
 #include "utils.h"
 #include "attach_probes.h"
@@ -63,78 +66,6 @@
 #include "generate_ebpf.h"
 #include "print_event_cb.h"
 
-static const char help_text[] = "\
-\n\
-Run the specified command and trace syscalls.\n\
-\n\
-USAGE:\n\
-\tstrace.ebpf [-h] [-t] [-X] [-p PID] [command [arg ...]]\n\
-\n\
-\t-t, --timestamp include timestamp in output\n\
-\t-X, --failed    only show failed syscalls\n\
-\t-d, --debug     enable debug output\n\
-\t-p, --pid       trace this PID only. Command arg should be missing\n\
-\t-o, --output    filename\n\
-\t-l, --format    output logs format. Possible values:\n\
-\t                    'bin', 'binary', 'hex', 'strace', 'list' & 'help'.\n\
-\t                    'bin'/'binary' file format is described in trace.h.\n\
-\t                Default: 'hex'\n\
-\t-K, --hex-separator\n\
-\t                set field separator for hex logs. Default is '\\t'.\n\
-\t-e, --expr      expression, 'help' or 'list' for supported list.\n\
-\t                Default: trace=kp-kern-all.\n\
-\t-L, --list      Print a list of all traceable syscalls\n\
-\t                of the running kernel.\n\
-\t-R, --ll-list   Print a list of all traceable low-level funcs\n\
-\t                of the running kernel.\n\
-\t                WARNING: really long. ~45000 functions.\n\
-\t-b, --builtin-list\n\
-\t                Print a list of all syscalls known by glibc.\n\
-\t-h, --help      print help\n\
-\n\
-examples:\n\
-    ./strace.ebpf -l hex           # trace all syscalls in the system\n\
-    ./strace.ebpf -l hex ls        # trace syscalls of ls command\n\
-    ./strace.ebpf -l hex -t ls     # include timestamps\n\
-    ./strace.ebpf -l hex -X ls     # only show failed syscalls\n\
-    ./strace.ebpf -l hex -p 342    # only trace PID 342\n\
-\n\
-WARNING: System-wide tracing can fillout your disk really fast.\n\
-";
-
-static const char trace_list_text[] = "\
-List of supported sets:\n"
-	" * Help:\n"
-	"\t - 'help', 'list'    This list.\n"
-	"\n"
-	" * Intercepting using KProbe:\n"
-	"\t - 'kp-fileio'          FileIO - any syscall related to file IO\n"
-	"\t - 'kp-file'            SCs with path in args\n"
-	"\t - 'kp-desc'            SCs with fdesd in args\n"
-	"\t - 'kp-kern-all'        All syscalls provided by kernel.\n"
-	"\t -                      A bit slower.\n"
-	"\t - 'kp-libc-all'        All syscalls provided by glibc.\n"
-	"\t                        This list is 36%% shorter\n"
-	"\t                        than previous and loads faster.\n"
-	"\t - 'kp-sc_glob:*'       Choose SCs by glob pattern, such as 'set*'\n"
-	"\t - 'kp-sc_re:.*'        Choose SCs by re pattern, such as 'set.*'\n"
-	"\t - 'kp-raw_glob:*'      Choose low-level funcs by glob pattern,\n"
-	"\t                        such as 'raw_glob:ext4_*'\n"
-	"\t - 'kp-raw_re:.*'       Choose low-level funcs by re pattern,\n"
-	"\t                        such as 'raw_glob:ext4_*'\n"
-	"\t - 'kp-XXXX'            Choose exact single SC by name,\n"
-	"\t                        such as 'open'\n"
-	"\t - 'kp-raw:XXXX'        Choose exact single low-level func by\n"
-	"\t                        name, such as 'raw:ext4_mkdir'\n"
-	"\n"
-	" * Intercepting using TracePoints:\n"
-	"   Currently malfunctions because of this bug:\n"
-	"   https://github.com/iovisor/bcc/issues/748\n"
-	"\t - 'tp-all'             All syscalls provided by kernel.\n"
-	"\t                        This option starts many times faster than\n"
-	"\t                        corresponding kprobe ones, but can eat\n"
-	"\t                        more of CPU resource.\n"
-	"\n";
 
 /*
  * fprint_help -- This function prints help message in stream.
@@ -144,7 +75,9 @@ fprint_help(FILE *f)
 {
 	size_t fw_res;
 
-	fw_res = fwrite(help_text, sizeof(help_text) - 1, 1, f);
+	fw_res = fwrite(_binary_help_text_txt_start,
+			(size_t)_binary_help_text_txt_size,
+			1, f);
 
 	assert(fw_res > 0);
 }
@@ -158,7 +91,9 @@ fprint_trace_list(FILE *f)
 {
 	size_t fw_res;
 
-	fw_res = fwrite(trace_list_text, sizeof(trace_list_text) - 1, 1, f);
+	fw_res = fwrite(_binary_trace_list_text_txt_start,
+			(size_t)_binary_trace_list_text_txt_size,
+			1, f);
 
 	assert(fw_res > 0);
 }
@@ -209,7 +144,10 @@ main(int argc, char *argv[])
 			{"debug",		no_argument,	   0, 'd'},
 			{"list",		no_argument,	   0, 'L'},
 			{"ll-list",		no_argument,	   0, 'R'},
-			{"builtin-list", no_argument,	   0, 'b'},
+			{"builtin-list", no_argument,	   0, 'B'},
+
+			{"fast-follow-fork", optional_argument,	   0, 'F'},
+			{"full-follow-fork", optional_argument,	   0, 'f'},
 
 			{"pid",		   required_argument, 0, 'p'},
 			{"format",		required_argument, 0, 'l'},
@@ -219,7 +157,7 @@ main(int argc, char *argv[])
 			{0,	   0,	 0,  0 }
 		};
 
-		c = getopt_long(argc, argv, "+tXhdp:o:l:K:e:LRb",
+		c = getopt_long(argc, argv, "+tXhdp:o:l:K:e:LRBf::F::",
 				long_options, &option_index);
 
 		if (c == -1)
@@ -316,7 +254,7 @@ main(int argc, char *argv[])
 			get_sc_list(stdout, NULL);
 			exit(EXIT_SUCCESS);
 
-		case 'b':
+		case 'B':
 			for (unsigned i = 0; i < SC_TBL_SIZE; i++)
 				if (NULL != syscall_array[i].handler_name)
 					fprintf(stdout,
@@ -325,6 +263,20 @@ main(int argc, char *argv[])
 						syscall_array[i].num_name,
 						syscall_array[i].handler_name);
 			exit(EXIT_SUCCESS);
+
+		case 'f':
+			args.ff_mode = E_FF_FULL;
+			if (optarg) {
+				args.ff_separate_logs = true;
+			}
+			break;
+
+		case 'F':
+			args.ff_mode = E_FF_FAST;
+			if (optarg) {
+				args.ff_separate_logs = true;
+			}
+			break;
 
 		case ':':
 			fprintf(stderr, "ERROR: "
@@ -409,15 +361,23 @@ main(int argc, char *argv[])
 	char *bpf_str = generate_ebpf();
 
 	if (0 < args.pid) {
-		char str[128];
+		char str[64];
+		int snp_res;
+		char *pid_check_hook;
 
-		int snp_res = snprintf(str, sizeof(str),
-				"if ((pid_tid >> 32) != %d) { return 0; }",
-				args.pid);
+		snp_res = snprintf(str, sizeof(str), "%d", 	args.pid);
 
 		assert(snp_res > 0);
 
-		str_replace_all(&bpf_str, "PID_CHECK_HOOK", str);
+		pid_check_hook = load_pid_check_hook(args.ff_mode);
+
+		assert(NULL != pid_check_hook);
+
+		str_replace_all(&pid_check_hook, "TRACED_PID", str);
+
+		str_replace_all(&bpf_str, "PID_CHECK_HOOK", pid_check_hook);
+
+		free(pid_check_hook);
 
 		if (!args.command) {
 			if (kill(args.pid, 0) == -1) {

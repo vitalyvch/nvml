@@ -40,7 +40,10 @@
 #include <stdio.h>
 #include <signal.h>
 
+#include "main.h"
+
 char *load_file(const char *fn);
+char *load_pid_check_hook(enum ff_mode ff_mode);
 char *load_file_from_disk(const char *const fn);
 void check_bpf_jit_status(FILE *file);
 

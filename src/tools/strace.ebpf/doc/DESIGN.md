@@ -41,26 +41,30 @@ System requirements
 Pros
 -----
 
-    - Used combination of technologies allow tool to be about one order faster
-      than regular system strace.
-    - This tool consume much less amount of CPU resource
-    - Output of this tool is designed to be suitable for processing with
-      classical tools and technologies, like awk.
-    - Could trace syscalls system-wide.
-	- Could trace init (process with 'pid == 1')
+ - Used combination of technologies allow tool to be about one order faster
+   than regular system strace.
+ - This tool consume much less amount of CPU resource
+ - Output of this tool is designed to be suitable for processing with
+   classical tools and technologies, like awk.
+ - Could trace syscalls system-wide.
+ - Could trace init (process with 'pid == 1'). Finally we have a proper
+   tool for debugging systemd ;-)
 
 ******
 
 Cons
 -----
 
-    - Limited functionality
-    - Slow attaching and detaching
-    - Asynchronity. If user will not provide enough system resources for
-      performance tool will skip some calls. Tool does not assume to try
-      any work-around behind the scene.
-    - Depend on modern kernel features
-    - Limited possibility to run few instances simultaneously.
+ - Limited functionality
+ - Slow attaching and detaching
+ - Asynchronity. If user will not provide enough system resources for
+   performance tool will skip some calls. Tool does not assume to try
+   any work-around behind the scene.
+ - Depend on modern kernel features
+ - Limited possibility to run few instances simultaneously.
+ - Underlaing eBPF technology still is in active development. So we should
+   expect hangs and crashes more often as for regular strace, especially on
+   low-res systems.
 
 ******
 

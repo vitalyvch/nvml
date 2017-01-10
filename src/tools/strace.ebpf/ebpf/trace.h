@@ -47,61 +47,82 @@ enum { E_SC_NAME_SIZE = 32 };
 
 struct ev_dt_t {
 	/*
-	 * the value equals to -1 mean "header"
-	 * the value equals to -2 mean that syscall's num is unknown for glibc
-	 *    and the field sc_name should be used to figuring out syscall.
+	 * This fild is set for glibc-defined syscalls and describe
+	 *    a series of packets for every syscall.
+	 *
+	 * It is needed because we are limited with stack size of
+	 *    512 bytes and used part of stack is initilaized with zeros
+	 *    on every call of syscall handlers.
+	 *
+	 * the value equals to -1 means "header"
+	 *
+	 * the value equals to 0 means that there will be no additional
+	 *    packets sent for this syscall.
+	 * the value equals to 1 means that this first packet and there
+	 *    will be sent 1 more additional packet.
+	 * the value equals to 2 means that this first packet and there
+	 *    will be sent 2 more additional packet.
+	 * the value equals to 3 means that this first packet and there
+	 *    will be sent 3 more additional packet.
+	 *
+	 * the value equals to 11 means that this first additional packet
+	 * the value equals to 12 means that this second additional packet
+	 * the value equals to 13 means that this third additional packet
+	 *
+	 * Content of additional packets is defined by syscall number in
+	 *    first packet. There are no additional packets for "sc_id == -2"
 	 */
-	s64 sc_id;
+	s64 packet_type;
 
-	u64 pid_tid;
+	/*
+	 * Syscall's signature. All packets with same signature belongs to same
+	 *    call of same syscall. We need two timestamps here, because we
+	 *    can get nesting of syscalls from same pid_tid by calling syscall
+	 *    from signal handler, before syscall called from main context has
+	 *    returned.
+	 */
+	struct {
+		u64 pid_tid;
 
-	/* Timestamps */
-	u64 start_ts_nsec;
-	u64 finish_ts_nsec;
-	s64 ret;
+		/* Timestamps */
+		u64 start_ts_nsec;
+		u64 finish_ts_nsec;
+	};
 
 	union {
+		/* Body of first packet */
 		struct {
+			/*
+			 * the value equals to -2 means that syscall's num is
+			 *    unknown for glibc and the field sc_name should be
+			 *    used to figuring out syscall.
+			 */
+			s64 sc_id;
+
+			s64 ret;
+
 			s64 arg_1;
 			s64 arg_2;
 			s64 arg_3;
 			s64 arg_4;
 			s64 arg_5;
 			s64 arg_6;
-		};
-		struct {
-		} open;
 
-		struct {
-			s64 fd;
-		} close;
-
-		struct {
-			s64 fd;
-		} read;
-
-		struct {
-			s64 fd;
-		} write;
-	};
-
-	union {
-		char sc_name[E_SC_NAME_SIZE];
-
-		struct {
-			char fl_nm[NAME_MAX];
-			/*
-			 * Auxilary field. In dependence on syscall
-			 * could contain second filename, current process
-			 * name or something else.
-			 */
-			char aux[NAME_MAX];
+			/* should be last in this structure */
+			char sc_name[E_SC_NAME_SIZE];
 		};
 
+		/* Body of header */
 		struct {
-			s32 argc;
+			s64 argc;
 			char argv[];
 		} header;
+
+		/*
+		 * Body of string argument. The content and meaning of argument
+		 *    is defined by syscall's number in the first packet.
+		 */
+		char str[1];	/* NAME_MAX */
 	};
 };
 

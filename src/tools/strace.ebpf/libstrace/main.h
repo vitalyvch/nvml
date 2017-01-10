@@ -50,6 +50,13 @@ enum out_fmt {
 	EOF_QTY, /* Should be last */
 };
 
+/* follow fork modes */
+enum ff_mode {
+	E_FF_DISABLED = 0,
+	E_FF_FULL,
+	E_FF_FAST,
+};
+
 /*
  * This structure contains default and parsed values for command-line options
  */
@@ -81,6 +88,8 @@ struct cl_options {
 	 *    command line options
 	 */
 	unsigned pr_arr_max;
+	enum ff_mode ff_mode;
+	bool ff_separate_logs;
 };
 
 extern struct cl_options args;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017, Intel Corporation
+ * Copyright 2017, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,14 +31,11 @@
  */
 
 /*
- * generate_ebpf.h -- generate_ebpf() function
+ * pid_check_ff_disabled_hook.c -- Pid check hook for no-follow-fork mode.
  */
 
-#ifndef GENERATE_EBPF_H
-#define GENERATE_EBPF_H
-
-
-char *generate_ebpf(void);
-
-
-#endif
+{
+	if ((pid_tid >> 32) != TRACED_PID) {
+		return 0;
+	}
+}

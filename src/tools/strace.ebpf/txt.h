@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017, Intel Corporation
+ * Copyright 2017, Intel Corporation
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,14 +31,17 @@
  */
 
 /*
- * generate_ebpf.h -- generate_ebpf() function
+ * txt.h -- Text messages
  */
 
-#ifndef GENERATE_EBPF_H
-#define GENERATE_EBPF_H
 
+#ifndef TXT_H
+#define TXT_H
 
-char *generate_ebpf(void);
+extern const char _binary_help_text_txt_size[];
+extern const char _binary_help_text_txt_start[];
 
+extern const char _binary_trace_list_text_txt_size[];
+extern const char _binary_trace_list_text_txt_start[];
 
-#endif
+#endif /* TXT_H */

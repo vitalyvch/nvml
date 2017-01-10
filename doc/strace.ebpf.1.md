@@ -38,6 +38,9 @@ date: pmem Tools version 1.0.2
 [NAME](#name)<br />
 [SYNOPSIS](#synopsis)<br />
 [DESCRIPTION](#description)<br />
+[FEATURES](#features)<br />
+[LIMITATIONS](#limitations)<br />
+[SYSTEM REQUIREMENTS](#system requirements)<br />
 [OPTIONS](#options)<br />
 [CONFIGURATION](#configuration)<br />
 [FILES](#files)<br />
@@ -63,29 +66,40 @@ $ strace.ebpf [options] [command [arg ...]]
 strace.ebpf is a limited functional strace equivalent for Linux but based on
 eBPF and KProbe technologies and libbcc library.
 
-+ Pros:
+# FEATURES #
 
-    - Used combination of technologies allow tool to be about one order faster
-      than regular system strace.
-    - This tool consume much less amount of CPU resource
-    - Output of this tool is designed to be suitable for processing with
-      classical tools and technologies, like awk.
-    - Could trace syscalls system-wide.
-	- Could trace init (process with 'pid == 1')
+ - Used combination of technologies allow tool to be about one order faster
+   than regular system strace.
+ - This tool consume much less amount of CPU resource
+ - Output of this tool is designed to be suitable for processing with
+   classical tools and technologies, like awk.
+ - Could trace syscalls system-wide.
+ - Could trace init (process with 'pid == 1'). Finally we have a proper
+   tool for debugging systemd ;-)
 
-+ Cons:
+# LIMITATIONS #
 
-    - Limited functionality
-    - Slow attaching and detaching
-    - Asynchronity. If user will not provide enough system resources for
-      performance tool will skip some calls. Tool does not assume to try
-      any work-around behind the scene.
-    - Depend on modern kernel features
-    - Limited possibility to run few instances simultaneously.
+ - Limited functionality
+ - Slow attaching and detaching
+ - Asynchronity. If user will not provide enough system resources for
+   performance tool will skip some calls. Tool does not assume to try
+   any work-around behind the scene.
+ - Depend on modern kernel features
+ - Limited possibility to run few instances simultaneously.
+ - Underlaing eBPF technology still is in active development. So we should
+   expect hangs and crashes more often as for regular strace, especially on
+   low-res systems.
 
 
 WARNING: System-wide tracing can fill out your disk really fast.
 
+
+# SYSTEM REQUIREMENTS #
+
+ - libbcc
+ - Linux Kernel 4.4 or later (for Perf Event Circular Buffer)
+ - CAP_SYS_ADMIN capability for bpf() syscall
+ - mounted tracefs
 
 # OPTIONS #
 
@@ -101,15 +115,15 @@ only show failed syscalls
 
 enable debug output
 
-`-p, --pid`
+`-p, --pid <pid>`
 
 this PID only. Command arg should be missing
 
-`-o, --output`
+`-o, --output <file>`
 
 filename
 
-`-l, --format`
+`-l, --format <fmt>`
 
 output logs format. Possible values:
 
@@ -120,11 +134,11 @@ directory is not writable generating is skipped.
 
 Default: 'hex'
 
-`-K, --hex-separator`
+`-K, --hex-separator <sep>`
 
 set field separator for hex logs. Default is '\t'.
 
-`-e, --expr`
+`-e, --expr <expr>`
 
 expression, 'help' or 'list' for supported list.
 
@@ -140,13 +154,36 @@ Print a list of all traceable low-level funcs of the running kernel.
 
 WARNING: really long. ~45000 functions for 4.4 kernel.
 
-`-b, --builtin-list`
+`-B, --builtin-list`
 
 Print a list of all syscalls known by glibc.
 
 `-h, --help`
 
 print help
+
+`-f, --full-follow-fork`
+
+Follow new processes created with fork()/vfork()/clone()
+syscall as regular strace does.
+
+`-ff, --full-follow-fork=f`
+
+Same as above, but put logs for each process in
+separate file with name \<file\>\.pid
+
+`-F, --fast-follow-fork`
+
+Follow new processes created with fork()/vfork()/clone()
+in fast, but limited, way using kernel 4.8 feature
+bpf_get_current_task(). This mode assume "level 1"
+tracing only: no grandchildren or other descendants
+will be traced.
+
+`-FF, --fast-follow-fork=F`
+
+Same as above, but put logs for each process in
+separate file with name \<file\>\.pid
 
 
 # CONFIGURATION #
@@ -156,8 +193,8 @@ print help
 1. You should provide permissions to access tracefs for final user
    according to your distro documentation. Some of possible options:
 
-   - In /etc/fstab add mode=755 option for debugfs AND tracefs.
-   - Use sudo
+    - In /etc/fstab add mode=755 option for debugfs AND tracefs.
+    - Use sudo
 
 2. It's good to put this command in init scripts such as local.rc:
 
@@ -172,6 +209,10 @@ print help
 
 4. Kernel headers for running kernel should be installed.
 
+5. CAP_SYS_ADMIN capability should be provided for user for bpf() syscall.
+   In the newest kernel (4.10 ?) there is alternate option, but your should
+   found it youself.
+
 
 # FILES #
 
@@ -180,13 +221,13 @@ supporting more newer eBPF VM features in newer kernels. Also if current
 directory does not contain trace.h strace.ebpf on first start saves built-in
 trace.h into current directory. Saved built-in describe binary log's format.
 
--	trace.h
--	trace_head.c
--	trace_tp_all.c
--	trace_kern_tmpl.c
--	trace_libc_tmpl.c
--	trace_file_tmpl.c
--	trace_fileat_tmpl.c
+ - trace.h
+ - trace_head.c
+ - trace_tp_all.c
+ - trace_kern_tmpl.c
+ - trace_libc_tmpl.c
+ - trace_file_tmpl.c
+ - trace_fileat_tmpl.c
 
 
 # EXAMPLES #

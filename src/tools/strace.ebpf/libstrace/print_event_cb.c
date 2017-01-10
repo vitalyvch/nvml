@@ -57,7 +57,7 @@ typedef __u64 u64;
 
 enum { TASK_COMM_LEN = 16 };
 
-#include "trace.h"
+#include <ebpf/trace.h>
 
 static unsigned long long start_ts_nsec = 0;
 
@@ -127,7 +127,7 @@ print_event_strace(void *cb_cookie, void *data, int size)
 		fprintf(out, "%-7s ", event->sc_name + 4);
 
 	fprintf(out, "%-6llu %4lld %3lld %s\n",
-			event->pid_tid, res, err, event->fl_nm);
+			event->pid_tid, res, err, event->str);
 
 	(void) cb_cookie;
 }
@@ -310,7 +310,7 @@ print_event_hex(void *cb_cookie, void *data, int size)
 
 	default:
 		if (EM_file == (EM_file & syscall_array[event->sc_id].masks))
-			fwrite(event->fl_nm, strlen(event->fl_nm), 1, out);
+			fwrite(event->str, strlen(event->str), 1, out);
 		else if (EM_desc == (EM_desc &
 					syscall_array[event->sc_id].masks))
 			fprint_i64(out, (uint64_t)event->arg_1);
@@ -344,7 +344,7 @@ print_event_hex(void *cb_cookie, void *data, int size)
 	default:
 		if (EM_fileat == (EM_fileat &
 					syscall_array[event->sc_id].masks))
-			fwrite(event->fl_nm, strlen(event->fl_nm), 1, out);
+			fwrite(event->str, strlen(event->str), 1, out);
 		break;
 	}
 	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out);

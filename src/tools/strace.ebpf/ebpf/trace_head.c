@@ -50,5 +50,10 @@ struct first_step_t {
     u64 start_ts_nsec;
 };
 
+static u64 children_count = 0;
+/* children_idx => children_pid */
+BPF_HASH(children_map, u64, u64);
+
+
 BPF_HASH(tmp_i, u64, struct first_step_t);
 BPF_PERF_OUTPUT(events);

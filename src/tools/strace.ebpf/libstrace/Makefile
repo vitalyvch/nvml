@@ -59,6 +59,9 @@ CFLAGS += -Wno-override-init
 endif
 
 CFLAGS += -I ../compat
-CFLAGS += -I ../ebpf
+CFLAGS += -I ..
+
+
+%.o: %.c %.h Makefile
 
 include ../../../Makefile.inc

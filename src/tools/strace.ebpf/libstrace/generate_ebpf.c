@@ -38,20 +38,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <ebpf/ebpf_file_set.h>
+
 #include "main.h"
 #include "utils.h"
 #include "ebpf_syscalls.h"
 #include "generate_ebpf.h"
 
-const char *ebpf_trace_h_file = "trace.h";
-
-const char *ebpf_head_file = "trace_head.c";
-const char *ebpf_libc_tmpl_file = "trace_libc_tmpl.c";
-const char *ebpf_file_tmpl_file = "trace_file_tmpl.c";
-const char *ebpf_fileat_tmpl_file = "trace_fileat_tmpl.c";
-const char *ebpf_kern_tmpl_file = "trace_kern_tmpl.c";
-
-const char *ebpf_tp_all_file = "trace_tp_all.c";
 
 /*
  * get_sc_num -- This function returns syscall number by name according to
@@ -71,6 +64,54 @@ get_sc_num(const char *sc_name)
 	return -1;
 }
 
+static char *
+get_libc_tmpl(unsigned i)
+{
+	char *text = NULL;
+
+	if (NULL == syscall_array[i].handler_name)
+		return NULL;
+
+	if (EM_fs_path_1_2_arg == (EM_fs_path_1_2_arg & syscall_array[i].masks))
+		text = load_file(ebpf_fs_path_1_2_arg_tmpl_file);
+	else if (EM_fs_path_1_3_arg ==
+			(EM_fs_path_1_3_arg & syscall_array[i].masks))
+		text = load_file(ebpf_fs_path_1_3_arg_tmpl_file);
+	else if (EM_fs_path_2_4_arg ==
+			(EM_fs_path_2_4_arg & syscall_array[i].masks))
+		text = load_file(ebpf_fs_path_2_4_arg_tmpl_file);
+	else if (EM_rpid == (EM_rpid & syscall_array[i].masks)) {
+		switch (i) {
+		case __NR_clone:
+			text = load_file(ebpf_clone_tmpl_file);
+			break;
+		case __NR_vfork:
+			text = load_file(ebpf_vfork_tmpl_file);
+			break;
+		case __NR_fork:
+			text = load_file(ebpf_fork_tmpl_file);
+			break;
+
+		default:
+			assert(false);
+			break;
+		};
+	} else if (EM_file == (EM_file & syscall_array[i].masks))
+		text = load_file(ebpf_file_tmpl_file);
+	else if (EM_fileat == (EM_fileat & syscall_array[i].masks))
+		text = load_file(ebpf_fileat_tmpl_file);
+	else
+		text = load_file(ebpf_libc_tmpl_file);
+
+	if (NULL == text)
+		return NULL;
+
+	str_replace_all(&text, "SYSCALL_NR",
+			syscall_array[i].num_name);
+
+	return text;
+}
+
 /*
  * generate_ebpf_kp_libc_all -- This function generates eBPF handler for
  *     syscalls which are known to glibc.
@@ -78,23 +119,15 @@ get_sc_num(const char *sc_name)
 static void
 generate_ebpf_kp_libc_all(FILE *ts)
 {
-	char *text = NULL;
-
 	for (unsigned i = 0; i < SC_TBL_SIZE; i++) {
 		size_t fw_res;
+		char *text;
 
-		if (NULL == syscall_array[i].handler_name)
+		text = get_libc_tmpl(i);
+
+		if (NULL == text)
 			continue;
 
-		if (EM_file == (EM_file & syscall_array[i].masks))
-			text = load_file(ebpf_file_tmpl_file);
-		else if (EM_fileat == (EM_fileat & syscall_array[i].masks))
-			text = load_file(ebpf_fileat_tmpl_file);
-		else
-			text = load_file(ebpf_libc_tmpl_file);
-
-		str_replace_all(&text, "SYSCALL_NR",
-				syscall_array[i].num_name);
 		str_replace_all(&text, "SYSCALL_NAME",
 				syscall_array[i].handler_name);
 
@@ -155,17 +188,7 @@ generate_ebpf_kp_kern_all(FILE *ts)
 
 		/* Some optimization for glibc-supported syscalls */
 		if (0 <= sc_num) {
-			if (EM_file == (EM_file & syscall_array[sc_num].masks))
-				text = load_file(ebpf_file_tmpl_file);
-			else if (EM_fileat ==
-					(EM_fileat &
-					    syscall_array[sc_num].masks))
-				text = load_file(ebpf_fileat_tmpl_file);
-			else
-				text = load_file(ebpf_libc_tmpl_file);
-
-			str_replace_all(&text, "SYSCALL_NR",
-					syscall_array[sc_num].num_name);
+			text = get_libc_tmpl((unsigned)sc_num);
 		} else {
 			text = load_file(ebpf_kern_tmpl_file);
 		}

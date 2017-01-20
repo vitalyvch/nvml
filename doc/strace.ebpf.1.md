@@ -89,6 +89,8 @@ eBPF and KProbe technologies and libbcc library.
  - Underlaing eBPF technology still is in active development. So we should
    expect hangs and crashes more often as for regular strace, especially on
    low-res systems.
+ - Trunkating of very long filenames (longer then NAME_MAX bytes) to NAME_MAX.
+   Details: https://github.com/iovisor/bcc/issues/900
 
 
 WARNING: System-wide tracing can fill out your disk really fast.

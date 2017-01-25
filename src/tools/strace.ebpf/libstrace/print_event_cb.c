@@ -81,9 +81,9 @@ static void
 print_header_strace(int argc, char *const argv[])
 {
 	if (args.timestamp)
-		fprintf(out, "%-14s", "TIME(s)");
+		fprintf(out_lf, "%-14s", "TIME(s)");
 
-	fprintf(out, "%-7s %-6s %4s %3s %s\n",
+	fprintf(out_lf, "%-7s %-6s %4s %3s %s\n",
 		"SYSCALL", "PID_TID", "ARG1", "ERR", "PATH");
 
 	(void) argc;
@@ -118,24 +118,24 @@ print_event_strace(void *cb_cookie, void *data, int size)
 	if (args.timestamp) {
 		unsigned long long delta_nsec =
 			event->finish_ts_nsec - start_ts_nsec;
-		fprintf(out, "%-14.9f",
+		fprintf(out_lf, "%-14.9f",
 				(double)((double)delta_nsec / 1000000000.0));
 	}
 
 	if (0 <= event->sc_id)
-		fprintf(out, "%-7s ", sc_num2str(event->sc_id));
+		fprintf(out_lf, "%-7s ", sc_num2str(event->sc_id));
 	else
-		fprintf(out, "%-7s ", event->sc_name + 4);
+		fprintf(out_lf, "%-7s ", event->sc_name + 4);
 
 	if (0 == event->packet_type)
 		/*
 		 * XXX Check presence of aux_str by cheking sc_id
 		 *    and size arg
 		 */
-		fprintf(out, "%-6llu %4lld %3lld %s\n",
+		fprintf(out_lf, "%-6llu %4lld %3lld %s\n",
 				event->pid_tid, res, err, event->aux_str);
 	else
-		fprintf(out, "%-6llu %4lld %3lld %s\n",
+		fprintf(out_lf, "%-6llu %4lld %3lld %s\n",
 				event->pid_tid, res, err, event->str);
 
 	(void) cb_cookie;
@@ -151,31 +151,31 @@ print_header_hex(int argc, char *const argv[])
 {
 	for (int i = 0; i < argc; i++) {
 		if (i + 1 != argc)
-			fprintf(out, "%s%c", argv[i], args.out_sep_ch);
+			fprintf(out_lf, "%s%c", argv[i], args.out_sep_ch);
 		else
-			fprintf(out, "%s\n", argv[i]);
+			fprintf(out_lf, "%s\n", argv[i]);
 	}
 
-	fprintf(out, "%s%c", "PID_TID", args.out_sep_ch);
+	fprintf(out_lf, "%s%c", "PID_TID", args.out_sep_ch);
 
 	if (args.timestamp)
-		fprintf(out, "%s%c", "TIME(nsec)", args.out_sep_ch);
+		fprintf(out_lf, "%s%c", "TIME(nsec)", args.out_sep_ch);
 
-	fprintf(out, "%s%c",  "ERR",	 args.out_sep_ch);
-	fprintf(out, "%s%c",  "RES",	 args.out_sep_ch);
-	fprintf(out, "%s%c", "SYSCALL", args.out_sep_ch);
+	fprintf(out_lf, "%s%c",  "ERR",	 args.out_sep_ch);
+	fprintf(out_lf, "%s%c",  "RES",	 args.out_sep_ch);
+	fprintf(out_lf, "%s%c", "SYSCALL", args.out_sep_ch);
 
-	fprintf(out, "%s%c", "ARG1", args.out_sep_ch);
-	fprintf(out, "%s%c", "ARG2", args.out_sep_ch);
-	fprintf(out, "%s%c", "ARG3", args.out_sep_ch);
-	fprintf(out, "%s%c", "ARG4", args.out_sep_ch);
-	fprintf(out, "%s%c", "ARG5", args.out_sep_ch);
-	fprintf(out, "%s%c", "ARG6", args.out_sep_ch);
+	fprintf(out_lf, "%s%c", "ARG1", args.out_sep_ch);
+	fprintf(out_lf, "%s%c", "ARG2", args.out_sep_ch);
+	fprintf(out_lf, "%s%c", "ARG3", args.out_sep_ch);
+	fprintf(out_lf, "%s%c", "ARG4", args.out_sep_ch);
+	fprintf(out_lf, "%s%c", "ARG5", args.out_sep_ch);
+	fprintf(out_lf, "%s%c", "ARG6", args.out_sep_ch);
 
 	/* For COMM and like */
-	fprintf(out, "%s", "AUX_DATA");
+	fprintf(out_lf, "%s", "AUX_DATA");
 
-	fprintf(out, "\n");
+	fprintf(out_lf, "\n");
 }
 
 /*
@@ -277,37 +277,37 @@ print_event_hex(void *cb_cookie, void *data, int size)
 	if (args.failed && (event->ret >= 0))
 		return;
 
-	fprint_i64(out, event->pid_tid);
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out);
+	fprint_i64(out_lf, event->pid_tid);
+	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
 
 	if (args.timestamp) {
 		unsigned long long delta_nsec =
 			event->finish_ts_nsec - start_ts_nsec;
 
-		fprint_i64(out, delta_nsec);
-		fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out);
+		fprint_i64(out_lf, delta_nsec);
+		fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
 	}
 
-	fprint_i64(out, (uint64_t)err);
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out);
+	fprint_i64(out_lf, (uint64_t)err);
+	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
 
-	fprint_i64(out, (uint64_t)res);
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out);
+	fprint_i64(out_lf, (uint64_t)res);
+	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
 
 	if (event->sc_id >= 0)
 		fwrite(sc_num2str(event->sc_id),
 				strlen(sc_num2str(event->sc_id)),
-				1, out);
+				1, out_lf);
 	else
 		fwrite(event->sc_name + 4,
 				strlen(event->sc_name + 4),
-				1, out);
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out);
+				1, out_lf);
+	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
 
 	/* "ARG1" */
 	switch (event->sc_id) {
 	case -2:
-		fprint_i64(out, (uint64_t)event->arg_1);
+		fprint_i64(out_lf, (uint64_t)event->arg_1);
 		break;
 
 	case -1:
@@ -325,15 +325,17 @@ print_event_hex(void *cb_cookie, void *data, int size)
 			 */
 			if (0 == event->packet_type)
 				fwrite(event->aux_str,
-						strlen(event->aux_str), 1, out);
+						strlen(event->aux_str),
+						1, out_lf);
 			else
-				fwrite(event->str, strlen(event->str), 1, out);
+				fwrite(event->str, strlen(event->str),
+						1, out_lf);
 		} else if (EM_desc == (EM_desc &
 					syscall_array[event->sc_id].masks))
-			fprint_i64(out, (uint64_t)event->arg_1);
+			fprint_i64(out_lf, (uint64_t)event->arg_1);
 		else if (EM_fileat == (EM_fileat &
 					syscall_array[event->sc_id].masks))
-			fprint_i64(out, (uint64_t)event->arg_1);
+			fprint_i64(out_lf, (uint64_t)event->arg_1);
 		else {
 			/*
 			 * XXX We don't have any idea about this syscall args.
@@ -343,12 +345,12 @@ print_event_hex(void *cb_cookie, void *data, int size)
 		}
 		break;
 	}
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out);
+	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
 
 	/* "ARG2" */
 	switch (event->sc_id) {
 	case -2:
-		fprint_i64(out, (uint64_t)event->arg_2);
+		fprint_i64(out_lf, (uint64_t)event->arg_2);
 		break;
 
 	case -1:
@@ -367,16 +369,17 @@ print_event_hex(void *cb_cookie, void *data, int size)
 				 *    sc_id and size arg
 				 */
 				fwrite(event->aux_str,
-						strlen(event->aux_str), 1, out);
+						strlen(event->aux_str),
+						1, out_lf);
 		}
 		break;
 	}
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out);
+	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
 
 	/* "ARG3" */
 	switch (event->sc_id) {
 	case -2:
-		fprint_i64(out, (uint64_t)event->arg_3);
+		fprint_i64(out_lf, (uint64_t)event->arg_3);
 		break;
 
 	case -1:
@@ -389,12 +392,12 @@ print_event_hex(void *cb_cookie, void *data, int size)
 	default:
 		break;
 	}
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out);
+	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
 
 	/* "ARG4" */
 	switch (event->sc_id) {
 	case -2:
-		fprint_i64(out, (uint64_t)event->arg_4);
+		fprint_i64(out_lf, (uint64_t)event->arg_4);
 		break;
 
 	case -1:
@@ -407,12 +410,12 @@ print_event_hex(void *cb_cookie, void *data, int size)
 	default:
 		break;
 	}
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out);
+	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
 
 	/* "ARG5" */
 	switch (event->sc_id) {
 	case -2:
-		fprint_i64(out, (uint64_t)event->arg_5);
+		fprint_i64(out_lf, (uint64_t)event->arg_5);
 		break;
 
 	case -1:
@@ -425,12 +428,12 @@ print_event_hex(void *cb_cookie, void *data, int size)
 	default:
 		break;
 	}
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out);
+	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
 
 	/* "ARG6" */
 	switch (event->sc_id) {
 	case -2:
-		fprint_i64(out, (uint64_t)event->arg_6);
+		fprint_i64(out_lf, (uint64_t)event->arg_6);
 		break;
 
 	case -1:
@@ -443,11 +446,11 @@ print_event_hex(void *cb_cookie, void *data, int size)
 	default:
 		break;
 	}
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out);
+	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
 
 	/* "AUX_DATA". For COMM and like. XXX */
-	/* fwrite(event->comm, strlen(event->comm), 1, out); */
-	fwrite("\n", 1, 1, out);
+	/* fwrite(event->comm, strlen(event->comm), 1, out_lf); */
+	fwrite("\n", 1, 1, out_lf);
 
 	(void) cb_cookie;
 }
@@ -511,12 +514,12 @@ print_header_bin(int argc, char *const argv[])
 		argv_size += strlen(argv[i]) + 1;
 	}
 
-	if (1 != fwrite(&d_size, sizeof(d_size), 1, out)) {
+	if (1 != fwrite(&d_size, sizeof(d_size), 1, out_lf)) {
 		/* ERROR */
 		Cont = false;
 	}
 
-	if (1 != fwrite(&d, sizeof(d), 1, out)) {
+	if (1 != fwrite(&d, sizeof(d), 1, out_lf)) {
 		/* ERROR */
 		Cont = false;
 	}
@@ -535,12 +538,12 @@ print_event_bin(void *cb_cookie, void *data, int size)
 	if (args.failed && (event->ret >= 0))
 		return;
 
-	if (1 != fwrite(&size, sizeof(size), 1, out)) {
+	if (1 != fwrite(&size, sizeof(size), 1, out_lf)) {
 		/* ERROR */
 		Cont = false;
 	}
 
-	if (1 != fwrite(data, (size_t)size, 1, out)) {
+	if (1 != fwrite(data, (size_t)size, 1, out_lf)) {
 		/* ERROR */
 		Cont = false;
 	}

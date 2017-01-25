@@ -412,3 +412,37 @@ sig_transmit_handler(int sig, siginfo_t *si, void *unused)
 	(void) si;
 	(void) unused;
 }
+
+/*
+ * Setup out_lf stream
+ */
+void
+setup_out_lf(void)
+{
+	int err_no;
+
+	if (NULL == args.out_fn) {
+		out_lf = stdout;
+
+		goto setup_buffer;
+	}
+
+	out_lf = fopen(args.out_fn, "w");
+
+	if (NULL != out_lf)
+		goto setup_buffer;
+
+	err_no = errno;
+
+	fprintf(stderr, "ERROR: "
+		"Failed to open '%s' for appending: '%m'\n",
+		args.out_fn);
+
+	errno = err_no;
+	return;
+
+setup_buffer:
+	/* XXX We should improve it. May be we should use fd directly */
+	/* setbuffer(out_lf, NULL, args.out_buf_size); */
+	(void) args.out_buf_size;
+}

@@ -67,6 +67,9 @@ enum fnr_mode {
 	E_FNR_FULL,
 };
 
+/* 8 Megabytes should be something close to reasonable */
+enum { OUT_BUF_SIZE = 8 * 1024 * 1024 };
+
 /*
  * This structure contains default and parsed values for command-line options
  */
@@ -107,13 +110,16 @@ struct cl_options {
 	bool ff_separate_logs;
 	/* filenames reading mode */
 	enum fnr_mode fnr_mode;
+
+	/* XXX Should be configurable through command line */
+	unsigned out_buf_size;
 };
 
 extern struct cl_options args;
 extern bool Cont;
 
-/* Output log */
-extern FILE *out;
+/* Output logfile */
+extern FILE *out_lf;
 extern enum out_fmt out_fmt;
 
 #endif /* MAIN_H */

@@ -69,16 +69,11 @@
 
 struct cl_options args;
 bool Cont = true;
-FILE *out;
+FILE *out_lf;
 enum out_fmt out_fmt;
 
-/* HACK Should be fixed in libbcc */
+/* XXX HACK Should be fixed in libbcc */
 extern int perf_reader_page_cnt;
-
-/* 8 Megabytes should be something close to reasonable */
-enum { OUT_BUF_SIZE = 8 * 1024 * 1024 };
-/* XXX Should be configurable through command line */
-static unsigned out_buf_size = OUT_BUF_SIZE;
 
 /*
  * main -- Tool's entry point
@@ -97,6 +92,9 @@ main(const int argc, char *const argv[])
 	 */
 	args.pr_arr_max = 1000;
 
+	/* XXX Should be configurable through command line */
+	args.out_buf_size = OUT_BUF_SIZE;
+
 	/*
 	 * XXX Let's enlarge ring buffers. It's really improve situation
 	 *    with lost events. In the future we should do it via cl options.
@@ -110,23 +108,14 @@ main(const int argc, char *const argv[])
 	/* Check for JIT acceleration of BPF */
 	check_bpf_jit_status(stderr);
 
-	if (NULL != args.out_fn) {
-		out = fopen(args.out_fn, "w");
+	setup_out_lf();
 
-		if (NULL == out) {
-			fprintf(stderr, "ERROR: "
-				"Failed to open '%s' for appending: '%m'\n",
-				args.out_fn);
+	/* Settuping of out_lf failed */
+	if (NULL == out_lf) {
+		fprintf(stderr, "ERROR: Exiting\n");
 
-			exit(errno);
-		}
-	} else {
-		out = stdout;
+		exit(errno);
 	}
-
-	/* XXX We should improve it. May be we should use fd directly */
-	/* setbuffer(out, NULL, out_buf_size); */
-	(void) out_buf_size;
 
 	/*
 	 * XXX Temporarilly. We should do it in the future together with

@@ -61,6 +61,8 @@ pid_t start_command(int argc, char *const argv[]);
 void sig_chld_handler(int sig, siginfo_t *si, void *unused);
 void sig_transmit_handler(int sig, siginfo_t *si, void *unused);
 
+void setup_out_lf(void);
+
 #define DEBUG_TRACING "/sys/kernel/debug/tracing"
 #define DT_AFF "/available_filter_functions"
 

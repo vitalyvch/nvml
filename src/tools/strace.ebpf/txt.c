@@ -31,28 +31,61 @@
  */
 
 /*
- * txt.h -- Text messages
+ * txt.c -- Text messages
  */
 
+#include <assert.h>
 
-#ifndef TXT_H
-#define TXT_H
+#include "txt.h"
 
-#include <stdio.h>
+/*
+ * fprint_usage -- This function prints usage message in stream.
+ */
+void
+fprint_usage(FILE *f)
+{
+	size_t fw_res;
 
-void fprint_usage(FILE *f);
-void fprint_help(FILE *f);
-void fprint_trace_list(FILE *f);
+	fw_res = fwrite(_binary_usage_text_txt_start,
+			(size_t)_binary_usage_text_txt_size,
+			1, f);
 
-/* Bodies of messages */
+	assert(fw_res > 0);
+}
 
-extern const char _binary_help_text_txt_size[];
-extern const char _binary_help_text_txt_start[];
+/*
+ * fprint_help -- This function prints help message in stream.
+ */
+void
+fprint_help(FILE *f)
+{
+	size_t fw_res;
 
-extern const char _binary_usage_text_txt_size[];
-extern const char _binary_usage_text_txt_start[];
+	fprint_usage(f);
 
-extern const char _binary_trace_list_text_txt_size[];
-extern const char _binary_trace_list_text_txt_start[];
+	fw_res = fwrite("\n", 1, 1, f);
 
-#endif /* TXT_H */
+	assert(fw_res > 0);
+
+	fw_res = fwrite(_binary_help_text_txt_start,
+			(size_t)_binary_help_text_txt_size,
+			1, f);
+
+	assert(fw_res > 0);
+}
+
+/*
+ * fprint_trace_list -- This function prints description of expressions
+ *     in stream.
+ */
+void
+fprint_trace_list(FILE *f)
+{
+	size_t fw_res;
+
+	fw_res = fwrite(_binary_trace_list_text_txt_start,
+			(size_t)_binary_trace_list_text_txt_size,
+			1, f);
+
+	assert(fw_res > 0);
+}

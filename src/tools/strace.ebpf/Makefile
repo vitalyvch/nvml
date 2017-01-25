@@ -86,6 +86,7 @@ TXT_OBJS = $(addsuffix .o,$(TXT_SRCS))
 	$(LD) -r -b binary -o $@ $<
 
 OBJS = main.o \
+	   txt.o \
 	$(TXT_OBJS)
 
 

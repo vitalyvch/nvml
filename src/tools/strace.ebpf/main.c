@@ -67,58 +67,6 @@
 #include "print_event_cb.h"
 
 
-/*
- * fprint_usage -- This function prints usage message in stream.
- */
-static void
-fprint_usage(FILE *f)
-{
-	size_t fw_res;
-
-	fw_res = fwrite(_binary_usage_text_txt_start,
-			(size_t)_binary_usage_text_txt_size,
-			1, f);
-
-	assert(fw_res > 0);
-}
-
-/*
- * fprint_help -- This function prints help message in stream.
- */
-static void
-fprint_help(FILE *f)
-{
-	size_t fw_res;
-
-	fprint_usage(f);
-
-	fw_res = fwrite("\n", 1, 1, f);
-
-	assert(fw_res > 0);
-
-	fw_res = fwrite(_binary_help_text_txt_start,
-			(size_t)_binary_help_text_txt_size,
-			1, f);
-
-	assert(fw_res > 0);
-}
-
-/*
- * fprint_trace_list -- This function prints description of expressions
- *     in stream.
- */
-static void
-fprint_trace_list(FILE *f)
-{
-	size_t fw_res;
-
-	fw_res = fwrite(_binary_trace_list_text_txt_start,
-			(size_t)_binary_trace_list_text_txt_size,
-			1, f);
-
-	assert(fw_res > 0);
-}
-
 struct cl_options args;
 bool Cont = true;
 FILE *out;

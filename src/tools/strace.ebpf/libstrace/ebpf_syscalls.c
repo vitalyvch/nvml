@@ -456,3 +456,31 @@ struct syscall_descriptor syscall_array[SC_TBL_SIZE] = {
 	EBPF_SYSCALL_DESC(__NR_recvmmsg, SyS_recvmmsg),
 	/* EBPF_SYSCALL(__NR_socketcall, SyS_socketcall), */
 };
+
+/*
+ * Print a table of syscalls known to glibc to stream f.
+ *
+ * @return
+ *    1      - success
+ *    others - fprintf() result
+ */
+int
+fprint_sc_tbl(FILE *f)
+{
+	for (unsigned i = 0; i < SC_TBL_SIZE; i++) {
+		if (NULL != syscall_array[i].handler_name) {
+			int res;
+
+			res = fprintf(f,
+				"%03d: %-20s\t %s\n",
+				syscall_array[i].num,
+				syscall_array[i].num_name,
+				syscall_array[i].handler_name);
+
+			if (res <= 0)
+				return res;
+		}
+	}
+
+	return 1;
+}

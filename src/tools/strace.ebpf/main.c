@@ -37,7 +37,6 @@
 #include <errno.h>
 #include <stdio.h>
 #include <assert.h>
-#include <getopt.h>
 #include <signal.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -61,6 +60,7 @@
 #include "txt.h"
 #include "main.h"
 #include "utils.h"
+#include "cl_parser.h"
 #include "attach_probes.h"
 #include "ebpf_syscalls.h"
 #include "generate_ebpf.h"
@@ -86,6 +86,8 @@ static unsigned out_buf_size = OUT_BUF_SIZE;
 int
 main(const int argc, char *const argv[])
 {
+	int st_optind;
+
 	args.pid = -1;
 	args.out_sep_ch = '\t';
 
@@ -102,170 +104,8 @@ main(const int argc, char *const argv[])
 	perf_reader_page_cnt *= perf_reader_page_cnt;
 	perf_reader_page_cnt *= perf_reader_page_cnt;
 
-	while (1) {
-		int c;
-		int option_index = 0;
-
-		static struct option long_options[] = {
-			{"timestamp",	no_argument,	   0, 't'},
-			{"failed",		no_argument,	   0, 'X'},
-			{"help",		no_argument,	   0, 'h'},
-			{"debug",		no_argument,	   0, 'd'},
-			{"list",		no_argument,	   0, 'L'},
-			{"ll-list",		no_argument,	   0, 'R'},
-			{"builtin-list", no_argument,	   0, 'B'},
-
-			{"fast-follow-fork", optional_argument,	   0, 'F'},
-			{"full-follow-fork", optional_argument,	   0, 'f'},
-
-			{"pid",		   required_argument, 0, 'p'},
-			{"format",		required_argument, 0, 'l'},
-			{"expr",		required_argument, 0, 'e'},
-			{"output",		required_argument, 0, 'o'},
-			{"hex-separator", required_argument, 0, 'K'},
-			{0,	   0,	 0,  0 }
-		};
-
-		c = getopt_long(argc, argv, "+tXhdp:o:l:K:e:LRBf::F::",
-				long_options, &option_index);
-
-		if (c == -1)
-			break;
-
-		switch (c) {
-		case 't':
-			args.timestamp = true;
-			break;
-
-		case 'X':
-			args.failed = true;
-			break;
-
-		case 'h':
-			fprint_help(stdout);
-			exit(EXIT_SUCCESS);
-
-		case 'd':
-			args.debug = true;
-			break;
-
-		case 'p':
-			args.pid = atoi(optarg);
-			if (args.pid < 1) {
-				fprintf(stderr,
-					"ERROR: wrong value for pid option is"
-					" provided: '%s' => '%d'. Exit.\n",
-					optarg, args.pid);
-
-				exit(EXIT_FAILURE);
-			}
-			if (kill(args.pid, 0) == -1) {
-				fprintf(stderr,
-					"ERROR: Process with pid '%d'"
-					" does not exist : '%m'.\n",
-					args.pid);
-
-				fprintf(stderr, "Exit.\n");
-				exit(EXIT_FAILURE);
-			}
-			break;
-
-		case 'o':
-			args.out_fn = optarg;
-			break;
-
-		case 'K':
-			args.out_sep_ch = *optarg;
-			break;
-
-		case 'e':
-			if (!strcasecmp(optarg, "list") ||
-					!strcasecmp(optarg, "help")) {
-				fprintf(stderr,
-					"List of supported expressions:"
-					" 'help', 'list', 'trace=set'"
-					"\n");
-				fprintf(stderr,
-					"For list of supported sets you should"
-					"use 'trace=help' or 'trace=list'"
-					"\n");
-				exit(EXIT_SUCCESS);
-			} else if (!strcasecmp(optarg, "trace=help") ||
-					!strcasecmp(optarg,
-						"trace=list")) {
-				fprint_trace_list(stderr);
-				fprintf(stderr,
-					"You can combine sets"
-					" by using comma.\n");
-				exit(EXIT_SUCCESS);
-			}
-			args.expr = optarg;
-			break;
-
-		case 'l':
-			if (!strcasecmp(optarg, "list") ||
-					!strcasecmp(optarg, "help")) {
-				fprintf(stderr,
-					"List of supported formats:"
-					"'bin', 'binary', 'hex', 'hex_raw', "
-					"'hex_sl', 'strace', "
-					"'list' & 'help'\n");
-				exit(EXIT_SUCCESS);
-			}
-			args.out_fmt_str = optarg;
-			out_fmt = out_fmt_str2enum(args.out_fmt_str);
-			break;
-
-		case 'L':
-			get_sc_list(stdout, is_a_sc);
-			exit(EXIT_SUCCESS);
-
-		case 'R':
-			get_sc_list(stdout, NULL);
-			exit(EXIT_SUCCESS);
-
-		case 'B':
-			for (unsigned i = 0; i < SC_TBL_SIZE; i++)
-				if (NULL != syscall_array[i].handler_name)
-					fprintf(stdout,
-						"%03d: %-20s\t %s\n",
-						syscall_array[i].num,
-						syscall_array[i].num_name,
-						syscall_array[i].handler_name);
-			exit(EXIT_SUCCESS);
-
-		case 'f':
-			args.ff_mode = E_FF_FULL;
-			if (optarg) {
-				args.ff_separate_logs = true;
-			}
-			break;
-
-		case 'F':
-			args.ff_mode = E_FF_FAST;
-			if (optarg) {
-				args.ff_separate_logs = true;
-			}
-			break;
-
-		case ':':
-			fprintf(stderr, "ERROR: "
-				"Missing mandatory option's "
-				"argument\n");
-			fprint_help(stderr);
-			exit(EXIT_FAILURE);
-
-		default:
-			fprintf(stderr, "ERROR: "
-				"Unknown option: '-%c'\n", c);
-		case '?':
-			fprint_help(stderr);
-			exit(EXIT_FAILURE);
-		}
-	}
-
-	if (optind < argc)
-		args.command = true;
+	/* Let's parse command-line options */
+	st_optind = cl_parser(&args, argc, argv);
 
 	/* Check for JIT acceleration of BPF */
 	check_bpf_jit_status(stderr);
@@ -288,6 +128,10 @@ main(const int argc, char *const argv[])
 	/* setbuffer(out, NULL, out_buf_size); */
 	(void) out_buf_size;
 
+	/*
+	 * XXX Temporarilly. We should do it in the future together with
+	 *    multi-process tracing
+	 */
 	if (args.pid != -1 && args.command) {
 		fprintf(stderr, "ERROR: "
 				"It is currently unsupported to watch for PID"
@@ -299,12 +143,12 @@ main(const int argc, char *const argv[])
 	if (args.command) {
 		struct sigaction sa;
 
-		args.pid = start_command(argc - optind, argv + optind);
+		args.pid = start_command(argc - st_optind, argv + st_optind);
 
 		if (args.pid == -1) {
 			fprintf(stderr, "ERROR: "
 				"Failed to run: '%s': %m. Exiting.\n",
-				argv[optind]);
+				argv[st_optind]);
 			exit(errno);
 		}
 
@@ -418,7 +262,7 @@ main(const int argc, char *const argv[])
 
 	/*
 	 * Attach callback to perf output. "events" is a name of class declared
-	 * with BPF_PERF_OUTPUT() in trace.c.
+	 * with BPF_PERF_OUTPUT() in ebpf/trace_head.c.
 	 *
 	 * XXX Most likely we should utilise here str_replace for consistence
 	 *    increasing.

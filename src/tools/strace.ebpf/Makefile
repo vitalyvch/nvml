@@ -85,8 +85,10 @@ TXT_OBJS = $(addsuffix .o,$(TXT_SRCS))
 %.txt.o: %.txt Makefile
 	$(LD) -r -b binary -o $@ $<
 
-OBJS = main.o \
+OBJS = \
 	   txt.o \
+	   main.o \
+	   cl_parser.o \
 	$(TXT_OBJS)
 
 

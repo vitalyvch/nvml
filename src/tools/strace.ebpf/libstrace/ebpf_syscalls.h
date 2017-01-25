@@ -37,6 +37,8 @@
 #ifndef EBPF_SYSCALLS_H
 #define EBPF_SYSCALLS_H
 
+#include <stdio.h>
+
 #include <sys/syscall.h>
 
 /* XXX Subject to re-develop */
@@ -116,5 +118,7 @@ struct syscall_descriptor {
 /* Currently glibc does not have appropriate macro for it */
 enum { SC_TBL_SIZE = 1024 };
 extern struct syscall_descriptor syscall_array[SC_TBL_SIZE];
+
+int fprint_sc_tbl(FILE *f);
 
 #endif /* EBPF_SYSCALLS_H */

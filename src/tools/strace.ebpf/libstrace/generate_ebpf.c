@@ -72,13 +72,16 @@ get_libc_tmpl(unsigned i)
 	if (NULL == syscall_array[i].handler_name)
 		return NULL;
 
-	if (EM_fs_path_1_2_arg == (EM_fs_path_1_2_arg & syscall_array[i].masks))
-		switch(args.fnr_mode) {
+	if (EM_fs_path_1_2_arg ==
+			(EM_fs_path_1_2_arg & syscall_array[i].masks)) {
+		switch (args.fnr_mode) {
 		case E_FNR_FAST:
-			text = load_file_no_cr(ebpf_fs_path_1_2_arg_tmpl_sl_file);
+			text = load_file_no_cr(
+					ebpf_fs_path_1_2_arg_tmpl_sl_file);
 			break;
 		case E_FNR_NAME_MAX:
-			text = load_file_no_cr(ebpf_fs_path_1_2_arg_tmpl_ml_file);
+			text = load_file_no_cr(
+					ebpf_fs_path_1_2_arg_tmpl_ml_file);
 			break;
 		case E_FNR_FULL:
 			/* XXX */
@@ -86,14 +89,16 @@ get_libc_tmpl(unsigned i)
 			assert(false);
 			break;
 		}
-	else if (EM_fs_path_1_3_arg ==
-			(EM_fs_path_1_3_arg & syscall_array[i].masks))
-		switch(args.fnr_mode) {
+	} else if (EM_fs_path_1_3_arg ==
+			(EM_fs_path_1_3_arg & syscall_array[i].masks)) {
+		switch (args.fnr_mode) {
 		case E_FNR_FAST:
-			text = load_file_no_cr(ebpf_fs_path_1_3_arg_tmpl_sl_file);
+			text = load_file_no_cr(
+					ebpf_fs_path_1_3_arg_tmpl_sl_file);
 			break;
 		case E_FNR_NAME_MAX:
-			text = load_file_no_cr(ebpf_fs_path_1_3_arg_tmpl_ml_file);
+			text = load_file_no_cr(
+					ebpf_fs_path_1_3_arg_tmpl_ml_file);
 			break;
 		case E_FNR_FULL:
 			/* XXX */
@@ -101,14 +106,16 @@ get_libc_tmpl(unsigned i)
 			assert(false);
 			break;
 		}
-	else if (EM_fs_path_2_4_arg ==
-			(EM_fs_path_2_4_arg & syscall_array[i].masks))
-		switch(args.fnr_mode) {
+	} else if (EM_fs_path_2_4_arg ==
+			(EM_fs_path_2_4_arg & syscall_array[i].masks)) {
+		switch (args.fnr_mode) {
 		case E_FNR_FAST:
-			text = load_file_no_cr(ebpf_fs_path_2_4_arg_tmpl_sl_file);
+			text = load_file_no_cr(
+					ebpf_fs_path_2_4_arg_tmpl_sl_file);
 			break;
 		case E_FNR_NAME_MAX:
-			text = load_file_no_cr(ebpf_fs_path_2_4_arg_tmpl_ml_file);
+			text = load_file_no_cr(
+					ebpf_fs_path_2_4_arg_tmpl_ml_file);
 			break;
 		case E_FNR_FULL:
 			/* XXX */
@@ -116,7 +123,7 @@ get_libc_tmpl(unsigned i)
 			assert(false);
 			break;
 		}
-	else if (E_FF_FULL == args.ff_mode &&
+	} else if (E_FF_FULL == args.ff_mode &&
 			EM_rpid == (EM_rpid & syscall_array[i].masks)) {
 		switch (i) {
 		case __NR_clone:
@@ -133,8 +140,8 @@ get_libc_tmpl(unsigned i)
 			assert(false);
 			break;
 		};
-	} else if (EM_file == (EM_file & syscall_array[i].masks))
-		switch(args.fnr_mode) {
+	} else if (EM_file == (EM_file & syscall_array[i].masks)) {
+		switch (args.fnr_mode) {
 		case E_FNR_FAST:
 			text = load_file_no_cr(ebpf_file_tmpl_sl_file);
 			break;
@@ -147,8 +154,8 @@ get_libc_tmpl(unsigned i)
 			assert(false);
 			break;
 		}
-	else if (EM_fileat == (EM_fileat & syscall_array[i].masks))
-		switch(args.fnr_mode) {
+	} else if (EM_fileat == (EM_fileat & syscall_array[i].masks)) {
+		switch (args.fnr_mode) {
 		case E_FNR_FAST:
 			text = load_file_no_cr(ebpf_fileat_tmpl_sl_file);
 			break;
@@ -161,8 +168,9 @@ get_libc_tmpl(unsigned i)
 			assert(false);
 			break;
 		}
-	else
+	} else {
 		text = load_file_no_cr(ebpf_libc_tmpl_file);
+	}
 
 	if (NULL == text)
 		return NULL;
@@ -287,7 +295,7 @@ generate_ebpf_kp_file(FILE *ts)
 		if (EM_file != (EM_file & syscall_array[i].masks))
 			continue;
 
-		switch(args.fnr_mode) {
+		switch (args.fnr_mode) {
 		case E_FNR_FAST:
 			text = load_file_no_cr(ebpf_file_tmpl_sl_file);
 			break;
@@ -334,7 +342,7 @@ generate_ebpf_kp_fileat(FILE *ts)
 		if (EM_fileat != (EM_fileat & syscall_array[i].masks))
 			continue;
 
-		switch(args.fnr_mode) {
+		switch (args.fnr_mode) {
 		case E_FNR_FAST:
 			text = load_file_no_cr(ebpf_fileat_tmpl_sl_file);
 			break;
@@ -481,4 +489,46 @@ DeFault:
 out:
 	fclose(ts);
 	return text;
+}
+
+/*
+ * This function apply process-attach code to generated code with handlers
+ */
+void
+apply_process_attach_code(char **const pbpf_str)
+{
+	if (0 < args.pid) {
+		char str[64];
+		int snp_res;
+		char *pid_check_hook;
+
+		snp_res = snprintf(str, sizeof(str), "%d", 	args.pid);
+
+		assert(snp_res > 0);
+
+		pid_check_hook = load_pid_check_hook(args.ff_mode);
+
+		assert(NULL != pid_check_hook);
+
+		str_replace_all(&pid_check_hook, "TRACED_PID", str);
+
+		str_replace_all(pbpf_str, "PID_CHECK_HOOK", pid_check_hook);
+
+		free(pid_check_hook);
+	} else {
+		str_replace_all(pbpf_str, "PID_CHECK_HOOK", "");
+	}
+}
+
+/*
+ * This function apply trace.h because bcc preprocessor is too weak
+ */
+void
+apply_trace_h_header(char **const pbpf_str)
+{
+	char *trace_h = load_file_no_cr(ebpf_trace_h_file);
+
+	str_replace_all(pbpf_str, "#include \"trace.h\"\n", trace_h);
+
+	free(trace_h);
 }

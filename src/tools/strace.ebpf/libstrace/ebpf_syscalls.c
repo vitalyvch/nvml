@@ -482,5 +482,7 @@ fprint_sc_tbl(FILE *f)
 		}
 	}
 
+	fflush(f);
+
 	return 1;
 }

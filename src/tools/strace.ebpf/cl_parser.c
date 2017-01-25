@@ -193,7 +193,7 @@ cl_parser(struct cl_options *const clo,
 			case 0: exit(EXIT_FAILURE);
 			default: exit(res);
 			}
-			
+			break;
 
 		case 'f':
 			clo->ff_mode = E_FF_FULL;

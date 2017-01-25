@@ -130,7 +130,7 @@ main(const int argc, char *const argv[])
 
 	/*
 	 * XXX Temporarilly. We should do it in the future together with
-	 *    multi-process tracing
+	 *    multi-process attaching.
 	 */
 	if (args.pid != -1 && args.command) {
 		fprintf(stderr, "ERROR: "
@@ -171,46 +171,30 @@ main(const int argc, char *const argv[])
 		(void) sigaction(SIGSEGV, &sa, NULL);
 	}
 
-	/* define BPF program */
-	char *bpf_str = generate_ebpf();
-
 	if (0 < args.pid) {
-		char str[64];
-		int snp_res;
-		char *pid_check_hook;
-
-		snp_res = snprintf(str, sizeof(str), "%d", 	args.pid);
-
-		assert(snp_res > 0);
-
-		pid_check_hook = load_pid_check_hook(args.ff_mode);
-
-		assert(NULL != pid_check_hook);
-
-		str_replace_all(&pid_check_hook, "TRACED_PID", str);
-
-		str_replace_all(&bpf_str, "PID_CHECK_HOOK", pid_check_hook);
-
-		free(pid_check_hook);
-
 		if (!args.command) {
 			if (kill(args.pid, 0) == -1) {
 				fprintf(stderr,
 					"ERROR: Process with pid '%d'"
 					" does not exist: '%m'.\n", args.pid);
 
+				/*
+				 * XXX As soon as multi-process attaching will
+				 *     be done we should print warning here
+				 *     and continue.
+				 */
 				exit(errno);
 			}
 		}
-	} else {
-		str_replace_all(&bpf_str, "PID_CHECK_HOOK", "");
 	}
 
-	char *trace_h = load_file_no_cr(ebpf_trace_h_file);
+	/* define BPF program */
+	char *bpf_str = generate_ebpf();
 
-	str_replace_all(&bpf_str, "#include \"trace.h\"\n", trace_h);
+	apply_process_attach_code(&bpf_str);
 
-	free(trace_h);
+	/* bcc preprocessor is too limited, so let's do it by hands */
+	apply_trace_h_header(&bpf_str);
 
 	if (args.debug) {
 		fprintf(stderr, "\t>>>>> Generated eBPF code <<<<<\n");

@@ -31,7 +31,7 @@
  */
 
 
-/* 
+/*
  * cl_parser.h -- Command-line parser for strace.ebpf
  */
 

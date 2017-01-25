@@ -51,6 +51,8 @@ fprint_usage(FILE *f)
 			1, f);
 
 	assert(fw_res > 0);
+
+	fflush(f);
 }
 
 /*
@@ -72,6 +74,8 @@ fprint_help(FILE *f)
 			1, f);
 
 	assert(fw_res > 0);
+
+	fflush(f);
 }
 
 /*
@@ -88,4 +92,6 @@ fprint_trace_list(FILE *f)
 			1, f);
 
 	assert(fw_res > 0);
+
+	fflush(f);
 }

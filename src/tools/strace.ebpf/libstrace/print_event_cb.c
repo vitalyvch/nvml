@@ -324,7 +324,8 @@ print_event_hex(void *cb_cookie, void *data, int size)
 			 *    and size arg
 			 */
 			if (0 == event->packet_type)
-				fwrite(event->aux_str, strlen(event->aux_str), 1, out);
+				fwrite(event->aux_str,
+						strlen(event->aux_str), 1, out);
 			else
 				fwrite(event->str, strlen(event->str), 1, out);
 		} else if (EM_desc == (EM_desc &
@@ -362,10 +363,11 @@ print_event_hex(void *cb_cookie, void *data, int size)
 					syscall_array[event->sc_id].masks)) {
 			if (0 == event->packet_type)
 				/*
-				 * XXX Check presence of aux_str by cheking sc_id
-				 *    and size arg
+				 * XXX Check presence of aux_str by cheking
+				 *    sc_id and size arg
 				 */
-				fwrite(event->aux_str, strlen(event->aux_str), 1, out);
+				fwrite(event->aux_str,
+						strlen(event->aux_str), 1, out);
 		}
 		break;
 	}

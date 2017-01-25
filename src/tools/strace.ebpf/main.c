@@ -244,23 +244,7 @@ main(const int argc, char *const argv[])
 	while (Cont) {
 		(void) perf_reader_poll((int)b->pr_arr_qty, readers, -1);
 
-		if (!args.command && 0 < args.pid) {
-			if (kill(args.pid, 0) == -1) {
-				/*
-				 * XXX subject to rework during
-				 *     implementation of multi-process
-				 *     attaching.
-				 */
-				Cont = false;
-
-				fprintf(stderr,
-					"ERROR: Process with pid '%d'"
-					" has disappeared : '%m'.\n",
-					args.pid);
-
-				fprintf(stderr, "Exit.\n");
-			}
-		}
+		main_loop_check_exit_conditions();
 	}
 
 

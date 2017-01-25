@@ -489,3 +489,39 @@ setup_buffer:
 	/* setbuffer(out_lf, NULL, args.out_buf_size); */
 	(void) args.out_buf_size;
 }
+
+/*
+ * Check main loop exit conditions
+ */
+void
+main_loop_check_exit_conditions(void)
+{
+	if (!Cont) {
+		fprintf(stderr, "INFO: Signaled.\n");
+
+		goto exit_message;
+	}
+
+	if (!args.command && 0 < args.pid) {
+		if (kill(args.pid, 0) == -1) {
+			/*
+			 * XXX subject to rework during
+			 *     implementation of multi-process
+			 *     attaching.
+			 */
+			Cont = false;
+
+			fprintf(stderr,
+				"ERROR: Process with pid '%d'"
+				" has disappeared : '%m'.\n",
+				args.pid);
+
+			goto exit_message;
+		}
+	}
+
+	return;
+
+exit_message:
+	fprintf(stderr, "Exiting.\n");
+}

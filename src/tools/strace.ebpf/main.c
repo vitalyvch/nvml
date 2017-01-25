@@ -129,35 +129,17 @@ main(const int argc, char *const argv[])
 		exit(EXIT_FAILURE);
 	}
 
+	/* Run user-supplied command */
 	if (args.command) {
-		struct sigaction sa;
-
-		args.pid = start_command(argc - st_optind, argv + st_optind);
+		args.pid = start_command_with_signals(
+				argc - st_optind,
+				argv + st_optind);
 
 		if (args.pid == -1) {
-			fprintf(stderr, "ERROR: "
-				"Failed to run: '%s': %m. Exiting.\n",
-				argv[st_optind]);
+			fprintf(stderr, "ERROR: Exiting.\n");
+
 			exit(errno);
 		}
-
-		sa.sa_sigaction = sig_chld_handler;
-		sigemptyset(&sa.sa_mask);
-		sa.sa_flags = SA_RESTART | SA_SIGINFO |
-			SA_NOCLDSTOP | SA_NOCLDWAIT;
-
-		(void) sigaction(SIGCHLD, &sa, NULL);
-
-		sa.sa_sigaction = sig_transmit_handler;
-		sa.sa_flags = SA_RESTART;
-
-		(void) sigaction(SIGINT, &sa, NULL);
-		(void) sigaction(SIGHUP, &sa, NULL);
-		(void) sigaction(SIGQUIT, &sa, NULL);
-		(void) sigaction(SIGTERM, &sa, NULL);
-
-		sa.sa_flags = (int)(SA_RESTART | SA_RESETHAND);
-		(void) sigaction(SIGSEGV, &sa, NULL);
 	}
 
 	if (0 < args.pid) {
@@ -177,12 +159,12 @@ main(const int argc, char *const argv[])
 		}
 	}
 
-	/* define BPF program */
+	/* Generate BPF program */
 	char *bpf_str = generate_ebpf();
 
 	apply_process_attach_code(&bpf_str);
 
-	/* bcc preprocessor is too limited, so let's do it by hands */
+	/* Let's simulate preprocessor, because it's more safe */
 	apply_trace_h_header(&bpf_str);
 
 	/* Print resulting code if debug mode */
@@ -264,6 +246,11 @@ main(const int argc, char *const argv[])
 
 		if (!args.command && 0 < args.pid) {
 			if (kill(args.pid, 0) == -1) {
+				/*
+				 * XXX subject to rework during
+				 *     implementation of multi-process
+				 *     attaching.
+				 */
 				Cont = false;
 
 				fprintf(stderr,

@@ -347,7 +347,7 @@ str_replace_all(char **const text, const char *templt, const char *str)
 
 /*
  * start_command -- This function runs traced command passed through
- * command line.
+ *    command line.
  */
 pid_t
 start_command(int argc, char *const argv[])
@@ -377,6 +377,49 @@ start_command(int argc, char *const argv[])
 	}
 
 	(void) argc;
+	return pid;
+}
+
+/*
+ * start_command_with_signals -- This function runs traced command passed
+ *    through command line and attach appropriate signal handlers.
+ */
+pid_t
+start_command_with_signals(int argc, char *const argv[])
+{
+	struct sigaction sa;
+
+	pid_t pid = start_command(argc, argv);
+
+	if (pid == -1) {
+		int err_no = errno;
+
+		fprintf(stderr, "ERROR: "
+			"Failed to run: '%s': %m. Exiting.\n",
+			*argv);
+
+		errno = err_no;
+		return -1;
+	}
+
+	sa.sa_sigaction = sig_chld_handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_RESTART | SA_SIGINFO |
+		SA_NOCLDSTOP | SA_NOCLDWAIT;
+
+	(void) sigaction(SIGCHLD, &sa, NULL);
+
+	sa.sa_sigaction = sig_transmit_handler;
+	sa.sa_flags = SA_RESTART;
+
+	(void) sigaction(SIGINT, &sa, NULL);
+	(void) sigaction(SIGHUP, &sa, NULL);
+	(void) sigaction(SIGQUIT, &sa, NULL);
+	(void) sigaction(SIGTERM, &sa, NULL);
+
+	sa.sa_flags = (int)(SA_RESTART | SA_RESETHAND);
+	(void) sigaction(SIGSEGV, &sa, NULL);
+
 	return pid;
 }
 

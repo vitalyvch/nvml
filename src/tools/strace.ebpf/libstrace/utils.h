@@ -57,6 +57,7 @@ void get_sc_list(FILE *f, template_t template);
 void str_replace_all(char **text, const char *templt, const char *str);
 
 pid_t start_command(int argc, char *const argv[]);
+pid_t start_command_with_signals(int argc, char *const argv[]);
 
 void sig_chld_handler(int sig, siginfo_t *si, void *unused);
 void sig_transmit_handler(int sig, siginfo_t *si, void *unused);

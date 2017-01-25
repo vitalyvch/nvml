@@ -521,7 +521,7 @@ apply_process_attach_code(char **const pbpf_str)
 }
 
 /*
- * This function apply trace.h because bcc preprocessor is too weak
+ * This function apply trace.h because this way is the safest.
  */
 void
 apply_trace_h_header(char **const pbpf_str)

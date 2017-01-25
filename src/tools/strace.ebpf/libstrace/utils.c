@@ -350,7 +350,7 @@ str_replace_all(char **const text, const char *templt, const char *str)
  * command line.
  */
 pid_t
-start_command(int argc, char *argv[])
+start_command(int argc, char *const argv[])
 {
 	pid_t pid = -1;
 

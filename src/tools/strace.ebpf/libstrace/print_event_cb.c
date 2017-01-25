@@ -78,7 +78,7 @@ static inline char b2hex(char b);
  * XXX A blank for human-readable strace-like logs
  */
 static void
-print_header_strace(int argc, char *argv[])
+print_header_strace(int argc, char *const argv[])
 {
 	if (args.timestamp)
 		fprintf(out, "%-14s", "TIME(s)");
@@ -147,7 +147,7 @@ print_event_strace(void *cb_cookie, void *data, int size)
  * print_header_hex -- This function prints header for hexadecimal logs.
  */
 static void
-print_header_hex(int argc, char *argv[])
+print_header_hex(int argc, char *const argv[])
 {
 	for (int i = 0; i < argc; i++) {
 		if (i + 1 != argc)
@@ -491,7 +491,7 @@ print_event_hex_sl(void *cb_cookie, void *data, int size)
  * print_header_bin -- This function writes header in stream.
  */
 static void
-print_header_bin(int argc, char *argv[])
+print_header_bin(int argc, char *const argv[])
 {
 	size_t  argv_size = 0;
 

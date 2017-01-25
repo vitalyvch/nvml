@@ -136,7 +136,7 @@ static unsigned out_buf_size = OUT_BUF_SIZE;
  * main -- Tool's entry point
  */
 int
-main(int argc, char *argv[])
+main(const int argc, char *const argv[])
 {
 	args.pid = -1;
 	args.out_sep_ch = '\t';

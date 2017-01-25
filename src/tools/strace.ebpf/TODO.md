@@ -124,3 +124,13 @@ We already have an option for it, but we need to finish implemantation.
 --------------------------------
 
 We already have an option for it, but we need to finish implemantation.
+
+
+5. Improovemetns
+==================
+
+5.1 enum masks_t
+------------------
+
+It looks like current version is not enough scallable for full-features
+immitation of strace. Subject to redevelop.

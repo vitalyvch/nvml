@@ -39,6 +39,7 @@
 
 #include <sys/syscall.h>
 
+/* XXX Subject to re-develop */
 enum masks_t {
 	/* syscall has fs path as a first arg */
 	EM_fs_path_1_arg = 1 << 0,

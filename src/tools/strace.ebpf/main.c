@@ -185,20 +185,11 @@ main(const int argc, char *const argv[])
 	/* bcc preprocessor is too limited, so let's do it by hands */
 	apply_trace_h_header(&bpf_str);
 
-	if (args.debug) {
-		fprintf(stderr, "\t>>>>> Generated eBPF code <<<<<\n");
+	/* Print resulting code if debug mode */
+	if (args.debug)
+		fprint_ebpf_code_with_debug_marks(stderr, bpf_str);
 
-		if (bpf_str) {
-			size_t fw_res;
-
-			fw_res = fwrite(bpf_str, strlen(bpf_str), 1, stderr);
-
-			assert(fw_res > 0);
-		}
-
-		fprintf(stderr, "\t>>>>> EndOf generated eBPF code <<<<<<\n");
-	}
-
+	/* XXX We should do it only by user reques */
 	save_trace_h();
 
 	/* initialize BPF */

@@ -532,3 +532,22 @@ apply_trace_h_header(char **const pbpf_str)
 
 	free(trace_h);
 }
+
+/*
+ * Print ebpf code with marks for debug reason
+ */
+void
+fprint_ebpf_code_with_debug_marks(FILE *f, const char *bpf_str)
+{
+	fprintf(f, "\t>>>>> Generated eBPF code <<<<<\n");
+
+	if (bpf_str) {
+		size_t fw_res;
+
+		fw_res = fwrite(bpf_str, strlen(bpf_str), 1, f);
+
+		assert(fw_res > 0);
+	}
+
+	fprintf(f, "\t>>>>> EndOf generated eBPF code <<<<<<\n");
+}

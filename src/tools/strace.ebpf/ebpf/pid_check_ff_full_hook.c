@@ -36,7 +36,8 @@
 
 {
 	bool t = false;
-	const u64 pid = (pid_tid >> 32);
+
+	/* const */ u64 pid = (pid_tid >> 32);
 
 	if (pid == TRACED_PID) {
 		t |= true;

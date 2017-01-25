@@ -50,8 +50,8 @@
 		 * XXX Something wrong is here with real_parent. Probably we
 		 *    should use another parent pointer.
 		 *
-		 *    - https://github.com/iovisor/bcc/issues/799
-		 *    - http://lxr.free-electrons.com/source/kernel/sys.c?v=4.8#L847
+		 * - https://github.com/iovisor/bcc/issues/799
+		 * - http://lxr.free-electrons.com/source/kernel/sys.c?v=4.8#L847
 		 */
 		bpf_probe_read(&real_parent_task,
 				sizeof(real_parent_task),

@@ -89,7 +89,7 @@ kretprobe__SYSCALL_NAME(struct pt_regs *ctx)
 	ev.ret = PT_REGS_RC(ctx);
 
 	if (0 < ev.ret) {
-		const u64 one = 1;
+		/* const */ u64 one = 1;
 
 		children_map.update(&ev.ret, &one);
 	}

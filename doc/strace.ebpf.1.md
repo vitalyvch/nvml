@@ -186,6 +186,9 @@ bpf_get_current_task(). This mode assume "level 1"
 tracing only: no grandchildren or other descendants
 will be traced.
 Implementation is not debugged and is postponned.
+Details:
+ - https://github.com/iovisor/bcc/issues/799
+ - http://lxr.free-electrons.com/source/kernel/sys.c?v=4.8#L847
 
 `-FF, --fast-follow-fork=F`
 

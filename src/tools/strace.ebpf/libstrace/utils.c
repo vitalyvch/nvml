@@ -122,10 +122,21 @@ save_trace_h(void)
 char *
 load_file(const char *const fn)
 {
-	char *f = load_file_from_disk(fn);
+	if (NULL != args.ebpf_src_dir) {
+		const char path[4096];
+		char *f;
+		int res;
 
-	if (NULL != f)
-		return f;
+		res = snprintf(path, sizeof(path), "%s/%s",
+				args.ebpf_src_dir, fn);
+
+		assert(res > 0);
+
+		f = load_file_from_disk(path);
+
+		if (NULL != f)
+			return f;
+	}
 
 	/* fallback to embedded ones */
 	return ebpf_load_file(fn);

@@ -232,6 +232,9 @@ Note
 ```
 syntax.
 
+`-N, --ebpf-src-dir <dir>`
+
+Enable checking of updated ebpf templates in directory <dir>.
 
 #Miscellaneous:
 `-d, --debug`
@@ -287,19 +290,19 @@ Print a list of all syscalls known by glibc.
 
 # FILES #
 
-Putting into current directory following files allow to customize eBPF code for
-supporting more newer eBPF VM features in newer kernels. Also if current
-directory does not contain trace.h strace.ebpf on first start saves built-in
-trace.h into current directory. Saved built-in describe binary log's format.
+Putting into directory, supplied with -N option, modified template files
+allow to customize eBPF code for supporting more newer eBPF VM features in
+newer kernels.
+
+Also if current directory does not contain trace.h file, strace.ebpf on first
+start saves built-in trace.h into current directory. Saved built-in describe
+binary log's format.
 
  - trace.h
- - trace_head.c
- - trace_tp_all.c
- - trace_kern_tmpl.c
- - trace_libc_tmpl.c
- - trace_file_tmpl.c
- - trace_fileat_tmpl.c
+ - ...
 
+The rest of files could be figured out by looking into debug output, into eBPF
+source code.
 
 # EXAMPLES #
 

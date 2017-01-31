@@ -113,6 +113,8 @@ struct cl_options {
 
 	/* XXX Should be configurable through command line */
 	unsigned out_buf_size;
+
+	const char *ebpf_src_dir;
 };
 
 extern struct cl_options args;

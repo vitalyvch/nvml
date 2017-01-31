@@ -81,11 +81,12 @@ cl_parser(struct cl_options *const clo,
 			{"format",		required_argument, 0, 'l'},
 			{"expr",		required_argument, 0, 'e'},
 			{"output",		required_argument, 0, 'o'},
+			{"ebpf-src-dir", required_argument, 0, 'N'},
 			{"hex-separator", required_argument, 0, 'K'},
 			{0,	   0,	 0,  0 }
 		};
 
-		c = getopt_long(argc, argv, "+tXhdp:o:l:K:e:LRBf::F::",
+		c = getopt_long(argc, argv, "+tXhdp:o:l:K:e:LRBf::F::N:",
 				long_options, &option_index);
 
 		if (c == -1)
@@ -137,6 +138,10 @@ cl_parser(struct cl_options *const clo,
 
 		case 'K':
 			clo->out_sep_ch = *optarg;
+			break;
+
+		case 'N':
+			clo->ebpf_src_dir = optarg;
 			break;
 
 		case 'e':

@@ -72,6 +72,8 @@ Startup:
         trace this PID only. Command arg should be missing
         Press (CTRL-C) to send interrupt signal to exit.
         Note -p "`pidof PROG`" syntax.
+    -N, --ebpf-src-dir <dir>
+        Enable checking of updated ebpf templates in directory <dir>
 
 
 Miscellaneous:

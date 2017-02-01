@@ -65,6 +65,28 @@ get_sc_num(const char *sc_name)
 }
 
 static char *
+load_ebpf_fileat_tmpl(void)
+{
+	char *text = NULL;
+	
+	switch (Args.fnr_mode) {
+	case E_FNR_FAST:
+		text = load_file_no_cr(ebpf_fileat_tmpl_sl_file);
+		break;
+	case E_FNR_NAME_MAX:
+		text = load_file_no_cr(ebpf_fileat_tmpl_ml_file);
+		break;
+	case E_FNR_FULL:
+		/* XXX */
+	default:
+		assert(false);
+		break;
+	}
+
+	return text;
+}
+
+static char *
 get_libc_tmpl(unsigned i)
 {
 	char *text = NULL;
@@ -155,19 +177,7 @@ get_libc_tmpl(unsigned i)
 			break;
 		}
 	} else if (EM_fileat == (EM_fileat & Syscall_array[i].masks)) {
-		switch (Args.fnr_mode) {
-		case E_FNR_FAST:
-			text = load_file_no_cr(ebpf_fileat_tmpl_sl_file);
-			break;
-		case E_FNR_NAME_MAX:
-			text = load_file_no_cr(ebpf_fileat_tmpl_ml_file);
-			break;
-		case E_FNR_FULL:
-			/* XXX */
-		default:
-			assert(false);
-			break;
-		}
+		text = load_ebpf_fileat_tmpl();
 	} else {
 		text = load_file_no_cr(ebpf_libc_tmpl_file);
 	}
@@ -342,19 +352,7 @@ generate_ebpf_kp_fileat(FILE *ts)
 		if (EM_fileat != (EM_fileat & Syscall_array[i].masks))
 			continue;
 
-		switch (Args.fnr_mode) {
-		case E_FNR_FAST:
-			text = load_file_no_cr(ebpf_fileat_tmpl_sl_file);
-			break;
-		case E_FNR_NAME_MAX:
-			text = load_file_no_cr(ebpf_fileat_tmpl_ml_file);
-			break;
-		case E_FNR_FULL:
-			/* XXX */
-		default:
-			assert(false);
-			break;
-		}
+		text = load_ebpf_fileat_tmpl();
 
 		str_replace_all(&text, "SYSCALL_NR",
 				Syscall_array[i].num_name);

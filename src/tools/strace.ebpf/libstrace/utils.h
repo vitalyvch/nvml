@@ -68,7 +68,7 @@ void setup_out_lf(void);
 #define DEBUG_TRACING "/sys/kernel/debug/tracing"
 #define DT_AFF "/available_filter_functions"
 
-extern const char debug_tracing[];
-extern const char debug_tracing_aff[];
+extern const char Debug_tracing[];
+extern const char Debug_tracing_aff[];
 
 #endif /* UTILS_H */

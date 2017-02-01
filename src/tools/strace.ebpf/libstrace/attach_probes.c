@@ -154,7 +154,7 @@ attach_kp_kern_all(struct bpf_ctx *b)
 	size_t len = 0;
 	ssize_t read;
 
-	FILE *in = fopen(debug_tracing_aff, "r");
+	FILE *in = fopen(Debug_tracing_aff, "r");
 
 	if (NULL == in) {
 		fprintf(stderr, "%s: ERROR: '%m'\n", __func__);

@@ -93,11 +93,11 @@ enum masks_t {
 	EM_file = EM_fs_path_1_arg,
 	/* syscall accepts dir fd as a first arg and path as a second */
 	EM_fileat = EM_fd_1_arg | EM_fs_path_2_arg,
-	/* syscall has fs paths as first and second args. rename() */
+	/* syscall has fs paths as first and second Args. rename() */
 	EM_fs_path_1_2_arg = EM_fs_path_1_arg | EM_fs_path_2_arg,
-	/* syscall has fs paths as first and third args. linkat() */
+	/* syscall has fs paths as first and third Args. linkat() */
 	EM_fs_path_1_3_arg = EM_fs_path_1_arg | EM_fs_path_3_arg,
-	/* syscall has fs paths as second and forth args. renameat() */
+	/* syscall has fs paths as second and forth Args. renameat() */
 	EM_fs_path_2_4_arg = EM_fs_path_2_arg | EM_fs_path_4_arg,
 
 	EM_ALL = -1,

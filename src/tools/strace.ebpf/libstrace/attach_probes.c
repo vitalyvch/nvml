@@ -86,7 +86,7 @@ attach_single_sc(struct bpf_ctx *b, const char *handler_name)
 	/* KRetProbe should be first to prevent race condition */
 	res = load_fn_and_attach_to_kretp(b,
 			handler_name, kretprobe,
-			args.pid, 0, -1);
+			Args.pid, 0, -1);
 
 	if (res == -1) {
 		fprintf(stderr,
@@ -100,7 +100,7 @@ attach_single_sc(struct bpf_ctx *b, const char *handler_name)
 
 	res = load_fn_and_attach_to_kp(b, handler_name,
 			kprobe,
-			args.pid, 0, -1);
+			Args.pid, 0, -1);
 
 	if (res == -1) {
 		fprintf(stderr,
@@ -314,7 +314,7 @@ attach_tp_all(struct bpf_ctx *b)
 
 	/* 'sys_exit' should be first to prevent race condition */
 	res = load_fn_and_attach_to_tp(b, tp_all_category, tp_all_enter_name,
-			tp_all_enter_fn, args.pid, 0, -1);
+			tp_all_enter_fn, Args.pid, 0, -1);
 
 	if (res == -1) {
 		fprintf(stderr,
@@ -327,7 +327,7 @@ attach_tp_all(struct bpf_ctx *b)
 	}
 
 	res = load_fn_and_attach_to_tp(b, tp_all_category, tp_all_exit_name,
-			tp_all_exit_fn, args.pid, 0, -1);
+			tp_all_exit_fn, Args.pid, 0, -1);
 
 	if (res == -1) {
 		fprintf(stderr,
@@ -348,20 +348,20 @@ attach_tp_all(struct bpf_ctx *b)
 bool
 attach_probes(struct bpf_ctx *b)
 {
-	if (NULL == args.expr)
+	if (NULL == Args.expr)
 		goto DeFault;
 
-	if (!strcasecmp(args.expr, "trace=kp-libc-all")) {
+	if (!strcasecmp(Args.expr, "trace=kp-libc-all")) {
 		return attach_kp_libc_all(b);
-	} else if (!strcasecmp(args.expr, "trace=kp-kern-all")) {
+	} else if (!strcasecmp(Args.expr, "trace=kp-kern-all")) {
 		return attach_kp_kern_all(b);
-	} else if (!strcasecmp(args.expr, "trace=kp-file")) {
+	} else if (!strcasecmp(Args.expr, "trace=kp-file")) {
 		return attach_kp_file(b);
-	} else if (!strcasecmp(args.expr, "trace=kp-desc")) {
+	} else if (!strcasecmp(Args.expr, "trace=kp-desc")) {
 		return attach_kp_desc(b);
-	} else if (!strcasecmp(args.expr, "trace=kp-fileio")) {
+	} else if (!strcasecmp(Args.expr, "trace=kp-fileio")) {
 		return attach_kp_fileio(b);
-	} else if (!strcasecmp(args.expr, "trace=tp-all")) {
+	} else if (!strcasecmp(Args.expr, "trace=tp-all")) {
 		return attach_tp_all(b);
 	}
 

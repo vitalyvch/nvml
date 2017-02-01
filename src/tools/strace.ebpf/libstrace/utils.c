@@ -122,13 +122,13 @@ save_trace_h(void)
 char *
 load_file(const char *const fn)
 {
-	if (NULL != args.ebpf_src_dir) {
+	if (NULL != Args.ebpf_src_dir) {
 		char path[4096];
 		char *f;
 		int res;
 
 		res = snprintf(path, sizeof(path), "%s/%s",
-				args.ebpf_src_dir, fn);
+				Args.ebpf_src_dir, fn);
 
 		assert(res > 0);
 
@@ -442,7 +442,7 @@ start_command_with_signals(int argc, char *const argv[])
 void
 sig_chld_handler(int sig, siginfo_t *si, void *unused)
 {
-	if (si->si_code == CLD_EXITED && args.pid == si->si_pid) {
+	if (si->si_code == CLD_EXITED && Args.pid == si->si_pid) {
 		Cont = false;
 	}
 
@@ -459,7 +459,7 @@ sig_chld_handler(int sig, siginfo_t *si, void *unused)
 void
 sig_transmit_handler(int sig, siginfo_t *si, void *unused)
 {
-	kill(args.pid, SIGSEGV == sig ? SIGHUP : sig);
+	kill(Args.pid, SIGSEGV == sig ? SIGHUP : sig);
 
 	Cont = false;
 
@@ -475,13 +475,13 @@ setup_out_lf(void)
 {
 	int err_no;
 
-	if (NULL == args.out_fn) {
+	if (NULL == Args.out_fn) {
 		out_lf = stdout;
 
 		goto setup_buffer;
 	}
 
-	out_lf = fopen(args.out_fn, "w");
+	out_lf = fopen(Args.out_fn, "w");
 
 	if (NULL != out_lf)
 		goto setup_buffer;
@@ -490,15 +490,15 @@ setup_out_lf(void)
 
 	fprintf(stderr, "ERROR: "
 		"Failed to open '%s' for appending: '%m'\n",
-		args.out_fn);
+		Args.out_fn);
 
 	errno = err_no;
 	return;
 
 setup_buffer:
 	/* XXX We should improve it. May be we should use fd directly */
-	/* setbuffer(out_lf, NULL, args.out_buf_size); */
-	(void) args.out_buf_size;
+	/* setbuffer(out_lf, NULL, Args.out_buf_size); */
+	(void) Args.out_buf_size;
 }
 
 /*
@@ -513,8 +513,8 @@ main_loop_check_exit_conditions(void)
 		goto exit_message;
 	}
 
-	if (!args.command && 0 < args.pid) {
-		if (kill(args.pid, 0) == -1) {
+	if (!Args.command && 0 < Args.pid) {
+		if (kill(Args.pid, 0) == -1) {
 			/*
 			 * XXX subject to rework during
 			 *     implementation of multi-process
@@ -525,7 +525,7 @@ main_loop_check_exit_conditions(void)
 			fprintf(stderr,
 				"ERROR: Process with pid '%d'"
 				" has disappeared : '%m'.\n",
-				args.pid);
+				Args.pid);
 
 			goto exit_message;
 		}

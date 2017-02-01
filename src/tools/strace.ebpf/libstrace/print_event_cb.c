@@ -68,7 +68,7 @@ static inline char b2hex(char b);
 /*
  * Process event.
  *
- * Also it can be a good idea to use cb_cookie for args, for out or for static
+ * Also it can be a good idea to use cb_cookie for Args, for out or for static
  *	 variable above.
  */
 
@@ -80,7 +80,7 @@ static inline char b2hex(char b);
 static void
 print_header_strace(int argc, char *const argv[])
 {
-	if (args.timestamp)
+	if (Args.timestamp)
 		fprintf(out_lf, "%-14s", "TIME(s)");
 
 	fprintf(out_lf, "%-7s %-6s %4s %3s %s\n",
@@ -112,10 +112,10 @@ print_event_strace(void *cb_cookie, void *data, int size)
 	if (start_ts_nsec == 0)
 		start_ts_nsec = event->start_ts_nsec;
 
-	if (args.failed && (event->ret >= 0))
+	if (Args.failed && (event->ret >= 0))
 		return;
 
-	if (args.timestamp) {
+	if (Args.timestamp) {
 		unsigned long long delta_nsec =
 			event->finish_ts_nsec - start_ts_nsec;
 		fprintf(out_lf, "%-14.9f",
@@ -151,26 +151,26 @@ print_header_hex(int argc, char *const argv[])
 {
 	for (int i = 0; i < argc; i++) {
 		if (i + 1 != argc)
-			fprintf(out_lf, "%s%c", argv[i], args.out_sep_ch);
+			fprintf(out_lf, "%s%c", argv[i], Args.out_sep_ch);
 		else
 			fprintf(out_lf, "%s\n", argv[i]);
 	}
 
-	fprintf(out_lf, "%s%c", "PID_TID", args.out_sep_ch);
+	fprintf(out_lf, "%s%c", "PID_TID", Args.out_sep_ch);
 
-	if (args.timestamp)
-		fprintf(out_lf, "%s%c", "TIME(nsec)", args.out_sep_ch);
+	if (Args.timestamp)
+		fprintf(out_lf, "%s%c", "TIME(nsec)", Args.out_sep_ch);
 
-	fprintf(out_lf, "%s%c",  "ERR",	 args.out_sep_ch);
-	fprintf(out_lf, "%s%c",  "RES",	 args.out_sep_ch);
-	fprintf(out_lf, "%s%c", "SYSCALL", args.out_sep_ch);
+	fprintf(out_lf, "%s%c",  "ERR",	 Args.out_sep_ch);
+	fprintf(out_lf, "%s%c",  "RES",	 Args.out_sep_ch);
+	fprintf(out_lf, "%s%c", "SYSCALL", Args.out_sep_ch);
 
-	fprintf(out_lf, "%s%c", "ARG1", args.out_sep_ch);
-	fprintf(out_lf, "%s%c", "ARG2", args.out_sep_ch);
-	fprintf(out_lf, "%s%c", "ARG3", args.out_sep_ch);
-	fprintf(out_lf, "%s%c", "ARG4", args.out_sep_ch);
-	fprintf(out_lf, "%s%c", "ARG5", args.out_sep_ch);
-	fprintf(out_lf, "%s%c", "ARG6", args.out_sep_ch);
+	fprintf(out_lf, "%s%c", "ARG1", Args.out_sep_ch);
+	fprintf(out_lf, "%s%c", "ARG2", Args.out_sep_ch);
+	fprintf(out_lf, "%s%c", "ARG3", Args.out_sep_ch);
+	fprintf(out_lf, "%s%c", "ARG4", Args.out_sep_ch);
+	fprintf(out_lf, "%s%c", "ARG5", Args.out_sep_ch);
+	fprintf(out_lf, "%s%c", "ARG6", Args.out_sep_ch);
 
 	/* For COMM and like */
 	fprintf(out_lf, "%s", "AUX_DATA");
@@ -274,25 +274,25 @@ print_event_hex(void *cb_cookie, void *data, int size)
 	if (start_ts_nsec == 0)
 		start_ts_nsec = event->start_ts_nsec;
 
-	if (args.failed && (event->ret >= 0))
+	if (Args.failed && (event->ret >= 0))
 		return;
 
 	fprint_i64(out_lf, event->pid_tid);
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, out_lf);
 
-	if (args.timestamp) {
+	if (Args.timestamp) {
 		unsigned long long delta_nsec =
 			event->finish_ts_nsec - start_ts_nsec;
 
 		fprint_i64(out_lf, delta_nsec);
-		fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
+		fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, out_lf);
 	}
 
 	fprint_i64(out_lf, (uint64_t)err);
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, out_lf);
 
 	fprint_i64(out_lf, (uint64_t)res);
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, out_lf);
 
 	if (event->sc_id >= 0)
 		fwrite(sc_num2str(event->sc_id),
@@ -302,7 +302,7 @@ print_event_hex(void *cb_cookie, void *data, int size)
 		fwrite(event->sc_name + 4,
 				strlen(event->sc_name + 4),
 				1, out_lf);
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, out_lf);
 
 	/* "ARG1" */
 	switch (event->sc_id) {
@@ -338,14 +338,14 @@ print_event_hex(void *cb_cookie, void *data, int size)
 			fprint_i64(out_lf, (uint64_t)event->arg_1);
 		else {
 			/*
-			 * XXX We don't have any idea about this syscall args.
+			 * XXX We don't have any idea about this syscall Args.
 			 *    May be we should expand our table with additional
 			 *    syscall descriptions.
 			 */
 		}
 		break;
 	}
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, out_lf);
 
 	/* "ARG2" */
 	switch (event->sc_id) {
@@ -374,7 +374,7 @@ print_event_hex(void *cb_cookie, void *data, int size)
 		}
 		break;
 	}
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, out_lf);
 
 	/* "ARG3" */
 	switch (event->sc_id) {
@@ -392,7 +392,7 @@ print_event_hex(void *cb_cookie, void *data, int size)
 	default:
 		break;
 	}
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, out_lf);
 
 	/* "ARG4" */
 	switch (event->sc_id) {
@@ -410,7 +410,7 @@ print_event_hex(void *cb_cookie, void *data, int size)
 	default:
 		break;
 	}
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, out_lf);
 
 	/* "ARG5" */
 	switch (event->sc_id) {
@@ -428,7 +428,7 @@ print_event_hex(void *cb_cookie, void *data, int size)
 	default:
 		break;
 	}
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, out_lf);
 
 	/* "ARG6" */
 	switch (event->sc_id) {
@@ -446,7 +446,7 @@ print_event_hex(void *cb_cookie, void *data, int size)
 	default:
 		break;
 	}
-	fwrite(&args.out_sep_ch, sizeof(args.out_sep_ch), 1, out_lf);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, out_lf);
 
 	/* "AUX_DATA". For COMM and like. XXX */
 	/* fwrite(event->comm, strlen(event->comm), 1, out_lf); */
@@ -535,7 +535,7 @@ print_event_bin(void *cb_cookie, void *data, int size)
 
 	/* XXX Check size arg */
 
-	if (args.failed && (event->ret >= 0))
+	if (Args.failed && (event->ret >= 0))
 		return;
 
 	if (1 != fwrite(&size, sizeof(size), 1, out_lf)) {

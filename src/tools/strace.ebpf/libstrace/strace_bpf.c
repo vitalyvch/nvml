@@ -61,7 +61,7 @@
 static bool
 pr_arr_check_quota(struct bpf_ctx *sbcp, unsigned new_pr_qty)
 {
-	return sbcp->pr_arr_qty + new_pr_qty <= args.pr_arr_max;
+	return sbcp->pr_arr_qty + new_pr_qty <= Args.pr_arr_max;
 }
 
 /*
@@ -84,7 +84,7 @@ append_item_to_pr_arr(struct bpf_ctx *sbcp, const char *name,
 
 	if (NULL == sbcp->pr_arr)
 		sbcp->pr_arr =
-			calloc(args.pr_arr_max, sizeof(*sbcp->pr_arr));
+			calloc(Args.pr_arr_max, sizeof(*sbcp->pr_arr));
 
 	if (NULL == sbcp->pr_arr) {
 		free(item);
@@ -131,7 +131,7 @@ attach_callback_to_perf_output(struct bpf_ctx *sbcp,
 		fprintf(stderr,
 			"ERROR:%s:Number of perf readers would exceed"
 			" global quota: %d\n",
-			__func__, args.pr_arr_max);
+			__func__, Args.pr_arr_max);
 
 		return -1;
 	}
@@ -296,7 +296,7 @@ load_fn_and_attach_to_kp(struct bpf_ctx *sbcp,
 		fprintf(stderr,
 			"ERROR:%s:Number of perf readers would exceed"
 			" global quota: %d\n",
-			__func__, args.pr_arr_max);
+			__func__, Args.pr_arr_max);
 
 		return -1;
 	}
@@ -359,7 +359,7 @@ load_fn_and_attach_to_kretp(struct bpf_ctx *sbcp,
 		fprintf(stderr,
 			"ERROR:%s:Number of perf readers would exceed"
 			" global quota: %d\n",
-			__func__, args.pr_arr_max);
+			__func__, Args.pr_arr_max);
 
 		return -1;
 	}
@@ -417,7 +417,7 @@ load_fn_and_attach_to_tp(struct bpf_ctx *sbcp,
 		fprintf(stderr,
 			"ERROR:%s:Number of perf readers would exceed"
 			" global quota: %d\n",
-			__func__, args.pr_arr_max);
+			__func__, Args.pr_arr_max);
 
 		return -1;
 	}

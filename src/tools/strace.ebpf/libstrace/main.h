@@ -97,7 +97,7 @@ struct cl_options {
 	const char *expr;
 
 	/*
-	 * XXX Set this variable using args and
+	 * XXX Set this variable using Args and
 	 *    command line options
 	 */
 	unsigned pr_arr_max;
@@ -117,7 +117,7 @@ struct cl_options {
 	const char *ebpf_src_dir;
 };
 
-extern struct cl_options args;
+extern struct cl_options Args;
 extern bool Cont;
 
 /* Output logfile */

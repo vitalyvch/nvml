@@ -74,7 +74,7 @@ get_libc_tmpl(unsigned i)
 
 	if (EM_fs_path_1_2_arg ==
 			(EM_fs_path_1_2_arg & syscall_array[i].masks)) {
-		switch (args.fnr_mode) {
+		switch (Args.fnr_mode) {
 		case E_FNR_FAST:
 			text = load_file_no_cr(
 					ebpf_fs_path_1_2_arg_tmpl_sl_file);
@@ -91,7 +91,7 @@ get_libc_tmpl(unsigned i)
 		}
 	} else if (EM_fs_path_1_3_arg ==
 			(EM_fs_path_1_3_arg & syscall_array[i].masks)) {
-		switch (args.fnr_mode) {
+		switch (Args.fnr_mode) {
 		case E_FNR_FAST:
 			text = load_file_no_cr(
 					ebpf_fs_path_1_3_arg_tmpl_sl_file);
@@ -108,7 +108,7 @@ get_libc_tmpl(unsigned i)
 		}
 	} else if (EM_fs_path_2_4_arg ==
 			(EM_fs_path_2_4_arg & syscall_array[i].masks)) {
-		switch (args.fnr_mode) {
+		switch (Args.fnr_mode) {
 		case E_FNR_FAST:
 			text = load_file_no_cr(
 					ebpf_fs_path_2_4_arg_tmpl_sl_file);
@@ -123,7 +123,7 @@ get_libc_tmpl(unsigned i)
 			assert(false);
 			break;
 		}
-	} else if (E_FF_FULL == args.ff_mode &&
+	} else if (E_FF_FULL == Args.ff_mode &&
 			EM_rpid == (EM_rpid & syscall_array[i].masks)) {
 		switch (i) {
 		case __NR_clone:
@@ -141,7 +141,7 @@ get_libc_tmpl(unsigned i)
 			break;
 		};
 	} else if (EM_file == (EM_file & syscall_array[i].masks)) {
-		switch (args.fnr_mode) {
+		switch (Args.fnr_mode) {
 		case E_FNR_FAST:
 			text = load_file_no_cr(ebpf_file_tmpl_sl_file);
 			break;
@@ -155,7 +155,7 @@ get_libc_tmpl(unsigned i)
 			break;
 		}
 	} else if (EM_fileat == (EM_fileat & syscall_array[i].masks)) {
-		switch (args.fnr_mode) {
+		switch (Args.fnr_mode) {
 		case E_FNR_FAST:
 			text = load_file_no_cr(ebpf_fileat_tmpl_sl_file);
 			break;
@@ -295,7 +295,7 @@ generate_ebpf_kp_file(FILE *ts)
 		if (EM_file != (EM_file & syscall_array[i].masks))
 			continue;
 
-		switch (args.fnr_mode) {
+		switch (Args.fnr_mode) {
 		case E_FNR_FAST:
 			text = load_file_no_cr(ebpf_file_tmpl_sl_file);
 			break;
@@ -342,7 +342,7 @@ generate_ebpf_kp_fileat(FILE *ts)
 		if (EM_fileat != (EM_fileat & syscall_array[i].masks))
 			continue;
 
-		switch (args.fnr_mode) {
+		switch (Args.fnr_mode) {
 		case E_FNR_FAST:
 			text = load_file_no_cr(ebpf_fileat_tmpl_sl_file);
 			break;
@@ -456,25 +456,25 @@ generate_ebpf()
 
 	head = NULL;
 
-	if (NULL == args.expr)
+	if (NULL == Args.expr)
 		goto DeFault;
 
-	if (!strcasecmp(args.expr, "trace=kp-libc-all")) {
+	if (!strcasecmp(Args.expr, "trace=kp-libc-all")) {
 		generate_ebpf_kp_libc_all(ts);
 		goto out;
-	} else if (!strcasecmp(args.expr, "trace=kp-kern-all")) {
+	} else if (!strcasecmp(Args.expr, "trace=kp-kern-all")) {
 		generate_ebpf_kp_kern_all(ts);
 		goto out;
-	} else if (!strcasecmp(args.expr, "trace=kp-file")) {
+	} else if (!strcasecmp(Args.expr, "trace=kp-file")) {
 		generate_ebpf_kp_file(ts);
 		goto out;
-	} else if (!strcasecmp(args.expr, "trace=kp-desc")) {
+	} else if (!strcasecmp(Args.expr, "trace=kp-desc")) {
 		generate_ebpf_kp_desc(ts);
 		goto out;
-	} else if (!strcasecmp(args.expr, "trace=kp-fileio")) {
+	} else if (!strcasecmp(Args.expr, "trace=kp-fileio")) {
 		generate_ebpf_kp_fileio(ts);
 		goto out;
-	} else if (!strcasecmp(args.expr, "trace=tp-all")) {
+	} else if (!strcasecmp(Args.expr, "trace=tp-all")) {
 		generate_ebpf_tp_all(ts);
 		goto out;
 	}
@@ -497,16 +497,16 @@ out:
 void
 apply_process_attach_code(char **const pbpf_str)
 {
-	if (0 < args.pid) {
+	if (0 < Args.pid) {
 		char str[64];
 		int snp_res;
 		char *pid_check_hook;
 
-		snp_res = snprintf(str, sizeof(str), "%d", 	args.pid);
+		snp_res = snprintf(str, sizeof(str), "%d", 	Args.pid);
 
 		assert(snp_res > 0);
 
-		pid_check_hook = load_pid_check_hook(args.ff_mode);
+		pid_check_hook = load_pid_check_hook(Args.ff_mode);
 
 		assert(NULL != pid_check_hook);
 

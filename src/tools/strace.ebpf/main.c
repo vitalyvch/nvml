@@ -67,7 +67,7 @@
 #include "print_event_cb.h"
 
 
-struct cl_options args;
+struct cl_options Args;
 bool Cont = true;
 FILE *out_lf;
 enum out_fmt out_fmt;
@@ -83,17 +83,17 @@ main(const int argc, char *const argv[])
 {
 	int st_optind;
 
-	args.pid = -1;
-	args.out_sep_ch = '\t';
+	Args.pid = -1;
+	Args.out_sep_ch = '\t';
 
 	/*
 	 * XXX Should be set by cl options
 	 *    if we need something over syscalls
 	 */
-	args.pr_arr_max = 1000;
+	Args.pr_arr_max = 1000;
 
 	/* XXX Should be configurable through command line */
-	args.out_buf_size = OUT_BUF_SIZE;
+	Args.out_buf_size = OUT_BUF_SIZE;
 
 	/*
 	 * XXX Let's enlarge ring buffers. It's really improve situation
@@ -103,7 +103,7 @@ main(const int argc, char *const argv[])
 	perf_reader_page_cnt *= perf_reader_page_cnt;
 
 	/* Let's parse command-line options */
-	st_optind = cl_parser(&args, argc, argv);
+	st_optind = cl_parser(&Args, argc, argv);
 
 	/* Check for JIT acceleration of BPF */
 	check_bpf_jit_status(stderr);
@@ -121,7 +121,7 @@ main(const int argc, char *const argv[])
 	 * XXX Temporarilly. We should do it in the future together with
 	 *    multi-process attaching.
 	 */
-	if (args.pid != -1 && args.command) {
+	if (Args.pid != -1 && Args.command) {
 		fprintf(stderr, "ERROR: "
 				"It is currently unsupported to watch for PID"
 				" and command simultaneously.\n");
@@ -130,24 +130,24 @@ main(const int argc, char *const argv[])
 	}
 
 	/* Run user-supplied command */
-	if (args.command) {
-		args.pid = start_command_with_signals(
+	if (Args.command) {
+		Args.pid = start_command_with_signals(
 				argc - st_optind,
 				argv + st_optind);
 
-		if (args.pid == -1) {
+		if (Args.pid == -1) {
 			fprintf(stderr, "ERROR: Exiting.\n");
 
 			exit(errno);
 		}
 	}
 
-	if (0 < args.pid) {
-		if (!args.command) {
-			if (kill(args.pid, 0) == -1) {
+	if (0 < Args.pid) {
+		if (!Args.command) {
+			if (kill(Args.pid, 0) == -1) {
 				fprintf(stderr,
 					"ERROR: Process with pid '%d'"
-					" does not exist: '%m'.\n", args.pid);
+					" does not exist: '%m'.\n", Args.pid);
 
 				/*
 				 * XXX As soon as multi-process attaching will
@@ -168,7 +168,7 @@ main(const int argc, char *const argv[])
 	apply_trace_h_header(&bpf_str);
 
 	/* Print resulting code if debug mode */
-	if (args.debug)
+	if (Args.debug)
 		fprint_ebpf_code_with_debug_marks(stderr, bpf_str);
 
 	/* XXX We should do it only by user reques */
@@ -186,7 +186,7 @@ main(const int argc, char *const argv[])
 
 	/* Compiling of generated eBPF code */
 	b->module = bpf_module_create_c_from_string(bpf_str, 0, NULL, 0);
-	b->debug  = args.debug;
+	b->debug  = Args.debug;
 
 	free(bpf_str);
 
@@ -195,9 +195,9 @@ main(const int argc, char *const argv[])
 		fprintf(stderr,
 			"ERROR: No probes were attached. Exiting.\n");
 
-		if (args.command) {
+		if (Args.command) {
 			/* let's KILL child */
-			kill(args.pid, SIGKILL);
+			kill(Args.pid, SIGKILL);
 		}
 
 		return EXIT_FAILURE;
@@ -218,18 +218,18 @@ main(const int argc, char *const argv[])
 			PERF_OUTPUT_NAME, Print_event_cb[out_fmt]);
 
 	if (!res) {
-		if (args.command) {
+		if (Args.command) {
 			/* let's child go */
-			kill(args.pid, SIGCONT);
+			kill(Args.pid, SIGCONT);
 		}
 	} else {
 		fprintf(stderr,
 			"ERROR: Can't attach to perf output '%s'. Exiting.\n",
 			PERF_OUTPUT_NAME);
 
-		if (args.command) {
+		if (Args.command) {
 			/* let's KILL child */
-			kill(args.pid, SIGKILL);
+			kill(Args.pid, SIGKILL);
 		}
 
 		detach_all(b);

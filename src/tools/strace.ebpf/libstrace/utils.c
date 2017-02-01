@@ -123,7 +123,7 @@ char *
 load_file(const char *const fn)
 {
 	if (NULL != args.ebpf_src_dir) {
-		const char path[4096];
+		char path[4096];
 		char *f;
 		int res;
 

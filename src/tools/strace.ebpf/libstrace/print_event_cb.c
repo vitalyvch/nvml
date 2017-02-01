@@ -572,14 +572,14 @@ out_fmt_str2enum(const char *str)
 	return EOF_HEX_RAW;
 }
 
-perf_reader_raw_cb print_event_cb[EOF_QTY + 1] = {
+perf_reader_raw_cb Print_event_cb[EOF_QTY + 1] = {
 	[EOF_HEX_RAW]	= print_event_hex_raw,
 	[EOF_HEX_SL]	= print_event_hex_sl,
 	[EOF_BIN]	= print_event_bin,
 	[EOF_STRACE] = print_event_strace,
 };
 
-print_header_t print_header[EOF_QTY + 1] = {
+print_header_t Print_header[EOF_QTY + 1] = {
 	[EOF_HEX_RAW]	= print_header_hex,
 	[EOF_HEX_SL]	= print_header_hex,
 	[EOF_BIN]	= print_header_bin,

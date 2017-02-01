@@ -204,7 +204,7 @@ main(const int argc, char *const argv[])
 	}
 
 	/* header */
-	print_header[out_fmt](argc, argv);
+	Print_header[out_fmt](argc, argv);
 
 	/*
 	 * Attach callback to perf output. "events" is a name of class declared
@@ -215,7 +215,7 @@ main(const int argc, char *const argv[])
 	 */
 #define PERF_OUTPUT_NAME "events"
 	int res = attach_callback_to_perf_output(b,
-			PERF_OUTPUT_NAME, print_event_cb[out_fmt]);
+			PERF_OUTPUT_NAME, Print_event_cb[out_fmt]);
 
 	if (!res) {
 		if (args.command) {

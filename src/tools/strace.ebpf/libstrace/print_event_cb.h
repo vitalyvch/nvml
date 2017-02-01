@@ -44,10 +44,10 @@
 #include "main.h"
 
 /* process event */
-extern perf_reader_raw_cb print_event_cb[EOF_QTY + 1];
+extern perf_reader_raw_cb Print_event_cb[EOF_QTY + 1];
 
 typedef void (*print_header_t)(int argc, char *const argv[]);
-extern print_header_t print_header[EOF_QTY + 1];
+extern print_header_t Print_header[EOF_QTY + 1];
 
 enum out_fmt out_fmt_str2enum(const char *str);
 

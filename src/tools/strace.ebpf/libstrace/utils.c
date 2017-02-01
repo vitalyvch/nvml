@@ -468,7 +468,7 @@ sig_transmit_handler(int sig, siginfo_t *si, void *unused)
 }
 
 /*
- * Setup out_lf stream
+ * Setup Out_lf stream
  */
 void
 setup_out_lf(void)
@@ -476,14 +476,14 @@ setup_out_lf(void)
 	int err_no;
 
 	if (NULL == Args.out_fn) {
-		out_lf = stdout;
+		Out_lf = stdout;
 
 		goto setup_buffer;
 	}
 
-	out_lf = fopen(Args.out_fn, "w");
+	Out_lf = fopen(Args.out_fn, "w");
 
-	if (NULL != out_lf)
+	if (NULL != Out_lf)
 		goto setup_buffer;
 
 	err_no = errno;
@@ -497,7 +497,7 @@ setup_out_lf(void)
 
 setup_buffer:
 	/* XXX We should improve it. May be we should use fd directly */
-	/* setbuffer(out_lf, NULL, Args.out_buf_size); */
+	/* setbuffer(Out_lf, NULL, Args.out_buf_size); */
 	(void) Args.out_buf_size;
 }
 

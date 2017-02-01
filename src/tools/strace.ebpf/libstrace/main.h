@@ -121,7 +121,7 @@ extern struct cl_options Args;
 extern bool Cont;
 
 /* Output logfile */
-extern FILE *out_lf;
+extern FILE *Out_lf;
 extern enum out_fmt out_fmt;
 
 #endif /* MAIN_H */

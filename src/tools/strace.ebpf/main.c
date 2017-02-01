@@ -69,7 +69,7 @@
 
 struct cl_options Args;
 bool Cont = true;
-FILE *out_lf;
+FILE *Out_lf;
 enum out_fmt out_fmt;
 
 /* XXX HACK Should be fixed in libbcc */
@@ -110,8 +110,8 @@ main(const int argc, char *const argv[])
 
 	setup_out_lf();
 
-	/* Settuping of out_lf failed */
-	if (NULL == out_lf) {
+	/* Settuping of Out_lf failed */
+	if (NULL == Out_lf) {
 		fprintf(stderr, "ERROR: Exiting\n");
 
 		exit(errno);

@@ -235,10 +235,10 @@ sc_num2str(const int64_t sc_num)
 	static char buf[32];
 
 	if ((0 <= sc_num) && (SC_TBL_SIZE > sc_num)) {
-		if (NULL == syscall_array[sc_num].handler_name)
+		if (NULL == Syscall_array[sc_num].handler_name)
 			goto out;
 
-		return syscall_array[sc_num].handler_name +
+		return Syscall_array[sc_num].handler_name +
 			4 /* strlen("sys_") */;
 	}
 
@@ -318,7 +318,7 @@ print_event_hex(void *cb_cookie, void *data, int size)
 		break;
 
 	default:
-		if (EM_file == (EM_file & syscall_array[event->sc_id].masks)) {
+		if (EM_file == (EM_file & Syscall_array[event->sc_id].masks)) {
 			/*
 			 * XXX Check presence of string body by cheking sc_id
 			 *    and size arg
@@ -331,10 +331,10 @@ print_event_hex(void *cb_cookie, void *data, int size)
 				fwrite(event->str, strlen(event->str),
 						1, Out_lf);
 		} else if (EM_desc == (EM_desc &
-					syscall_array[event->sc_id].masks))
+					Syscall_array[event->sc_id].masks))
 			fprint_i64(Out_lf, (uint64_t)event->arg_1);
 		else if (EM_fileat == (EM_fileat &
-					syscall_array[event->sc_id].masks))
+					Syscall_array[event->sc_id].masks))
 			fprint_i64(Out_lf, (uint64_t)event->arg_1);
 		else {
 			/*
@@ -362,7 +362,7 @@ print_event_hex(void *cb_cookie, void *data, int size)
 
 	default:
 		if (EM_fileat == (EM_fileat &
-					syscall_array[event->sc_id].masks)) {
+					Syscall_array[event->sc_id].masks)) {
 			if (0 == event->packet_type)
 				/*
 				 * XXX Check presence of aux_str by cheking

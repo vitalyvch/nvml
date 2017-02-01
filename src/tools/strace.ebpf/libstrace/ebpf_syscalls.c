@@ -85,7 +85,7 @@
  * Commented syscalls mean that syscall exists in the kernel but glibc
  *    does not provide __NR_* and SYS_* macros.
  */
-struct syscall_descriptor syscall_array[SC_TBL_SIZE] = {
+struct syscall_descriptor Syscall_array[SC_TBL_SIZE] = {
 	[0 ... SC_TBL_SIZE - 1] = SC_NI,
 
 	EBPF_SYSCALL(__NR_arch_prctl, sys_arch_prctl),
@@ -468,14 +468,14 @@ int
 fprint_sc_tbl(FILE *f)
 {
 	for (unsigned i = 0; i < SC_TBL_SIZE; i++) {
-		if (NULL != syscall_array[i].handler_name) {
+		if (NULL != Syscall_array[i].handler_name) {
 			int res;
 
 			res = fprintf(f,
 				"%03d: %-20s\t %s\n",
-				syscall_array[i].num,
-				syscall_array[i].num_name,
-				syscall_array[i].handler_name);
+				Syscall_array[i].num,
+				Syscall_array[i].num_name,
+				Syscall_array[i].handler_name);
 
 			if (res <= 0)
 				return res;

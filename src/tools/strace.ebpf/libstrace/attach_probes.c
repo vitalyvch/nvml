@@ -127,7 +127,7 @@ attach_kp_libc_all(struct bpf_ctx *b)
 	for (unsigned i = 0; i < SC_TBL_SIZE; i++) {
 		int res;
 
-		res = attach_single_sc(b, syscall_array[i].handler_name);
+		res = attach_single_sc(b, Syscall_array[i].handler_name);
 
 		if (res >= 0)
 			succ_counter++;
@@ -203,13 +203,13 @@ attach_kp_desc(struct bpf_ctx *b)
 	for (unsigned i = 0; i < SC_TBL_SIZE; i++) {
 		int res;
 
-		if (NULL == syscall_array[i].handler_name)
+		if (NULL == Syscall_array[i].handler_name)
 			continue;
 
-		if (EM_desc != (EM_desc & syscall_array[i].masks))
+		if (EM_desc != (EM_desc & Syscall_array[i].masks))
 			continue;
 
-		res = attach_single_sc(b, syscall_array[i].handler_name);
+		res = attach_single_sc(b, Syscall_array[i].handler_name);
 
 		if (res >= 0)
 			succ_counter ++;
@@ -232,13 +232,13 @@ attach_kp_file(struct bpf_ctx *b)
 	for (unsigned i = 0; i < SC_TBL_SIZE; i++) {
 		int res;
 
-		if (NULL == syscall_array[i].handler_name)
+		if (NULL == Syscall_array[i].handler_name)
 			continue;
 
-		if (EM_file != (EM_file & syscall_array[i].masks))
+		if (EM_file != (EM_file & Syscall_array[i].masks))
 			continue;
 
-		res = attach_single_sc(b, syscall_array[i].handler_name);
+		res = attach_single_sc(b, Syscall_array[i].handler_name);
 
 		if (res >= 0)
 			succ_counter ++;
@@ -261,13 +261,13 @@ attach_kp_fileat(struct bpf_ctx *b)
 	for (unsigned i = 0; i < SC_TBL_SIZE; i++) {
 		int res;
 
-		if (NULL == syscall_array[i].handler_name)
+		if (NULL == Syscall_array[i].handler_name)
 			continue;
 
-		if (EM_fileat != (EM_fileat & syscall_array[i].masks))
+		if (EM_fileat != (EM_fileat & Syscall_array[i].masks))
 			continue;
 
-		res = attach_single_sc(b, syscall_array[i].handler_name);
+		res = attach_single_sc(b, Syscall_array[i].handler_name);
 
 		if (res >= 0)
 			succ_counter ++;

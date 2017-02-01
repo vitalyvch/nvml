@@ -117,7 +117,7 @@ struct syscall_descriptor {
 
 /* Currently glibc does not have appropriate macro for it */
 enum { SC_TBL_SIZE = 1024 };
-extern struct syscall_descriptor syscall_array[SC_TBL_SIZE];
+extern struct syscall_descriptor Syscall_array[SC_TBL_SIZE];
 
 int fprint_sc_tbl(FILE *f);
 

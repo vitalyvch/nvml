@@ -41,7 +41,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 
-enum out_fmt {
+enum out_lf_fmt {
 	/* Write syscall's data packets "as is" */
 	EOF_HEX_RAW = 0,
 	/* Assemble multi-packet syscall data into single line */
@@ -122,6 +122,7 @@ extern bool Cont;
 
 /* Output logfile */
 extern FILE *Out_lf;
-extern enum out_fmt out_fmt;
+/* Output logfile format */
+extern enum out_lf_fmt Out_lf_fmt;
 
 #endif /* MAIN_H */

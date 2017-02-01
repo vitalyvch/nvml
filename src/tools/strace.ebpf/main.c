@@ -66,11 +66,11 @@
 #include "generate_ebpf.h"
 #include "print_event_cb.h"
 
-
+/* Global variables */
 struct cl_options Args;
 bool Cont = true;
 FILE *Out_lf;
-enum out_fmt out_fmt;
+enum out_lf_fmt Out_lf_fmt;
 
 /* XXX HACK Should be fixed in libbcc */
 extern int perf_reader_page_cnt;
@@ -204,7 +204,7 @@ main(const int argc, char *const argv[])
 	}
 
 	/* header */
-	Print_header[out_fmt](argc, argv);
+	Print_header[Out_lf_fmt](argc, argv);
 
 	/*
 	 * Attach callback to perf output. "events" is a name of class declared
@@ -215,7 +215,7 @@ main(const int argc, char *const argv[])
 	 */
 #define PERF_OUTPUT_NAME "events"
 	int res = attach_callback_to_perf_output(b,
-			PERF_OUTPUT_NAME, Print_event_cb[out_fmt]);
+			PERF_OUTPUT_NAME, Print_event_cb[Out_lf_fmt]);
 
 	if (!res) {
 		if (Args.command) {

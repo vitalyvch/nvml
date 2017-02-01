@@ -554,7 +554,7 @@ print_event_bin(void *cb_cookie, void *data, int size)
 /*
  * out_fmt_str2enum -- This function parsess log's type
  */
-enum out_fmt
+enum out_lf_fmt
 out_fmt_str2enum(const char *str)
 {
 	if (!strcasecmp("bin", str) || !strcasecmp("binary", str))

@@ -179,7 +179,7 @@ cl_parser(struct cl_options *const clo,
 				exit(EXIT_SUCCESS);
 			}
 			clo->out_fmt_str = optarg;
-			out_fmt = out_fmt_str2enum(clo->out_fmt_str);
+			Out_lf_fmt = out_fmt_str2enum(clo->out_fmt_str);
 			break;
 
 		case 'L':

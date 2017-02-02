@@ -68,7 +68,7 @@ static char *
 load_ebpf_fileat_tmpl(void)
 {
 	char *text = NULL;
-	
+
 	switch (Args.fnr_mode) {
 	case E_FNR_FAST:
 		text = load_file_no_cr(ebpf_fileat_tmpl_sl_file);

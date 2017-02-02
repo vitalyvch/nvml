@@ -251,6 +251,57 @@ out:
 }
 
 /*
+ * fprint_arg1 -- If syscall has first arg print it.
+ */
+static void
+fprint_arg1(FILE *f, struct ev_dt_t *const event, int size)
+{
+	/* XXX Temporarily */
+	(void) size;
+
+	switch (event->sc_id) {
+	case -2:
+		fprint_i64(f, (uint64_t)event->arg_1);
+		break;
+
+	case -1:
+		/*
+		 * XXX Something unexpected happened. Maybe we should issue a
+		 * warning or do something better
+		 */
+		break;
+
+	default:
+		if (EM_file == (EM_file & Syscall_array[event->sc_id].masks)) {
+			/*
+			 * XXX Check presence of string body by cheking sc_id
+			 *    and size arg
+			 */
+			if (0 == event->packet_type)
+				fwrite(event->aux_str,
+						strlen(event->aux_str),
+						1, f);
+			else
+				fwrite(event->str, strlen(event->str),
+						1, f);
+		} else if (EM_desc == (EM_desc &
+					Syscall_array[event->sc_id].masks))
+			fprint_i64(f, (uint64_t)event->arg_1);
+		else if (EM_fileat == (EM_fileat &
+					Syscall_array[event->sc_id].masks))
+			fprint_i64(f, (uint64_t)event->arg_1);
+		else {
+			/*
+			 * XXX We don't have any idea about this syscall Args.
+			 *    May be we should expand our table with additional
+			 *    syscall descriptions.
+			 */
+		}
+		break;
+	}
+}
+
+/*
  * print_event_hex -- This function prints syscall's logs entry in stream.
  *
  * WARNING
@@ -305,46 +356,7 @@ print_event_hex(FILE *f, void *data, int size)
 	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG1" */
-	switch (event->sc_id) {
-	case -2:
-		fprint_i64(f, (uint64_t)event->arg_1);
-		break;
-
-	case -1:
-		/*
-		 * XXX Something unexpected happened. Maybe we should issue a
-		 * warning or do something better
-		 */
-		break;
-
-	default:
-		if (EM_file == (EM_file & Syscall_array[event->sc_id].masks)) {
-			/*
-			 * XXX Check presence of string body by cheking sc_id
-			 *    and size arg
-			 */
-			if (0 == event->packet_type)
-				fwrite(event->aux_str,
-						strlen(event->aux_str),
-						1, f);
-			else
-				fwrite(event->str, strlen(event->str),
-						1, f);
-		} else if (EM_desc == (EM_desc &
-					Syscall_array[event->sc_id].masks))
-			fprint_i64(f, (uint64_t)event->arg_1);
-		else if (EM_fileat == (EM_fileat &
-					Syscall_array[event->sc_id].masks))
-			fprint_i64(f, (uint64_t)event->arg_1);
-		else {
-			/*
-			 * XXX We don't have any idea about this syscall Args.
-			 *    May be we should expand our table with additional
-			 *    syscall descriptions.
-			 */
-		}
-		break;
-	}
+	fprint_arg1(f, event, size);
 	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG2" */

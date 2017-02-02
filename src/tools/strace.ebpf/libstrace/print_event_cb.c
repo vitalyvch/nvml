@@ -251,10 +251,10 @@ out:
 }
 
 /*
- * fprint_arg1 -- If syscall has first arg print it.
+ * fprint_arg1_hex -- If syscall has first arg print it in hex form.
  */
 static void
-fprint_arg1(FILE *f, struct ev_dt_t *const event, int size)
+fprint_arg1_hex(FILE *f, struct ev_dt_t *const event, int size)
 {
 	/* XXX Temporarily */
 	(void) size;
@@ -267,7 +267,7 @@ fprint_arg1(FILE *f, struct ev_dt_t *const event, int size)
 	case -1:
 		/*
 		 * XXX Something unexpected happened. Maybe we should issue a
-		 * warning or do something better
+		 *    warning or do something better
 		 */
 		break;
 
@@ -302,10 +302,10 @@ fprint_arg1(FILE *f, struct ev_dt_t *const event, int size)
 }
 
 /*
- * fprint_arg2 -- If syscall has second arg print it.
+ * fprint_arg2_hex -- If syscall has second arg print it in hex form.
  */
 static void
-fprint_arg2(FILE *f, struct ev_dt_t *const event, int size)
+fprint_arg2_hex(FILE *f, struct ev_dt_t *const event, int size)
 {
 	/* XXX Temporarily */
 	(void) size;
@@ -318,7 +318,7 @@ fprint_arg2(FILE *f, struct ev_dt_t *const event, int size)
 	case -1:
 		/*
 		 * XXX Something unexpected happened. Ma be we should issue a
-		 * warning or do something better
+		 *    warning or do something better
 		 */
 		break;
 
@@ -339,10 +339,10 @@ fprint_arg2(FILE *f, struct ev_dt_t *const event, int size)
 }
 
 /*
- * fprint_arg3 -- If syscall has third arg print it.
+ * fprint_arg3_hex -- If syscall has third arg print it in hex form.
  */
 static void
-fprint_arg3(FILE *f, struct ev_dt_t *const event, int size)
+fprint_arg3_hex(FILE *f, struct ev_dt_t *const event, int size)
 {
 	/* XXX Temporarily */
 	(void) size;
@@ -355,7 +355,7 @@ fprint_arg3(FILE *f, struct ev_dt_t *const event, int size)
 	case -1:
 		/*
 		 * XXX Something unexpected happened. Ma be we should issue a
-		 * warning or do something better
+		 *    warning or do something better
 		 */
 		break;
 
@@ -365,10 +365,10 @@ fprint_arg3(FILE *f, struct ev_dt_t *const event, int size)
 }
 
 /*
- * fprint_arg4 -- If syscall has fourth arg print it.
+ * fprint_arg4_hex -- If syscall has fourth arg print it in hex form.
  */
 static void
-fprint_arg4(FILE *f, struct ev_dt_t *const event, int size)
+fprint_arg4_hex(FILE *f, struct ev_dt_t *const event, int size)
 {
 	/* XXX Temporarily */
 	(void) size;
@@ -381,7 +381,33 @@ fprint_arg4(FILE *f, struct ev_dt_t *const event, int size)
 	case -1:
 		/*
 		 * XXX Something unexpected happened. Ma be we should issue a
-		 * warning or do something better
+		 *    warning or do something better
+		 */
+		break;
+
+	default:
+		break;
+	}
+}
+
+/*
+ * fprint_arg5_hex -- If syscall has fifth arg print it in hex form.
+ */
+static void
+fprint_arg5_hex(FILE *f, struct ev_dt_t *const event, int size)
+{
+	/* XXX Temporarily */
+	(void) size;
+
+	switch (event->sc_id) {
+	case -2:
+		fprint_i64(f, (uint64_t)event->arg_5);
+		break;
+
+	case -1:
+		/*
+		 * XXX Something unexpected happened. Ma be we should issue a
+		 *    warning or do something better
 		 */
 		break;
 
@@ -445,37 +471,23 @@ print_event_hex(FILE *f, void *data, int size)
 	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG1" */
-	fprint_arg1(f, event, size);
+	fprint_arg1_hex(f, event, size);
 	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG2" */
-	fprint_arg2(f, event, size);
+	fprint_arg2_hex(f, event, size);
 	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG3" */
-	fprint_arg3(f, event, size);
+	fprint_arg3_hex(f, event, size);
 	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG4" */
-	fprint_arg4(f, event, size);
+	fprint_arg4_hex(f, event, size);
 	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG5" */
-	switch (event->sc_id) {
-	case -2:
-		fprint_i64(f, (uint64_t)event->arg_5);
-		break;
-
-	case -1:
-		/*
-		 * XXX Something unexpected happened. Ma be we should issue a
-		 * warning or do something better
-		 */
-		break;
-
-	default:
-		break;
-	}
+	fprint_arg5_hex(f, event, size);
 	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG6" */

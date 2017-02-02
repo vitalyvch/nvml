@@ -417,6 +417,32 @@ fprint_arg5_hex(FILE *f, struct ev_dt_t *const event, int size)
 }
 
 /*
+ * fprint_arg6_hex -- If syscall has sixth arg print it in hex form.
+ */
+static void
+fprint_arg6_hex(FILE *f, struct ev_dt_t *const event, int size)
+{
+	/* XXX Temporarily */
+	(void) size;
+
+	switch (event->sc_id) {
+	case -2:
+		fprint_i64(f, (uint64_t)event->arg_6);
+		break;
+
+	case -1:
+		/*
+		 * XXX Something unexpected happened. May be we should issue a
+		 *    warning or do something better
+		 */
+		break;
+
+	default:
+		break;
+	}
+}
+
+/*
  * print_event_hex -- This function prints syscall's logs entry in stream.
  *
  * WARNING
@@ -491,21 +517,7 @@ print_event_hex(FILE *f, void *data, int size)
 	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG6" */
-	switch (event->sc_id) {
-	case -2:
-		fprint_i64(f, (uint64_t)event->arg_6);
-		break;
-
-	case -1:
-		/*
-		 * XXX Something unexpected happened. May be we should issue a
-		 *    warning or do something better
-		 */
-		break;
-
-	default:
-		break;
-	}
+	fprint_arg6_hex(f, event, size);
 	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "AUX_DATA". For COMM and like. XXX */

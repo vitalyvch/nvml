@@ -259,7 +259,7 @@ out:
  *		 function too much.
  */
 static void
-print_event_hex(void *cb_cookie, void *data, int size)
+print_event_hex(FILE *f, void *data, int size)
 {
 	s64 res, err;
 	struct ev_dt_t *const event = data;
@@ -277,37 +277,37 @@ print_event_hex(void *cb_cookie, void *data, int size)
 	if (Args.failed && (event->ret >= 0))
 		return;
 
-	fprint_i64(Out_lf, event->pid_tid);
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, Out_lf);
+	fprint_i64(f, event->pid_tid);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	if (Args.timestamp) {
 		unsigned long long delta_nsec =
 			event->finish_ts_nsec - start_ts_nsec;
 
-		fprint_i64(Out_lf, delta_nsec);
-		fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, Out_lf);
+		fprint_i64(f, delta_nsec);
+		fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 	}
 
-	fprint_i64(Out_lf, (uint64_t)err);
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, Out_lf);
+	fprint_i64(f, (uint64_t)err);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
-	fprint_i64(Out_lf, (uint64_t)res);
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, Out_lf);
+	fprint_i64(f, (uint64_t)res);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	if (event->sc_id >= 0)
 		fwrite(sc_num2str(event->sc_id),
 				strlen(sc_num2str(event->sc_id)),
-				1, Out_lf);
+				1, f);
 	else
 		fwrite(event->sc_name + 4,
 				strlen(event->sc_name + 4),
-				1, Out_lf);
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, Out_lf);
+				1, f);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG1" */
 	switch (event->sc_id) {
 	case -2:
-		fprint_i64(Out_lf, (uint64_t)event->arg_1);
+		fprint_i64(f, (uint64_t)event->arg_1);
 		break;
 
 	case -1:
@@ -326,16 +326,16 @@ print_event_hex(void *cb_cookie, void *data, int size)
 			if (0 == event->packet_type)
 				fwrite(event->aux_str,
 						strlen(event->aux_str),
-						1, Out_lf);
+						1, f);
 			else
 				fwrite(event->str, strlen(event->str),
-						1, Out_lf);
+						1, f);
 		} else if (EM_desc == (EM_desc &
 					Syscall_array[event->sc_id].masks))
-			fprint_i64(Out_lf, (uint64_t)event->arg_1);
+			fprint_i64(f, (uint64_t)event->arg_1);
 		else if (EM_fileat == (EM_fileat &
 					Syscall_array[event->sc_id].masks))
-			fprint_i64(Out_lf, (uint64_t)event->arg_1);
+			fprint_i64(f, (uint64_t)event->arg_1);
 		else {
 			/*
 			 * XXX We don't have any idea about this syscall Args.
@@ -345,12 +345,12 @@ print_event_hex(void *cb_cookie, void *data, int size)
 		}
 		break;
 	}
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, Out_lf);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG2" */
 	switch (event->sc_id) {
 	case -2:
-		fprint_i64(Out_lf, (uint64_t)event->arg_2);
+		fprint_i64(f, (uint64_t)event->arg_2);
 		break;
 
 	case -1:
@@ -370,16 +370,16 @@ print_event_hex(void *cb_cookie, void *data, int size)
 				 */
 				fwrite(event->aux_str,
 						strlen(event->aux_str),
-						1, Out_lf);
+						1, f);
 		}
 		break;
 	}
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, Out_lf);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG3" */
 	switch (event->sc_id) {
 	case -2:
-		fprint_i64(Out_lf, (uint64_t)event->arg_3);
+		fprint_i64(f, (uint64_t)event->arg_3);
 		break;
 
 	case -1:
@@ -392,12 +392,12 @@ print_event_hex(void *cb_cookie, void *data, int size)
 	default:
 		break;
 	}
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, Out_lf);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG4" */
 	switch (event->sc_id) {
 	case -2:
-		fprint_i64(Out_lf, (uint64_t)event->arg_4);
+		fprint_i64(f, (uint64_t)event->arg_4);
 		break;
 
 	case -1:
@@ -410,12 +410,12 @@ print_event_hex(void *cb_cookie, void *data, int size)
 	default:
 		break;
 	}
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, Out_lf);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG5" */
 	switch (event->sc_id) {
 	case -2:
-		fprint_i64(Out_lf, (uint64_t)event->arg_5);
+		fprint_i64(f, (uint64_t)event->arg_5);
 		break;
 
 	case -1:
@@ -428,12 +428,12 @@ print_event_hex(void *cb_cookie, void *data, int size)
 	default:
 		break;
 	}
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, Out_lf);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG6" */
 	switch (event->sc_id) {
 	case -2:
-		fprint_i64(Out_lf, (uint64_t)event->arg_6);
+		fprint_i64(f, (uint64_t)event->arg_6);
 		break;
 
 	case -1:
@@ -446,13 +446,11 @@ print_event_hex(void *cb_cookie, void *data, int size)
 	default:
 		break;
 	}
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, Out_lf);
+	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "AUX_DATA". For COMM and like. XXX */
-	/* fwrite(event->comm, strlen(event->comm), 1, Out_lf); */
-	fwrite("\n", 1, 1, Out_lf);
-
-	(void) cb_cookie;
+	/* fwrite(event->comm, strlen(event->comm), 1, f); */
+	fwrite("\n", 1, 1, f);
 }
 
 /*
@@ -466,7 +464,9 @@ print_event_hex(void *cb_cookie, void *data, int size)
 static void
 print_event_hex_raw(void *cb_cookie, void *data, int size)
 {
-	print_event_hex(cb_cookie, data, size);
+	print_event_hex(Out_lf, data, size);
+
+	(void) cb_cookie;
 }
 
 /*
@@ -483,7 +483,9 @@ print_event_hex_raw(void *cb_cookie, void *data, int size)
 static void
 print_event_hex_sl(void *cb_cookie, void *data, int size)
 {
-	print_event_hex(cb_cookie, data, size);
+	print_event_hex(Out_lf, data, size);
+
+	(void) cb_cookie;
 }
 
 /* ** Binary logs ** */

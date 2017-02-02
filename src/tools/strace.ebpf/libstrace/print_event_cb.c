@@ -302,6 +302,43 @@ fprint_arg1(FILE *f, struct ev_dt_t *const event, int size)
 }
 
 /*
+ * fprint_arg2 -- If syscall has second arg print it.
+ */
+static void
+fprint_arg2(FILE *f, struct ev_dt_t *const event, int size)
+{
+	/* XXX Temporarily */
+	(void) size;
+
+	switch (event->sc_id) {
+	case -2:
+		fprint_i64(f, (uint64_t)event->arg_2);
+		break;
+
+	case -1:
+		/*
+		 * XXX Something unexpected happened. Ma be we should issue a
+		 * warning or do something better
+		 */
+		break;
+
+	default:
+		if (EM_fileat == (EM_fileat &
+					Syscall_array[event->sc_id].masks)) {
+			if (0 == event->packet_type)
+				/*
+				 * XXX Check presence of aux_str by cheking
+				 *    sc_id and size arg
+				 */
+				fwrite(event->aux_str,
+						strlen(event->aux_str),
+						1, f);
+		}
+		break;
+	}
+}
+
+/*
  * print_event_hex -- This function prints syscall's logs entry in stream.
  *
  * WARNING
@@ -360,32 +397,7 @@ print_event_hex(FILE *f, void *data, int size)
 	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG2" */
-	switch (event->sc_id) {
-	case -2:
-		fprint_i64(f, (uint64_t)event->arg_2);
-		break;
-
-	case -1:
-		/*
-		 * XXX Something unexpected happened. Ma be we should issue a
-		 * warning or do something better
-		 */
-		break;
-
-	default:
-		if (EM_fileat == (EM_fileat &
-					Syscall_array[event->sc_id].masks)) {
-			if (0 == event->packet_type)
-				/*
-				 * XXX Check presence of aux_str by cheking
-				 *    sc_id and size arg
-				 */
-				fwrite(event->aux_str,
-						strlen(event->aux_str),
-						1, f);
-		}
-		break;
-	}
+	fprint_arg2(f, event, size);
 	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG3" */

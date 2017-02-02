@@ -473,6 +473,8 @@ print_event_hex_raw(void *cb_cookie, void *data, int size)
  * print_event_hex_sl -- This function prints syscall's logs entry in stream.
  *    This logger should assemble multi-packet data in one line.
  *
+ * XXX Finish implementation
+ *
  * WARNING
  *
  *    PLEASE don't use *printf() calls because it will slow down this

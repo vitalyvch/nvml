@@ -339,6 +339,32 @@ fprint_arg2(FILE *f, struct ev_dt_t *const event, int size)
 }
 
 /*
+ * fprint_arg3 -- If syscall has third arg print it.
+ */
+static void
+fprint_arg3(FILE *f, struct ev_dt_t *const event, int size)
+{
+	/* XXX Temporarily */
+	(void) size;
+
+	switch (event->sc_id) {
+	case -2:
+		fprint_i64(f, (uint64_t)event->arg_3);
+		break;
+
+	case -1:
+		/*
+		 * XXX Something unexpected happened. Ma be we should issue a
+		 * warning or do something better
+		 */
+		break;
+
+	default:
+		break;
+	}
+}
+
+/*
  * print_event_hex -- This function prints syscall's logs entry in stream.
  *
  * WARNING
@@ -401,21 +427,7 @@ print_event_hex(FILE *f, void *data, int size)
 	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG3" */
-	switch (event->sc_id) {
-	case -2:
-		fprint_i64(f, (uint64_t)event->arg_3);
-		break;
-
-	case -1:
-		/*
-		 * XXX Something unexpected happened. Ma be we should issue a
-		 * warning or do something better
-		 */
-		break;
-
-	default:
-		break;
-	}
+	fprint_arg3(f, event, size);
 	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG4" */

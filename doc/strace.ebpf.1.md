@@ -85,10 +85,6 @@ eBPF and KProbe technologies and libbcc library.
    performance tool will skip some calls. Tool does not assume to try
    any work-around behind the scene.
  - Depend on modern kernel features
- - Limited possibility to run few instances simultaneously.
-   Details:
-    - https://github.com/iovisor/bcc/pull/918
-    - https://github.com/iovisor/bcc/issues/872
  - Underlaing eBPF technology still is in active development. So we should
    expect hangs and crashes more often as for regular strace, especially on
    low-res systems.
@@ -96,13 +92,22 @@ eBPF and KProbe technologies and libbcc library.
    Details:
     - https://github.com/iovisor/bcc/issues/900
 
+# Outdated limitations
+
+Could be useful with old libbcc versions.
+
+ - Limited possibility to run few instances simultaneously.
+   Details:
+    - https://github.com/iovisor/bcc/pull/918
+    - https://github.com/iovisor/bcc/issues/872
+
 
 WARNING: System-wide tracing can fill out your disk really fast.
 
 
 # SYSTEM REQUIREMENTS #
 
- - libbcc
+ - libbcc after commit e1f7462ceea60297b8ceb8e4dd9927069fce46de
  - Linux Kernel 4.4 or later (for Perf Event Circular Buffer)
  - CAP_SYS_ADMIN capability for bpf() syscall
  - mounted tracefs

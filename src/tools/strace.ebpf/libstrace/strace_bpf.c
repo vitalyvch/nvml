@@ -192,14 +192,7 @@ detach_all(struct bpf_ctx *b)
 
 		/* non-attached keys here include the perf_events reader */
 		if (b->pr_arr[i]->attached) {
-			char desc[256];
-
-			int res = snprintf(desc, sizeof(desc),
-				"-:kprobes/%s", b->pr_arr[i]->key);
-
-			assert(res > 0);
-
-			bpf_detach_kprobe(desc);
+			bpf_detach_kprobe(b->pr_arr[i]->key);
 		}
 
 		free(b->pr_arr[i]);
@@ -280,6 +273,29 @@ chr_replace(char *str, const char tmpl, const char ch)
 }
 
 /*
+ * event2ev_name -- Convert event to ev_name
+ */
+static char *
+event2ev_name(const char pref, const char *event)
+{
+	char *ev_name = calloc(1, 2 + strlen(event) + 1);
+
+	if (NULL == ev_name)
+		return NULL;
+
+	ev_name[0] = pref;
+	ev_name[1] = '_';
+	ev_name[2] = '\0';
+
+	strcat(ev_name, event);
+
+	chr_replace(ev_name, '+', '_');
+	chr_replace(ev_name, '.', '_');
+
+	return ev_name;
+}
+
+/*
  * load_fn_and_attach_to_kp -- Load ebpf function code into VM and attach it
  *    to syscall exit point using KProbe.
  */
@@ -288,7 +304,6 @@ load_fn_and_attach_to_kp(struct bpf_ctx *sbcp,
 		const char *event, const char *fn_name,
 		pid_t pid, unsigned cpu, int group_fd)
 {
-	char desc[256];
 	struct perf_reader *pr;
 	int fn_fd;
 
@@ -306,22 +321,13 @@ load_fn_and_attach_to_kp(struct bpf_ctx *sbcp,
 		return -1;
 	}
 
-	char *ev_name = calloc(1, 2 + strlen(event) + 1);
+	char *ev_name = event2ev_name('p', event);
 
 	if (NULL == ev_name)
 		return -1;
 
-	strcpy(ev_name, "p_");
-	strcat(ev_name, event);
-	chr_replace(ev_name, '+', '_');
-	chr_replace(ev_name, '.', '_');
-
-	int res = snprintf(desc, sizeof(desc),
-			"p:kprobes/%s %s", ev_name, event);
-
-	assert(res > 0);
-
-	pr = bpf_attach_kprobe(fn_fd, ev_name, desc, pid, (int)cpu, group_fd,
+	pr = bpf_attach_kprobe(fn_fd, BPF_PROBE_ENTRY, ev_name, event,
+				pid, (int)cpu, group_fd,
 				NULL, NULL);
 
 	if (NULL == pr) {
@@ -351,7 +357,6 @@ load_fn_and_attach_to_kretp(struct bpf_ctx *sbcp,
 		const char *event, const char *fn_name,
 		pid_t pid, unsigned cpu, int group_fd)
 {
-	char desc[256];
 	struct perf_reader *pr;
 	int fn_fd;
 
@@ -369,22 +374,13 @@ load_fn_and_attach_to_kretp(struct bpf_ctx *sbcp,
 		return -1;
 	}
 
-	char *ev_name = calloc(1, 2 + strlen(event) + 1);
+	char *ev_name = event2ev_name('r', event);
 
 	if (NULL == ev_name)
 		return -1;
 
-	strcpy(ev_name, "r_");
-	strcat(ev_name, event);
-	chr_replace(ev_name, '+', '_');
-	chr_replace(ev_name, '.', '_');
-
-	int res = snprintf(desc, sizeof(desc),
-			"r:kprobes/%s %s", ev_name, event);
-
-	assert(res > 0);
-
-	pr = bpf_attach_kprobe(fn_fd, ev_name, desc, pid, (int)cpu, group_fd,
+	pr = bpf_attach_kprobe(fn_fd, BPF_PROBE_RETURN, ev_name, event,
+				pid, (int)cpu, group_fd,
 				NULL, NULL);
 
 	if (NULL == pr) {

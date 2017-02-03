@@ -137,7 +137,7 @@ cl_parser(struct cl_options *const clo,
 			break;
 
 		case 'K':
-			clo->out_sep_ch = *optarg;
+			clo->out_lf_fld_sep_ch = *optarg;
 			break;
 
 		case 'N':

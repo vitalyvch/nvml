@@ -84,7 +84,7 @@ main(const int argc, char *const argv[])
 	int st_optind;
 
 	Args.pid = -1;
-	Args.out_sep_ch = '\t';
+	Args.out_lf_fld_sep_ch = '\t';
 
 	/*
 	 * XXX Should be set by cl options

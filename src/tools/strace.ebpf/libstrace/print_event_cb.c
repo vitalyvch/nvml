@@ -152,26 +152,27 @@ print_header_hex(int argc, char *const argv[])
 {
 	for (int i = 0; i < argc; i++) {
 		if (i + 1 != argc)
-			fprintf(Out_lf, "%s%c", argv[i], Args.out_sep_ch);
+			fprintf(Out_lf, "%s%c", argv[i],
+					Args.out_lf_fld_sep_ch);
 		else
 			fprintf(Out_lf, "%s\n", argv[i]);
 	}
 
-	fprintf(Out_lf, "%s%c", "PID_TID", Args.out_sep_ch);
+	fprintf(Out_lf, "%s%c", "PID_TID", Args.out_lf_fld_sep_ch);
 
 	if (Args.timestamp)
-		fprintf(Out_lf, "%s%c", "TIME(nsec)", Args.out_sep_ch);
+		fprintf(Out_lf, "%s%c", "TIME(nsec)", Args.out_lf_fld_sep_ch);
 
-	fprintf(Out_lf, "%s%c",  "ERR",	 Args.out_sep_ch);
-	fprintf(Out_lf, "%s%c",  "RES",	 Args.out_sep_ch);
-	fprintf(Out_lf, "%s%c", "SYSCALL", Args.out_sep_ch);
+	fprintf(Out_lf, "%s%c",  "ERR",	 Args.out_lf_fld_sep_ch);
+	fprintf(Out_lf, "%s%c",  "RES",	 Args.out_lf_fld_sep_ch);
+	fprintf(Out_lf, "%s%c", "SYSCALL", Args.out_lf_fld_sep_ch);
 
-	fprintf(Out_lf, "%s%c", "ARG1", Args.out_sep_ch);
-	fprintf(Out_lf, "%s%c", "ARG2", Args.out_sep_ch);
-	fprintf(Out_lf, "%s%c", "ARG3", Args.out_sep_ch);
-	fprintf(Out_lf, "%s%c", "ARG4", Args.out_sep_ch);
-	fprintf(Out_lf, "%s%c", "ARG5", Args.out_sep_ch);
-	fprintf(Out_lf, "%s%c", "ARG6", Args.out_sep_ch);
+	fprintf(Out_lf, "%s%c", "ARG1", Args.out_lf_fld_sep_ch);
+	fprintf(Out_lf, "%s%c", "ARG2", Args.out_lf_fld_sep_ch);
+	fprintf(Out_lf, "%s%c", "ARG3", Args.out_lf_fld_sep_ch);
+	fprintf(Out_lf, "%s%c", "ARG4", Args.out_lf_fld_sep_ch);
+	fprintf(Out_lf, "%s%c", "ARG5", Args.out_lf_fld_sep_ch);
+	fprintf(Out_lf, "%s%c", "ARG6", Args.out_lf_fld_sep_ch);
 
 	/* For COMM and like */
 	fprintf(Out_lf, "%s", "AUX_DATA");
@@ -464,6 +465,20 @@ fprint_arg6_hex(FILE *f, struct ev_dt_t *const event, int size)
 }
 
 /*
+ * fwrite_out_lf_fld_sep -- write out logfile field separator for hex mode.
+ */
+static inline void
+fwrite_out_lf_fld_sep(FILE *f)
+{
+	size_t res;
+
+	res = fwrite(&Args.out_lf_fld_sep_ch, sizeof(Args.out_lf_fld_sep_ch),
+			1, f);
+
+	assert(1 == res);
+}
+
+/*
  * print_event_hex -- This function prints syscall's logs entry in stream.
  *
  * WARNING
@@ -491,48 +506,48 @@ print_event_hex(FILE *f, void *data, int size)
 		return;
 
 	fprint_i64(f, event->pid_tid);
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
+	fwrite_out_lf_fld_sep(f);
 
 	if (Args.timestamp) {
 		unsigned long long delta_nsec =
 			event->finish_ts_nsec - start_ts_nsec;
 
 		fprint_i64(f, delta_nsec);
-		fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
+		fwrite_out_lf_fld_sep(f);
 	}
 
 	fprint_i64(f, (uint64_t)err);
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
+	fwrite_out_lf_fld_sep(f);
 
 	fprint_i64(f, (uint64_t)res);
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
+	fwrite_out_lf_fld_sep(f);
 
 	fwrite_sc_name(f, event, size);
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
+	fwrite_out_lf_fld_sep(f);
 
 	/* "ARG1" */
 	fprint_arg1_hex(f, event, size);
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
+	fwrite_out_lf_fld_sep(f);
 
 	/* "ARG2" */
 	fprint_arg2_hex(f, event, size);
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
+	fwrite_out_lf_fld_sep(f);
 
 	/* "ARG3" */
 	fprint_arg3_hex(f, event, size);
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
+	fwrite_out_lf_fld_sep(f);
 
 	/* "ARG4" */
 	fprint_arg4_hex(f, event, size);
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
+	fwrite_out_lf_fld_sep(f);
 
 	/* "ARG5" */
 	fprint_arg5_hex(f, event, size);
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
+	fwrite_out_lf_fld_sep(f);
 
 	/* "ARG6" */
 	fprint_arg6_hex(f, event, size);
-	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
+	fwrite_out_lf_fld_sep(f);
 
 	/* "AUX_DATA". For COMM and like. XXX */
 	/* fwrite(event->comm, strlen(event->comm), 1, f); */

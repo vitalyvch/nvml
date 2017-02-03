@@ -92,7 +92,7 @@ struct cl_options {
 	/* string constant with type of output log format */
 	const char *out_fmt_str;
 	/* Field separator for hexadecimal logs */
-	char out_sep_ch;
+	char out_lf_fld_sep_ch;
 	/* Expression */
 	const char *expr;
 

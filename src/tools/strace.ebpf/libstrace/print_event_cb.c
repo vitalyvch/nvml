@@ -48,6 +48,7 @@
 
 /*
  * XXX A bit of black magic to have some US <-> KS portability.
+ *
  * PLEASE do not add any other includes afters this comment.
  */
 typedef __s32 s32;
@@ -68,8 +69,8 @@ static inline char b2hex(char b);
 /*
  * Process event.
  *
- * Also it can be a good idea to use cb_cookie for Args, for out or for static
- *	 variable above.
+ * Also it can be a good idea to use cb_cookie for Args, for Out_lf or for
+ *    static variable above.
  */
 
 /*

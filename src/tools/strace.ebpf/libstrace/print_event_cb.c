@@ -312,13 +312,12 @@ fprint_arg1_hex(FILE *f, struct ev_dt_t *const event, int size)
 		else if (EM_fileat == (EM_fileat &
 					Syscall_array[event->sc_id].masks))
 			fprint_i64(f, (uint64_t)event->arg_1);
-		else {
-			/*
-			 * XXX We don't have any idea about this syscall Args.
-			 *    May be we should expand our table with additional
-			 *    syscall descriptions.
-			 */
+		else if (Syscall_array[event->sc_id].args_qty >= 1) {
+			fprint_i64(f, (uint64_t)event->arg_1);
+		} else {
+			/* Syscall doesn't have this arg. Print nothing */
 		}
+		
 		break;
 	}
 }
@@ -355,6 +354,10 @@ fprint_arg2_hex(FILE *f, struct ev_dt_t *const event, int size)
 				fwrite(event->aux_str,
 						strlen(event->aux_str),
 						1, f);
+		} else if (Syscall_array[event->sc_id].args_qty >= 2) {
+			fprint_i64(f, (uint64_t)event->arg_2);
+		} else {
+			/* Syscall doesn't have this arg. Print nothing */
 		}
 		break;
 	}
@@ -382,6 +385,11 @@ fprint_arg3_hex(FILE *f, struct ev_dt_t *const event, int size)
 		break;
 
 	default:
+		if (Syscall_array[event->sc_id].args_qty >= 3) {
+			fprint_i64(f, (uint64_t)event->arg_3);
+		} else {
+			/* Syscall doesn't have this arg. Print nothing */
+		}
 		break;
 	}
 }
@@ -408,6 +416,11 @@ fprint_arg4_hex(FILE *f, struct ev_dt_t *const event, int size)
 		break;
 
 	default:
+		if (Syscall_array[event->sc_id].args_qty >= 4) {
+			fprint_i64(f, (uint64_t)event->arg_4);
+		} else {
+			/* Syscall doesn't have this arg. Print nothing */
+		}
 		break;
 	}
 }
@@ -434,6 +447,11 @@ fprint_arg5_hex(FILE *f, struct ev_dt_t *const event, int size)
 		break;
 
 	default:
+		if (Syscall_array[event->sc_id].args_qty >= 5) {
+			fprint_i64(f, (uint64_t)event->arg_5);
+		} else {
+			/* Syscall doesn't have this arg. Print nothing */
+		}
 		break;
 	}
 }
@@ -460,6 +478,11 @@ fprint_arg6_hex(FILE *f, struct ev_dt_t *const event, int size)
 		break;
 
 	default:
+		if (Syscall_array[event->sc_id].args_qty >= 6) {
+			fprint_i64(f, (uint64_t)event->arg_6);
+		} else {
+			/* Syscall doesn't have this arg. Print nothing */
+		}
 		break;
 	}
 }

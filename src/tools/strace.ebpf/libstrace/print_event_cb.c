@@ -251,6 +251,26 @@ out:
 }
 
 /*
+ * fwrite_sc_name -- write syscall's name to stream
+ */
+static void
+fwrite_sc_name(FILE *f, struct ev_dt_t *const event, int size)
+{
+	/* XXX Temporarily */
+	(void) size;
+
+	if (event->sc_id >= 0)
+		fwrite(sc_num2str(event->sc_id),
+				strlen(sc_num2str(event->sc_id)),
+				1, f);
+	else
+		/* XXX Check presence of string body by cheking size arg */
+		fwrite(event->sc_name + 4,
+				strlen(event->sc_name + 4),
+				1, f);
+}
+
+/*
  * fprint_arg1_hex -- If syscall has first arg print it in hex form.
  */
 static void
@@ -486,14 +506,7 @@ print_event_hex(FILE *f, void *data, int size)
 	fprint_i64(f, (uint64_t)res);
 	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
-	if (event->sc_id >= 0)
-		fwrite(sc_num2str(event->sc_id),
-				strlen(sc_num2str(event->sc_id)),
-				1, f);
-	else
-		fwrite(event->sc_name + 4,
-				strlen(event->sc_name + 4),
-				1, f);
+	fwrite_sc_name(f, event, size);
 	fwrite(&Args.out_sep_ch, sizeof(Args.out_sep_ch), 1, f);
 
 	/* "ARG1" */

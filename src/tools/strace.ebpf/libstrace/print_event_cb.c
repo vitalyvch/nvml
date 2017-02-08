@@ -733,6 +733,33 @@ fprint_arg5_hex(FILE *f, struct ev_dt_t *const event, int size)
 }
 
 /*
+ * get_type_of_arg6 -- return sixth arg's type code for syscall num.
+ */
+static enum sc_arg_type
+get_type_of_arg6(unsigned sc_num)
+{
+	if (Syscall_array[sc_num].args_qty >= 6)
+		return EAT_int;
+
+	/* Syscall doesn't have this arg. Print nothing */
+	return EAT_absent;
+}
+
+/*
+ * fprint_arg6_path -- If syscall has path in sixth arg print it as ascii str
+ */
+static void
+fprint_arg6_path(FILE *f, struct ev_dt_t *const event, int size)
+{
+	(void) f;
+	(void) event;
+	(void) size;
+
+	assert(false);
+}
+
+
+/*
  * fprint_arg6_hex -- If syscall has sixth arg print it in hex form.
  */
 static void
@@ -754,10 +781,21 @@ fprint_arg6_hex(FILE *f, struct ev_dt_t *const event, int size)
 		break;
 
 	default:
-		if (Syscall_array[event->sc_id].args_qty >= 6) {
+		switch (get_type_of_arg6((unsigned)event->sc_id)) {
+		case EAT_path:
+			fprint_arg6_path(f, event, size);
+			break;
+
+		case EAT_pointer:
+		case EAT_file_descriptor:
+		case EAT_int:
+		default:
 			fprint_i64(f, (uint64_t)event->arg_6);
-		} else {
+			break;
+
+		case EAT_absent:
 			/* Syscall doesn't have this arg. Print nothing */
+			break;
 		}
 		break;
 	}

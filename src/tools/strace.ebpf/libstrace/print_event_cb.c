@@ -448,7 +448,7 @@ get_type_of_arg2(unsigned sc_num)
 	if (EM_fileat == (EM_fileat & Syscall_array[sc_num].masks))
 		return EAT_path;
 
-	if (Syscall_array[sc_num].args_qty >= 1)
+	if (Syscall_array[sc_num].args_qty >= 2)
 		return EAT_int;
 
 	/* Syscall doesn't have this arg. Print nothing */
@@ -504,7 +504,7 @@ fprint_arg2_hex(FILE *f, struct ev_dt_t *const event, int size)
 		case EAT_file_descriptor:
 		case EAT_int:
 		default:
-			fprint_i64(f, (uint64_t)event->arg_1);
+			fprint_i64(f, (uint64_t)event->arg_2);
 			break;
 
 		case EAT_absent:
@@ -512,6 +512,38 @@ fprint_arg2_hex(FILE *f, struct ev_dt_t *const event, int size)
 			break;
 		}
 		break;
+	}
+}
+
+/*
+ * get_type_of_arg3 -- return third arg's type code for syscall num.
+ */
+static enum sc_arg_type
+get_type_of_arg3(unsigned sc_num)
+{
+	if (EM_fs_path_1_3_arg ==
+			(EM_fs_path_1_3_arg & Syscall_array[sc_num].masks))
+		return EAT_path;
+
+	if (Syscall_array[sc_num].args_qty >= 3)
+		return EAT_int;
+
+	/* Syscall doesn't have this arg. Print nothing */
+	return EAT_absent;
+}
+
+/*
+ * fprint_arg3_path -- If syscall has path in third arg print it as ascii str
+ */
+static void
+fprint_arg3_path(FILE *f, struct ev_dt_t *const event, int size)
+{
+	if (EM_fs_path_1_3_arg == (EM_fs_path_1_3_arg &
+				Syscall_array[event->sc_id].masks)) {
+		if (0 == event->packet_type)
+			fprint_second_str(f, event, size);
+		else
+			fprint_first_str(f, event, size);
 	}
 }
 
@@ -537,10 +569,21 @@ fprint_arg3_hex(FILE *f, struct ev_dt_t *const event, int size)
 		break;
 
 	default:
-		if (Syscall_array[event->sc_id].args_qty >= 3) {
+		switch (get_type_of_arg3((unsigned)event->sc_id)) {
+		case EAT_path:
+			fprint_arg3_path(f, event, size);
+			break;
+
+		case EAT_pointer:
+		case EAT_file_descriptor:
+		case EAT_int:
+		default:
 			fprint_i64(f, (uint64_t)event->arg_3);
-		} else {
+			break;
+
+		case EAT_absent:
 			/* Syscall doesn't have this arg. Print nothing */
+			break;
 		}
 		break;
 	}

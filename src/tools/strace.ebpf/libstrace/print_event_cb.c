@@ -238,6 +238,8 @@ fprint_first_str(FILE *f, struct ev_dt_t *const event, int size)
 	 * XXX Check presence of string body by cheking sc_id
 	 *    and size arg
 	 */
+	(void) size;
+
 	/* This packet contains only single string. Let's write it */
 	if (0 != event->packet_type) {
 		fwrite(event->str, strnlen(event->str, NAME_MAX), 1, f);
@@ -246,21 +248,24 @@ fprint_first_str(FILE *f, struct ev_dt_t *const event, int size)
 
 
 	/* Half-lenth strings */
-	if (EM_fs_path_1_2_arg
-			== (EM_fs_path_1_2_arg & Syscall_array[i].masks)) {
-		fwrite(event->aux_str, strnlen(event->aux_str, NAME_MAX/2), 1, f);
+	if (EM_fs_path_1_2_arg == (EM_fs_path_1_2_arg &
+				Syscall_array[event->sc_id].masks)) {
+		fwrite(event->aux_str,
+				strnlen(event->aux_str, NAME_MAX / 2), 1, f);
 		return;
 	}
 
-	if (EM_fs_path_1_3_arg
-			== (EM_fs_path_1_3_arg & Syscall_array[i].masks)) {
-		fwrite(event->aux_str, strnlen(event->aux_str, NAME_MAX/2), 1, f);
+	if (EM_fs_path_1_3_arg == (EM_fs_path_1_3_arg &
+				Syscall_array[event->sc_id].masks)) {
+		fwrite(event->aux_str,
+				strnlen(event->aux_str, NAME_MAX / 2), 1, f);
 		return;
 	}
 
-	if (EM_fs_path_2_4_arg
-			== (EM_fs_path_2_4_arg & Syscall_array[i].masks)) {
-		fwrite(event->aux_str, strnlen(event->aux_str, NAME_MAX/2), 1, f);
+	if (EM_fs_path_2_4_arg == (EM_fs_path_2_4_arg &
+				Syscall_array[event->sc_id].masks)) {
+		fwrite(event->aux_str,
+				strnlen(event->aux_str, NAME_MAX / 2), 1, f);
 		return;
 	}
 
@@ -284,26 +289,27 @@ fprint_second_str(FILE *f, struct ev_dt_t *const event, int size)
 	 * XXX Check presence of string body by cheking sc_id
 	 *    and size arg
 	 */
+	(void) size;
 
 	/* Half-lenth strings */
-	if (EM_fs_path_1_2_arg
-			== (EM_fs_path_1_2_arg & Syscall_array[i].masks)) {
+	if (EM_fs_path_1_2_arg == (EM_fs_path_1_2_arg &
+				Syscall_array[event->sc_id].masks)) {
 		const char *const p = event->aux_str + (NAME_MAX / 2);
-		fwrite(p, strnlen(p, NAME_MAX - (NAME_MAX/2)), 1, f);
+		fwrite(p, strnlen(p, NAME_MAX - (NAME_MAX / 2)), 1, f);
 		return;
 	}
 
-	if (EM_fs_path_1_3_arg
-			== (EM_fs_path_1_3_arg & Syscall_array[i].masks)) {
+	if (EM_fs_path_1_3_arg == (EM_fs_path_1_3_arg &
+				Syscall_array[event->sc_id].masks)) {
 		const char *const p = event->aux_str + (NAME_MAX / 2);
-		fwrite(p, strnlen(p, NAME_MAX - (NAME_MAX/2)), 1, f);
+		fwrite(p, strnlen(p, NAME_MAX - (NAME_MAX / 2)), 1, f);
 		return;
 	}
 
-	if (EM_fs_path_2_4_arg
-			== (EM_fs_path_2_4_arg & Syscall_array[i].masks)) {
+	if (EM_fs_path_2_4_arg == (EM_fs_path_2_4_arg &
+				Syscall_array[event->sc_id].masks)) {
 		const char *const p = event->aux_str + (NAME_MAX / 2);
-		fwrite(p, strnlen(p, NAME_MAX - (NAME_MAX/2)), 1, f);
+		fwrite(p, strnlen(p, NAME_MAX - (NAME_MAX / 2)), 1, f);
 		return;
 	}
 
@@ -359,7 +365,6 @@ fwrite_sc_name(FILE *f, struct ev_dt_t *const event, int size)
 /*
  * get_type_of_arg1 -- return first arg's type code for syscall num.
  */
-
 static enum sc_arg_type
 get_type_of_arg1(unsigned sc_num)
 {
@@ -406,7 +411,7 @@ fprint_arg1_hex(FILE *f, struct ev_dt_t *const event, int size)
 		break;
 
 	default:
-		switch (get_type_of_arg1(event->sc_id)) {
+		switch (get_type_of_arg1((unsigned)event->sc_id)) {
 		case EAT_path:
 			fprint_first_str(f, event, size);
 			break;
@@ -427,14 +432,56 @@ fprint_arg1_hex(FILE *f, struct ev_dt_t *const event, int size)
 }
 
 /*
+ * get_type_of_arg2 -- return second arg's type code for syscall num.
+ */
+static enum sc_arg_type
+get_type_of_arg2(unsigned sc_num)
+{
+	if (EM_fs_path_1_2_arg ==
+			(EM_fs_path_1_2_arg & Syscall_array[sc_num].masks))
+		return EAT_path;
+
+	if (EM_fs_path_2_4_arg ==
+			(EM_fs_path_2_4_arg & Syscall_array[sc_num].masks))
+		return EAT_path;
+
+	if (EM_fileat == (EM_fileat & Syscall_array[sc_num].masks))
+		return EAT_path;
+
+	if (Syscall_array[sc_num].args_qty >= 1)
+		return EAT_int;
+
+	/* Syscall doesn't have this arg. Print nothing */
+	return EAT_absent;
+}
+
+/*
+ * fprint_arg2_path -- If syscall has path in second arg print it as ascii str
+ */
+static void
+fprint_arg2_path(FILE *f, struct ev_dt_t *const event, int size)
+{
+	if (EM_fs_path_1_2_arg == (EM_fs_path_1_2_arg &
+				Syscall_array[event->sc_id].masks)) {
+		if (0 == event->packet_type)
+			fprint_second_str(f, event, size);
+		else
+			fprint_first_str(f, event, size);
+	} else if (EM_fs_path_2_4_arg == (EM_fs_path_2_4_arg &
+				Syscall_array[event->sc_id].masks)) {
+		fprint_first_str(f, event, size);
+	} else if (EM_fileat == (EM_fileat &
+				Syscall_array[event->sc_id].masks)) {
+		fprint_first_str(f, event, size);
+	}
+}
+
+/*
  * fprint_arg2_hex -- If syscall has second arg print it in hex form.
  */
 static void
 fprint_arg2_hex(FILE *f, struct ev_dt_t *const event, int size)
 {
-	/* XXX Temporarily */
-	(void) size;
-
 	switch (event->sc_id) {
 	case -2:
 		fprint_i64(f, (uint64_t)event->arg_2);
@@ -448,20 +495,21 @@ fprint_arg2_hex(FILE *f, struct ev_dt_t *const event, int size)
 		break;
 
 	default:
-		if (EM_fileat == (EM_fileat &
-					Syscall_array[event->sc_id].masks)) {
-			if (0 == event->packet_type)
-				/*
-				 * XXX Check presence of aux_str by cheking
-				 *    sc_id and size arg
-				 */
-				fwrite(event->aux_str,
-						strlen(event->aux_str),
-						1, f);
-		} else if (Syscall_array[event->sc_id].args_qty >= 2) {
-			fprint_i64(f, (uint64_t)event->arg_2);
-		} else {
+		switch (get_type_of_arg2((unsigned)event->sc_id)) {
+		case EAT_path:
+			fprint_arg2_path(f, event, size);
+			break;
+
+		case EAT_pointer:
+		case EAT_file_descriptor:
+		case EAT_int:
+		default:
+			fprint_i64(f, (uint64_t)event->arg_1);
+			break;
+
+		case EAT_absent:
 			/* Syscall doesn't have this arg. Print nothing */
+			break;
 		}
 		break;
 	}

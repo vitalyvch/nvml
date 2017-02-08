@@ -590,7 +590,7 @@ fprint_arg3_hex(FILE *f, struct ev_dt_t *const event, int size)
 }
 
 /*
- * get_type_of_arg4 -- return third arg's type code for syscall num.
+ * get_type_of_arg4 -- return fourth arg's type code for syscall num.
  */
 static enum sc_arg_type
 get_type_of_arg4(unsigned sc_num)
@@ -607,7 +607,7 @@ get_type_of_arg4(unsigned sc_num)
 }
 
 /*
- * fprint_arg4_path -- If syscall has path in third arg print it as ascii str
+ * fprint_arg4_path -- If syscall has path in fourth arg print it as ascii str
  */
 static void
 fprint_arg4_path(FILE *f, struct ev_dt_t *const event, int size)
@@ -664,6 +664,33 @@ fprint_arg4_hex(FILE *f, struct ev_dt_t *const event, int size)
 }
 
 /*
+ * get_type_of_arg5 -- return fifth arg's type code for syscall num.
+ */
+static enum sc_arg_type
+get_type_of_arg5(unsigned sc_num)
+{
+	if (Syscall_array[sc_num].args_qty >= 5)
+		return EAT_int;
+
+	/* Syscall doesn't have this arg. Print nothing */
+	return EAT_absent;
+}
+
+/*
+ * fprint_arg5_path -- If syscall has path in fifth arg print it as ascii str
+ */
+static void
+fprint_arg5_path(FILE *f, struct ev_dt_t *const event, int size)
+{
+	(void) f;
+	(void) event;
+	(void) size;
+
+	assert(false);
+}
+
+
+/*
  * fprint_arg5_hex -- If syscall has fifth arg print it in hex form.
  */
 static void
@@ -685,10 +712,21 @@ fprint_arg5_hex(FILE *f, struct ev_dt_t *const event, int size)
 		break;
 
 	default:
-		if (Syscall_array[event->sc_id].args_qty >= 5) {
+		switch (get_type_of_arg5((unsigned)event->sc_id)) {
+		case EAT_path:
+			fprint_arg5_path(f, event, size);
+			break;
+
+		case EAT_pointer:
+		case EAT_file_descriptor:
+		case EAT_int:
+		default:
 			fprint_i64(f, (uint64_t)event->arg_5);
-		} else {
+			break;
+
+		case EAT_absent:
 			/* Syscall doesn't have this arg. Print nothing */
+			break;
 		}
 		break;
 	}

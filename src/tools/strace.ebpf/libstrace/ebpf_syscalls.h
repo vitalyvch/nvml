@@ -41,6 +41,21 @@
 
 #include <sys/syscall.h>
 
+
+enum sc_arg_type {
+	/* Syscall does not have this argument */
+	EAT_absent = 0,
+	/* This argument is a pointer */
+	EAT_pointer,
+	/* This argument is a file descriptor */
+	EAT_file_descriptor,
+	/* This argument is a fs path */
+	EAT_path,
+	/* This argument is generic integer */
+	EAT_int,
+};
+
+
 /* XXX Subject to re-develop */
 enum masks_t {
 	/* syscall has fs path as a first arg */

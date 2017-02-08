@@ -162,9 +162,9 @@ struct syscall_descriptor Syscall_array[SC_TBL_SIZE] = {
 	EBPF_SYSCALL(__NR_getpgrp, sys_getpgrp, 6),
 	EBPF_SYSCALL(__NR_getsid, SyS_getsid, 6),
 	EBPF_SYSCALL(__NR_setsid, sys_setsid, 6),
-	/* EBPF_SYSCALL(__NR_newuname, SyS_newuname, 6), */
-	EBPF_SYSCALL(__NR_uname, SyS_uname, 6),
-	/* EBPF_SYSCALL(__NR_olduname, SyS_olduname, 6), */
+	/* EBPF_SYSCALL(__NR_newuname, SyS_newuname, 1), */
+	EBPF_SYSCALL(__NR_uname, SyS_uname, 1),
+	/* EBPF_SYSCALL(__NR_olduname, SyS_olduname, 1), */
 	EBPF_SYSCALL(__NR_sethostname, SyS_sethostname, 6),
 	/* EBPF_SYSCALL(__NR_gethostname, SyS_gethostname, 6), */
 	EBPF_SYSCALL(__NR_setdomainname, SyS_setdomainname, 6),
@@ -276,7 +276,7 @@ struct syscall_descriptor Syscall_array[SC_TBL_SIZE] = {
 	EBPF_SYSCALL(__NR_get_mempolicy, SyS_get_mempolicy, 6),
 	EBPF_SYSCALL(__NR_mbind, SyS_mbind, 6),
 	EBPF_SYSCALL(__NR_move_pages, SyS_move_pages, 6),
-	EBPF_SYSCALL_DESC(__NR_close, SyS_close, 6),
+	EBPF_SYSCALL_DESC(__NR_close, SyS_close, 1),
 	EBPF_SYSCALL_FILE(__NR_truncate, SyS_truncate, 6),
 	EBPF_SYSCALL_DESC(__NR_ftruncate, SyS_ftruncate, 6),
 	EBPF_SYSCALL_DESC(__NR_fallocate, SyS_fallocate, 6),
@@ -310,16 +310,16 @@ struct syscall_descriptor Syscall_array[SC_TBL_SIZE] = {
 	/* EBPF_SYSCALL_DESC(__NR_sendfile64, SyS_sendfile64, 6), */
 	EBPF_SYSCALL_FILE(__NR_stat, SyS_stat, 6),
 	EBPF_SYSCALL_FILE(__NR_lstat, SyS_lstat, 6),
-	EBPF_SYSCALL_DESC(__NR_fstat, SyS_fstat, 6),
+	/* EBPF_SYSCALL_DESC(__NR_fstat, SyS_fstat, 2), */
 	EBPF_SYSCALL_FILE(__NR_stat, SyS_newstat, 6),
 	EBPF_SYSCALL_FILE(__NR_lstat, SyS_newlstat, 6),
 	EBPF_SYSCALL_DESC(__NR_newfstatat, SyS_newfstatat, 6),
-	EBPF_SYSCALL_DESC(__NR_fstat, SyS_newfstat, 6),
+	EBPF_SYSCALL_DESC(__NR_fstat, SyS_newfstat, 2),
 	EBPF_SYSCALL_FILEAT(__NR_readlinkat, SyS_readlinkat, 6),
 	EBPF_SYSCALL_FILE(__NR_readlink, SyS_readlink, 6),
 	EBPF_SYSCALL_FILE(__NR_uselib, SyS_uselib, 6),
-	EBPF_SYSCALL_FILE(__NR_execve, SyS_execve, 6),
-	EBPF_SYSCALL_FILEAT(__NR_execveat, SyS_execveat, 6),
+	EBPF_SYSCALL_FILE(__NR_execve, SyS_execve, 3),
+	EBPF_SYSCALL_FILEAT(__NR_execveat, SyS_execveat, 5),
 	EBPF_SYSCALL(__NR_pipe2, SyS_pipe2, 6),
 	EBPF_SYSCALL(__NR_pipe, SyS_pipe, 6),
 	EBPF_SYSCALL_FILEAT(__NR_mknodat, SyS_mknodat, 6),
